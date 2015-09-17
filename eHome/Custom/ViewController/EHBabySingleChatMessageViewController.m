@@ -209,10 +209,20 @@
 }
 
 -(void)sendMessage:(XHBabyChatMessage*)message{
+    WEAKSELF
     [[EHSingleChatCacheManager sharedCenter] sendBabyChatMessage:message writeSuccess:^(BOOL success, XHBabyChatMessage *chatMessage) {
-        EHLogInfo(@"issuccess：%d ",success);
+        if (success) {
+            EHLogInfo(@"-------> insert into database is success");
+        }else{
+            EHLogInfo(@"-------> insert into database is failed");
+        }
     } sendSuccess:^(BOOL success, XHBabyChatMessage *chatMessage) {
-        ;
+        if (success) {
+            message.msgStatus = EHBabyChatMessageStatusSent;
+        }else{
+            message.msgStatus = EHBabyChatMessageStatusFailed;
+        }
+        [weakSelf.messageTableView reloadData];
     }];
 }
 

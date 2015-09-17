@@ -7,6 +7,7 @@
 //
 
 #import "EHSingleChatCacheManager.h"
+#import "EHChatMessageLIstService.h"
 #import "EHSingleChatCacheService.h"
 #import "NSData+EHVoiceDataTransform.h"
 #import "LKDBHelper.h"
@@ -52,30 +53,13 @@
         return;
     }
     
-    NSString *context = nil;
-    EHMessageContextType context_type = EHMessageContextType_Text;
-    switch (message.messageMediaType) {
-        case XHBubbleMessageMediaTypeText: {
-            context_type = EHMessageContextType_Text;
-            context = message.text;
-            break;
-        }
-        case XHBubbleMessageMediaTypeVoice: {
-            context_type = EHMessageContextType_Voice;
-            if (message.voicePath) {
-                context = [NSData stringFromVoicePath:message.voicePath];
-            }
-            break;
-        }
-        default:
-            break;
-    }
-    
     [self insertBabyChatMessage:message writeSuccess:^(BOOL success) {
         if (writeSuccessBlock) {
             writeSuccessBlock(success, message);
         }
     }];
+    
+    [self sendBabyChatMessageWithNetwork:message sendSuccess:sendSuccessBlock];
 }
 
 - (void)recieveBabyChatMessage:(XHBabyChatMessage *)message{
@@ -95,15 +79,52 @@
 
 }
 
-/*!
- *  @author 孟希羲, 15-09-17 14:09:48
- *
- *  @brief  sendBabyChatMessage 发送message 并存入缓存
- *
- *  @return void
- *
- *  @since 1.0.9
- */
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark -
+#pragma mark - send network service Method
+-(void)sendBabyChatMessageWithNetwork:(XHBabyChatMessage *)message
+                         sendSuccess:(ServiceWriteSuccessCacheBlock)sendSuccessBlock{
+    NSString *context = nil;
+    EHMessageContextType context_type = EHMessageContextType_Text;
+    switch (message.messageMediaType) {
+        case XHBubbleMessageMediaTypeText: {
+            context_type = EHMessageContextType_Text;
+            context = message.text;
+            break;
+        }
+        case XHBubbleMessageMediaTypeVoice: {
+            context_type = EHMessageContextType_Voice;
+            if (message.voicePath) {
+                context = [NSData stringFromVoicePath:message.voicePath];
+            }
+            break;
+        }
+        default:
+            break;
+    }
+    
+    EHChatMessageLIstService* chatMessageService = [EHChatMessageLIstService new];
+    chatMessageService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
+        if (service.item && [service.item isKindOfClass:[EHChatMessageinfoModel class]]) {
+            EHChatMessageinfoModel* chatMessage = (EHChatMessageinfoModel*)service.item;
+            if (sendSuccessBlock) {
+                sendSuccessBlock(YES, chatMessage.babyChatMessage);
+            }
+        }else if (sendSuccessBlock) {
+            sendSuccessBlock(NO, nil);
+        }
+    };
+    chatMessageService.serviceDidFailLoadBlock = ^(WeAppBasicService* service, NSError* error){
+        if (sendSuccessBlock) {
+            sendSuccessBlock(NO, nil);
+        }
+    };
+    
+    [chatMessageService loadChatMessageListWithBabyId:message.recieverBabyID userPhone:[KSAuthenticationCenter userPhone] context:context contextType:[NSString stringWithFormat:@"%@",@(context_type)]];
+
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 #pragma mark - insert cache Method
 -(void)insertBabyChatMessage:(XHBabyChatMessage *)message

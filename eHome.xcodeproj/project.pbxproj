@@ -683,6 +683,9 @@
 		5F7EA3E21BA7FD8E00C82F25 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7EA3E11BA7FD8E00C82F25 /* MobileCoreServices.framework */; };
 		5F7EA3E41BA7FDAC00C82F25 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7EA3E31BA7FDAC00C82F25 /* CoreText.framework */; };
 		5F7EA3E61BA7FDBC00C82F25 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7EA3E51BA7FDBC00C82F25 /* AVFoundation.framework */; };
+		5F8DE1671BAAEAB800BB24F3 /* EHChatMessagePageList.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F8DE1661BAAEAB800BB24F3 /* EHChatMessagePageList.m */; };
+		5F8DE16A1BAAEDC900BB24F3 /* EHChatMessagePaginationItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F8DE1691BAAEDC900BB24F3 /* EHChatMessagePaginationItem.m */; };
+		5F8DE16D1BAAEEC600BB24F3 /* EHChatMessageLIstService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F8DE16C1BAAEEC600BB24F3 /* EHChatMessageLIstService.m */; };
 		5FCC2AF71B57804000C18FBD /* sosalerm.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 5FCC2AF61B57804000C18FBD /* sosalerm.mp3 */; };
 		5FD01EA01B79C29F00F98222 /* EHCoordinationInterpolation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FD01E9F1B79C29F00F98222 /* EHCoordinationInterpolation.m */; };
 		5FD01EA31B79CA3800F98222 /* EHMovingPointAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FD01EA21B79CA3800F98222 /* EHMovingPointAnnotation.m */; };
@@ -2313,6 +2316,12 @@
 		5F7EA3E11BA7FD8E00C82F25 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		5F7EA3E31BA7FDAC00C82F25 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		5F7EA3E51BA7FDBC00C82F25 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		5F8DE1651BAAEAB800BB24F3 /* EHChatMessagePageList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHChatMessagePageList.h; sourceTree = "<group>"; };
+		5F8DE1661BAAEAB800BB24F3 /* EHChatMessagePageList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHChatMessagePageList.m; sourceTree = "<group>"; };
+		5F8DE1681BAAEDC900BB24F3 /* EHChatMessagePaginationItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHChatMessagePaginationItem.h; sourceTree = "<group>"; };
+		5F8DE1691BAAEDC900BB24F3 /* EHChatMessagePaginationItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHChatMessagePaginationItem.m; sourceTree = "<group>"; };
+		5F8DE16B1BAAEEC600BB24F3 /* EHChatMessageLIstService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHChatMessageLIstService.h; sourceTree = "<group>"; };
+		5F8DE16C1BAAEEC600BB24F3 /* EHChatMessageLIstService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHChatMessageLIstService.m; sourceTree = "<group>"; };
 		5FCC2AF61B57804000C18FBD /* sosalerm.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = sosalerm.mp3; sourceTree = "<group>"; };
 		5FD01E9E1B79C29F00F98222 /* EHCoordinationInterpolation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHCoordinationInterpolation.h; sourceTree = "<group>"; };
 		5FD01E9F1B79C29F00F98222 /* EHCoordinationInterpolation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHCoordinationInterpolation.m; sourceTree = "<group>"; };
@@ -5492,6 +5501,12 @@
 				5F6D885B1BA96908001A3248 /* EHSingleChatCacheManager.m */,
 				5F6D88641BAA91F3001A3248 /* NSData+EHVoiceDataTransform.h */,
 				5F6D88651BAA91F3001A3248 /* NSData+EHVoiceDataTransform.m */,
+				5F8DE1651BAAEAB800BB24F3 /* EHChatMessagePageList.h */,
+				5F8DE1661BAAEAB800BB24F3 /* EHChatMessagePageList.m */,
+				5F8DE1681BAAEDC900BB24F3 /* EHChatMessagePaginationItem.h */,
+				5F8DE1691BAAEDC900BB24F3 /* EHChatMessagePaginationItem.m */,
+				5F8DE16B1BAAEEC600BB24F3 /* EHChatMessageLIstService.h */,
+				5F8DE16C1BAAEEC600BB24F3 /* EHChatMessageLIstService.m */,
 			);
 			path = EHSingleChatCacheService;
 			sourceTree = "<group>";
@@ -7191,6 +7206,7 @@
 				35AB52E91B53A18700791436 /* MJRefreshHeader.m in Sources */,
 				5FFD58D11B280ED200310255 /* KeychainItemWrapper.m in Sources */,
 				356ADEFF1B5F4630000C9005 /* EHBaseGeofenceViewController.m in Sources */,
+				5F8DE16A1BAAEDC900BB24F3 /* EHChatMessagePaginationItem.m in Sources */,
 				5F3E60011B8C5C7E00DA56DF /* EHMapNavigationManager.m in Sources */,
 				CC7416A81B4A0AA7009BEE77 /* PNLineChart.m in Sources */,
 				35C17E6E1B43CF1300306332 /* EHLoadingHud.m in Sources */,
@@ -7214,6 +7230,7 @@
 				35AB52E51B53A18700791436 /* MJRefreshAutoFooter.m in Sources */,
 				356ADF001B5F4630000C9005 /* EHGeofenceAddressSearchViewController.m in Sources */,
 				5F4E42621B1FF8B6004AE7C0 /* WeAppLoadingView.m in Sources */,
+				5F8DE16D1BAAEEC600BB24F3 /* EHChatMessageLIstService.m in Sources */,
 				5FF393A11B4106FF00C214D9 /* UIImage+Cut.m in Sources */,
 				5F4E41571B1FEA13004AE7C0 /* UIScrollView+SVPullToRefresh.m in Sources */,
 				5FF41C2C1B5F6640001A2881 /* EHHealthyAdapterService.m in Sources */,
@@ -7678,6 +7695,7 @@
 				CC74169C1B4A0AA7009BEE77 /* MASViewConstraint.m in Sources */,
 				35FF6FBE1B3C6FE9007A5AD9 /* EHAboutViewController.m in Sources */,
 				5F4E41391B1FEA13004AE7C0 /* NSObject+LKModel.m in Sources */,
+				5F8DE1671BAAEAB800BB24F3 /* EHChatMessagePageList.m in Sources */,
 				5F6D880C1BA800DC001A3248 /* XHShareMenuItem.m in Sources */,
 				01E4AC1D1B5E196000AA4BC6 /* EHModifyBabyNameViewController.m in Sources */,
 				5FFE28CE1B6B2F5F00151BC1 /* EHMapHistoryTracePolylineViewController.m in Sources */,
