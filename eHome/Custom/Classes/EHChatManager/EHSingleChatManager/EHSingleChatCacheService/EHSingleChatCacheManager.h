@@ -7,11 +7,20 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "EHChatMessageinfoModel.h"
+#import "XHBabyChatMessage.h"
+
+typedef void(^CacheWriteSuccessCacheBlock)(BOOL success, XHBabyChatMessage* chatMessage);
+typedef void(^ServiceWriteSuccessCacheBlock)(BOOL success, XHBabyChatMessage* chatMessage);
 
 @interface EHSingleChatCacheManager : NSObject
 
 + (instancetype)sharedCenter;
 
+- (void)sendBabyChatMessage:(XHBabyChatMessage *)message
+               writeSuccess:(CacheWriteSuccessCacheBlock)writeSuccessBlock
+                sendSuccess:(ServiceWriteSuccessCacheBlock)sendSuccessBlock;
 
+- (void)recieveBabyChatMessage:(XHBabyChatMessage *)message;
 
 @end

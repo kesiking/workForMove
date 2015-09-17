@@ -12,4 +12,6 @@
 
 @property (nonatomic, strong) EHGetBabyListRsp *             babyUserInfo;
 
+@property (nonatomic, strong) KSLoginComponentItem *         userInfoComponentItem;
+
 @end

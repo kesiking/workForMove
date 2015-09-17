@@ -6,11 +6,11 @@
 //  Copyright (c) 2014年 CMCC. All rights reserved.
 //
 
-#define kCellWidth 320
+#define kCellWidth CGRectGetWidth([UIScreen mainScreen].bounds)
 #define kMarginX 8
-#define kMarginY 4
+#define kMarginY 15
 #define kStartTag 100
-#define kButtonHeight 100
+#define kButtonHeight (kEHCollectionItemTableViewCellHeight-10)
 
 
 #import "EHCollectionItemTableViewCell.h"
@@ -31,11 +31,12 @@
 
 - (void)initAppItemButtons
 {
+
     NSInteger width = kCellWidth/kCollectionItemCount;
     for (NSInteger i = 0; i < kCollectionItemCount; i++)
     {
         EHCollectionCellItemButton *btn = [[EHCollectionCellItemButton alloc] init];
-        btn.frame = CGRectMake(i*width + kMarginX, kMarginY, width - 2*kMarginX, kButtonHeight - 2*kMarginY);
+        btn.frame = CGRectMake(i*width + kMarginX, kMarginY, width - 2*kMarginX, kButtonHeight - kMarginY);
         btn.tag = kStartTag + i;
         [self.contentView addSubview:btn];
     }
@@ -56,7 +57,7 @@
 
 - (void)buttonTapped:(EHCollectionCellItemButton *)sender
 {
-    [self.cellDelegate appItemCell:self actionWithTag:sender.tag];
+    [self.cellDelegate collectionItemCell:self actionWithTag:sender.tag];
 }
 
 

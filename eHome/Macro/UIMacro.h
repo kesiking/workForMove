@@ -53,7 +53,10 @@
 #define EH_cor11 RGB(0xff, 0xff, 0xff)
 #define EH_cor12 RGB(0xcb, 0xcb, 0xcb)
 #define EH_cor13 RGB(0xda, 0xda, 0xda)
-
+#define EH_cor14 RGB(0xa3, 0xd6, 0xff)
+#define EH_cor15 RGB(0x9c, 0x00, 0xff)
+#define EH_cor16 RGB(0x00, 0xc5, 0x20)
+#define EH_cor17 RGB(0xda, 0xda, 0xda)
 
 #define EH_PieCor1 RGB(0xfe,0xcd,0x69)
 #define EH_PieCor2 RGB(0xfa,0xfa,0xfa)
@@ -76,6 +79,7 @@
 #define EH_siz7 11//22px
 #define EH_siz8 10//20px
 #define EH_size9 24//48px
+#define EH_size10 60//120px
 
 #define EH_font1 [UIFont systemFontOfSize:EH_siz1]//36px
 #define EH_font2 [UIFont systemFontOfSize:EH_siz2]//34px
@@ -85,6 +89,26 @@
 #define EH_font6 [UIFont systemFontOfSize:EH_siz6]//24px
 #define EH_font7 [UIFont systemFontOfSize:EH_siz7]//22px
 #define EH_font8 [UIFont systemFontOfSize:EH_siz8]//20px
-#define EH_font9 [UIFont systemFontOfSize:EH_siz9]//48px
+#define EH_font9 [UIFont systemFontOfSize:EH_size9]//48px
+#define EH_font10 [UIFont systemFontOfSize:EH_size10]//120px
+
+//新的色值库
+#define EHBgcor1 RGB(0xf8, 0xf8, 0xf8)
+#define EHBgcor2 RGB(0xf5, 0xf5, 0xf9)
+#define EHBgcor3 RGB(0xff, 0xff, 0xff)
+
+#define EHLinecor1 RGB(0xda, 0xda, 0xda)
+
+#define EHCor1 RGB(0xff, 0xff, 0xff)
+#define EHCor2 RGB(0xae, 0xae, 0xae)
+#define EHCor3 RGB(0x09, 0x09, 0x09)
+#define EHCor4 RGB(0x06, 0x06, 0x06)
+#define EHCor5 RGB(0x03, 0x03, 0x03)
+#define EHCor6 RGB(0x23, 0x74, 0xfa)
+#define EHCor7 RGB(0xff, 0xff, 0x00)
+#define EHCor8 RGB(0x4d, 0x52, 0xfb)
+#define EHCor9 RGB(0xff, 0xcc, 0x72)
+#define EHCor10 RGB(0x4e, 0xea, 0xf0)
+#define EHCor11 RGB(0xf8, 0x68, 0xfd)
 
 #endif

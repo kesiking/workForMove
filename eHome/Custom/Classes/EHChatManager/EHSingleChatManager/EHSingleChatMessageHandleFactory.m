@@ -35,8 +35,15 @@
     return [[self shareInstance] addMessageHandleClass:messageHandleClass withKey:key];
 }
 
++ (NSString*)getMessageTypeWithEHMsgid:(NSString*)msgid{
+    if ([msgid isEqualToString:@"6"]) {
+        return [self getMessageTypeWithEHMessageFileType:EHMessageFileType_voice];
+    }
+    return [self getMessageTypeWithEHMessageFileType:EHMessageFileType_text];
+}
+
 + (NSString*)getMessageTypeWithEHMessageFileType:(EHMessageFileType)messageFileType{
-    return [NSString stringWithFormat:@"EHMessageFileType_%lu",messageFileType];
+    return [NSString stringWithFormat:@"chatMessage_%lu",messageFileType];
 }
 
 - (NSMutableDictionary *) messageHandelClassDic {

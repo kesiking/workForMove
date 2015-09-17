@@ -15,4 +15,9 @@
 
 -(BOOL)isHistoryMessage;
 
+
+-(void)setMsgid:(NSString*)msgid;
+
+-(NSString*)msgid;
+
 @end

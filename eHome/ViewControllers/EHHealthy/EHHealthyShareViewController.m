@@ -44,42 +44,71 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    UIView *sharedBackgroundView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, self.view.size.height - 70*SCREEN_SCALE)];
+//    UIView *sharedBackgroundView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, self.view.size.height - 70*SCREEN_SCALE)];
+    UIImageView *sharedBackgroundView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"img_share_health"]];
+    sharedBackgroundView.frame = CGRectMake(0, 0, SCREEN_WIDTH, self.view.size.height);
     self.sharedBgView = sharedBackgroundView;
     [self.view addSubview:self.sharedBgView];
     [self addSubViews];
-    
     
     UIImageView *sharedBtnBgView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_share_wechatanefriend"]];
     [self.view addSubview:sharedBtnBgView];
     [sharedBtnBgView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.equalTo(self.view.mas_bottom);
         make.centerX.equalTo(self.view.mas_centerX);
-        make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH, 70*SCREEN_SCALE));
+        make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH, 105*SCREEN_SCALE));
     }];
     sharedBtnBgView.userInteractionEnabled=YES;
     
     UIButton *weChatBtn=[[UIButton alloc]init];
-    [weChatBtn setBackgroundImage:[UIImage imageNamed:@"ico_share_wechat_80"] forState:UIControlStateNormal];
+    [weChatBtn setBackgroundImage:[UIImage imageNamed:@"public_icon_share_wechat"] forState:UIControlStateNormal];
     weChatBtn.tag=EHShareTypeWechatSession;
     [weChatBtn addTarget:self action:@selector(sharedButonClick:) forControlEvents:UIControlEventTouchUpInside];
     [sharedBtnBgView addSubview:weChatBtn];
     [weChatBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(sharedBtnBgView.mas_top).with.offset(15*SCREEN_SCALE);
-        make.left.equalTo(sharedBtnBgView.mas_left).with.offset(15*SCREEN_SCALE);
-        make.size.mas_equalTo(CGSizeMake(40*SCREEN_SCALE, 40*SCREEN_SCALE));
+        make.top.equalTo(sharedBtnBgView.mas_top).with.offset(16*SCREEN_SCALE);
+        make.left.equalTo(sharedBtnBgView.mas_left).with.offset(66*SCREEN_SCALE);
+        make.size.mas_equalTo(CGSizeMake(60*SCREEN_SCALE, 60*SCREEN_SCALE));
     }];
     
+    UILabel *weChartLabel = [[UILabel alloc]initWithFrame:CGRectZero];
+    weChartLabel.text = @"微信";
+//    weChartLabel.textColor = [UIColor redColor];
+    weChartLabel.font = EH_font6;
+    [weChartLabel sizeToFit];
+    [sharedBtnBgView addSubview:weChartLabel];
+    [weChartLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(weChatBtn.mas_bottom).with.offset(11*SCREEN_SCALE);
+        make.centerX.equalTo(weChatBtn.mas_centerX);
+
+    }];
+
+
     UIButton *friendsBtn=[[UIButton alloc]initWithFrame:CGRectZero];
-    [friendsBtn setBackgroundImage:[UIImage imageNamed:@"ico_share_friend"] forState:UIControlStateNormal];
+    [friendsBtn setBackgroundImage:[UIImage imageNamed:@"public_icon_share_circleoffriends"] forState:UIControlStateNormal];
     [sharedBtnBgView addSubview:friendsBtn];
     [friendsBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(sharedBtnBgView.mas_top).with.offset(15*SCREEN_SCALE);
-        make.left.equalTo(weChatBtn.mas_right).with.offset(15*SCREEN_SCALE);
-        make.size.mas_equalTo(CGSizeMake(40*SCREEN_SCALE, 40*SCREEN_SCALE));
+        make.top.equalTo(sharedBtnBgView.mas_top).with.offset(16*SCREEN_SCALE);
+        make.right.equalTo(sharedBtnBgView.mas_right).with.offset(-66*SCREEN_SCALE);
+        make.size.mas_equalTo(CGSizeMake(60*SCREEN_SCALE, 60*SCREEN_SCALE));
     }];
     friendsBtn.tag=EHShareTypeWechatTimeline;
     [friendsBtn addTarget:self action:@selector(sharedButonClick:) forControlEvents:UIControlEventTouchUpInside];
+    
+    
+    
+    UILabel *friendsLabel = [[UILabel alloc]initWithFrame:CGRectZero];
+    friendsLabel.text = @"朋友圈";
+//    friendsLabel.textColor = [UIColor redColor];
+    friendsLabel.font = EH_font6;
+    [friendsLabel sizeToFit];
+    [sharedBtnBgView addSubview:friendsLabel];
+    [friendsLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(friendsBtn.mas_bottom).with.offset(11*SCREEN_SCALE);
+        make.centerX.equalTo(friendsBtn.mas_centerX);
+        
+    }];
+
 }
 
 
@@ -108,15 +137,17 @@
     [self setHeadImageUrl:self.sharedHeadImage withSex:[self.babySex integerValue]];
     
     self.babyHeadImageView.layer.masksToBounds=YES;
-    self.babyHeadImageView.layer.cornerRadius=20*SCREEN_SCALE;
+    self.babyHeadImageView.layer.cornerRadius=30*SCREEN_SCALE;
+    self.babyHeadImageView.layer.borderWidth = 1;
+    self.babyHeadImageView.layer.borderColor = [UIColor redColor].CGColor;
     //[self.view addSubview:_babyHeadImageView];
     [self.sharedBgView addSubview:self.babyHeadImageView];
     
     //宝贝名字标签
     self.nameLabel.text=_sharedBabyName;
     //CGFloat
-    self.nameLabel.textColor=EH_cor4;
-    self.nameLabel.font=EH_font3;
+    self.nameLabel.textColor=EH_cor1;
+    self.nameLabel.font=EH_font4;
     
     NSLog(@"self.nameLabel.size.width = %f",self.nameLabel.size.width);
     [self.nameLabel sizeToFit];
@@ -134,26 +165,27 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     
     //日期标签
     self.dateLabel.text=_sharedDate;
-    self.dateLabel.textColor=EH_cor4;
-    self.dateLabel.font=EH_font3;
+    self.dateLabel.textColor=EH_cor1;
+    self.dateLabel.font=EH_font2;
     [self.dateLabel sizeToFit];
     //[self.view addSubview:self.dateLabel];
     [self.sharedBgView addSubview:self.dateLabel];
     
     //取消按钮
-    self.cancelButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, roundf(30*SCREEN_SCALE), roundf(30*SCREEN_SCALE))];
-    [self.cancelButton setBackgroundImage:[UIImage imageNamed:@"delect_share"] forState:UIControlStateNormal];
+    self.cancelButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, roundf(22*SCREEN_SCALE), roundf(22*SCREEN_SCALE))];
+    [self.cancelButton setBackgroundImage:[UIImage imageNamed:@"icon_close"] forState:UIControlStateNormal];
     [self.cancelButton addTarget:self action:@selector(cancelShareVC:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.cancelButton];
   
     NSNumber *finishedRate = [NSNumber numberWithFloat:[self.finishDigitRateLabel.text floatValue]];
     
     //计步标签
-    self.finishedSteps.textColor=EH_cor3;
+    self.finishedSteps.textColor=[UIColor redColor];
+    self.finishedSteps.font = EH_font10;
     self.finishedSteps.textAlignment=NSTextAlignmentCenter;
-    NSDictionary *attributes2 = [NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:40]forKey:NSFontAttributeName];
-    CGSize labelSize2=[self.finishedSteps.text boundingRectWithSize:CGSizeMake(160, 36) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes2 context:nil].size;
-    self.finishedSteps.size=labelSize2;
+    NSDictionary *attributes22 = [NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:EH_size10]forKey:NSFontAttributeName];
+    CGSize labelSize22=[self.finishedSteps.text boundingRectWithSize:CGSizeMake(360, 300) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes22 context:nil].size;
+    self.finishedSteps.size=labelSize22;
     ////////完成步数
     [self.sharedBgView addSubview:self.finishedSteps];
     
@@ -161,9 +193,10 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     
     //目标步数
     //计步标签
-    self.babyTargetSteps.textColor=EH_cor3;
+    self.babyTargetSteps.textColor=EHCor7;
+    self.babyTargetSteps.font = EH_font4;
     self.babyTargetSteps.textAlignment=NSTextAlignmentCenter;
-    NSDictionary *attributes12 = [NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:40]forKey:NSFontAttributeName];
+    NSDictionary *attributes12 = [NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:EH_siz4]forKey:NSFontAttributeName];
     CGSize labelSize12=[self.babyTargetSteps.text boundingRectWithSize:CGSizeMake(160, 36) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes12 context:nil].size;
     self.babyTargetSteps.size=labelSize12;
     ////////完成步数
@@ -179,20 +212,18 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     //创建运动距离相关控件
     //距离标签
     self.distanceLabel.text = @"距离";
-    self.distanceLabel.textColor = EH_cor4;
-    self.distanceLabel.font = EH_font4;
+    self.distanceLabel.textColor = EHCor1;
+    self.distanceLabel.font = EH_font6;
     self.distanceLabel.textAlignment = NSTextAlignmentCenter;
-    self.distanceLabel.size = sizeForLabel;
+    [self.distanceLabel sizeToFit];
     //self.distanceLabel.layer.borderWidth = 1;
     
     
-    self.distanceDigitLabel.textColor=EH_cor4;
-    self.distanceDigitLabel.font=[UIFont systemFontOfSize:EH_siz8];
-    //self.distanceDigitLabel.layer.borderWidth = 1;
+    self.distanceDigitLabel.textColor=EHCor11;
+    self.distanceDigitLabel.font=[UIFont systemFontOfSize:EH_siz4];
     self.distanceDigitLabel.textAlignment=NSTextAlignmentCenter;
-    self.distanceDigitLabel.size = [self.distanceDigitLabel.text boundingRectWithSize:CGSizeMake(80, 21) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes4 context:nil].size;
+    self.distanceDigitLabel.size = [self.distanceDigitLabel.text boundingRectWithSize:CGSizeMake(180, 61) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes3 context:nil].size;
 
-//    [self.sharedBgView addSubview:self.distanceCircleView];
     [self.sharedBgView addSubview:self.distanceLabel];
     [self.sharedBgView addSubview:self.distanceDigitLabel];
 
@@ -201,16 +232,16 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     //消耗能量标签
     self.energyLabel = [[UILabel alloc]initWithFrame:CGRectZero];
     self.energyLabel.text = @"热量";
-    self.energyLabel.textColor = EH_cor4;
-    self.energyLabel.font = EH_font4;
+    self.energyLabel.textColor = EH_cor1;
+    self.energyLabel.font = EH_font6;
     self.energyLabel.textAlignment = NSTextAlignmentCenter;
     self.energyLabel.size = sizeForLabel;
     
     
-    self.energyDigitLabel.textColor=EH_cor4;
-    self.energyDigitLabel.font=[UIFont systemFontOfSize:EH_siz8];
+    self.energyDigitLabel.textColor=EHCor9;
+    self.energyDigitLabel.font=[UIFont systemFontOfSize:EH_siz4];
     self.energyDigitLabel.textAlignment=NSTextAlignmentCenter;
-    self.energyDigitLabel.size = [self.energyDigitLabel.text boundingRectWithSize:CGSizeMake(80, 21) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes4 context:nil].size;
+    self.energyDigitLabel.size = [self.energyDigitLabel.text boundingRectWithSize:CGSizeMake(180, 71) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes3 context:nil].size;
    
     [self.sharedBgView addSubview:self.energyLabel];
     [self.sharedBgView addSubview:self.energyDigitLabel];
@@ -219,21 +250,23 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     //创建完成相关控件
     self.finishRateLabel = [[UILabel alloc]initWithFrame:CGRectZero];
     self.finishRateLabel.text = @"完成";
-    self.finishRateLabel.textColor = EH_cor4;
-    self.finishRateLabel.font = EH_font4;
+    self.finishRateLabel.textColor = EH_cor1;
+    self.finishRateLabel.font = EH_font6;
     self.finishRateLabel.textAlignment = NSTextAlignmentCenter;
     self.finishRateLabel.size = sizeForLabel;
     
     
-    self.finishDigitRateLabel.textColor=EH_cor4;
-    self.finishDigitRateLabel.font=[UIFont systemFontOfSize:EH_siz8];
-    self.finishDigitRateLabel.size = [self.finishDigitRateLabel.text boundingRectWithSize:CGSizeMake(80, 21) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes4 context:nil].size;
+    self.finishDigitRateLabel.textColor=EHCor11;
+    self.finishDigitRateLabel.font=[UIFont systemFontOfSize:EH_siz4];
+    self.finishDigitRateLabel.size = [self.finishDigitRateLabel.text boundingRectWithSize:CGSizeMake(80, 21) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes3 context:nil].size;
     self.finishDigitRateLabel.textAlignment=NSTextAlignmentCenter;
     
     [self.sharedBgView addSubview:self.finishRateLabel];
     [self.sharedBgView addSubview:self.finishDigitRateLabel];
 
     //创建底部标语
+    self.markedWordsLabel.textColor = EH_cor1;
+    self.finishDigitRateLabel.font=[UIFont systemFontOfSize:EH_siz4];
     [self.markedWordsLabel sizeToFit];
     [self.sharedBgView addSubview:self.markedWordsLabel];
 }
@@ -242,78 +275,80 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
 {
     UIView *superView = self.sharedBgView;
     [_babyHeadImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(superView.mas_top).with.offset(40*SCREEN_SCALE);
+        make.top.equalTo(superView.mas_top).with.offset(41*SCREEN_SCALE);
         make.centerX.equalTo(superView.mas_centerX);
-        make.size.mas_equalTo(CGSizeMake(40*SCREEN_SCALE, 40*SCREEN_SCALE));
+        make.size.mas_equalTo(CGSizeMake(60*SCREEN_SCALE, 60*SCREEN_SCALE));
         NSLog(@"5self.nameLabel.size.width=%f",self.nameLabel.size.width);
     }];
     
     [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.babyHeadImageView.mas_bottom).with.offset(10*SCREEN_SCALE);
+        make.top.equalTo(self.babyHeadImageView.mas_bottom).with.offset(11*SCREEN_SCALE);
         make.centerX.equalTo(superView.mas_centerX);
     }];
     
     [_dateLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(superView.mas_centerX);
-        make.top.equalTo(self.nameLabel.mas_bottom).with.offset(20*SCREEN_SCALE);
+        make.top.equalTo(self.nameLabel.mas_bottom).with.offset(11*SCREEN_SCALE);
 
     }];
     
     
     //创建取消按钮约束
     [self.cancelButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(superView.mas_top).with.offset(30*SCREEN_SCALE);
-        make.right.equalTo(superView.mas_right).with.offset(-20*SCREEN_SCALE);
-        make.size.mas_equalTo(CGSizeMake(30*SCREEN_SCALE, 30*SCREEN_SCALE));
+        make.top.equalTo(superView.mas_top).with.offset(60*SCREEN_SCALE);
+        make.right.equalTo(superView.mas_right).with.offset(-12*SCREEN_SCALE);
+        make.size.mas_equalTo(CGSizeMake(22*SCREEN_SCALE, 22*SCREEN_SCALE));
         
     }];
     
     [self.babyTargetSteps mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.dateLabel.mas_bottom).offset(10*SCREEN_SCALE);
+        make.top.equalTo(self.dateLabel.mas_bottom).offset(58*SCREEN_SCALE);
         make.centerX.equalTo(superView.mas_centerX);
     }];
     
     [self.finishedSteps mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.dateLabel.mas_bottom).offset(60*SCREEN_SCALE);
+        make.top.equalTo(self.babyTargetSteps.mas_bottom).offset(17*SCREEN_SCALE);
         make.centerX.equalTo(superView.mas_centerX);
     }];
     
     [self.distanceLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(superView.mas_left).offset(20*SCREEN_SCALE);
-        make.top.equalTo(self.finishedSteps.mas_bottom).offset(100*SCREEN_SCALE);
+        make.left.equalTo(superView.mas_left).offset(42*SCREEN_SCALE);
+        make.top.equalTo(self.markedWordsLabel.mas_top).offset(-56*SCREEN_SCALE);
         
     }];
    
     [self.distanceDigitLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.distanceLabel.mas_bottom).offset(7*SCREEN_SCALE);
+        make.bottom.equalTo(self.markedWordsLabel.mas_top).offset(-24*SCREEN_SCALE);
         make.centerX.equalTo(self.distanceLabel.mas_centerX);
     }];
     
 
     [self.energyLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.view.mas_centerX);
-        make.top.equalTo(self.finishedSteps.mas_bottom).offset(100*SCREEN_SCALE);
+         make.top.equalTo(self.markedWordsLabel.mas_top).offset(-56*SCREEN_SCALE);
         
     }];
     
     [self.energyDigitLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.energyLabel.mas_centerX);
-        make.top.equalTo(self.energyLabel.mas_bottom).offset(7*SCREEN_SCALE);
+        make.bottom.equalTo(self.markedWordsLabel.mas_top).offset(-24*SCREEN_SCALE);
     }];
 
     [self.finishRateLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.equalTo(self.view.mas_right).offset(-20*SCREEN_SCALE);
-        make.top.equalTo(self.finishedSteps.mas_bottom).offset(100*SCREEN_SCALE);
+        make.right.equalTo(self.view.mas_right).offset(-42*SCREEN_SCALE);
+        make.top.equalTo(self.markedWordsLabel.mas_top).offset(-56*SCREEN_SCALE);
+        
+
     }];
     
     [self.finishDigitRateLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.finishRateLabel.mas_centerX);
-        make.top.equalTo(self.finishRateLabel.mas_bottom).offset(7*SCREEN_SCALE);
+        make.bottom.equalTo(self.markedWordsLabel.mas_top).offset(-24*SCREEN_SCALE);
         
         }];
     //底部标语约束
     [self.markedWordsLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.distanceDigitLabel.mas_bottom).with.offset(50*SCREEN_SCALE);
+        make.bottom.equalTo(self.view.mas_bottom).with.offset(-126*SCREEN_SCALE);
         make.centerX.equalTo(superView.mas_centerX);
     }];
 

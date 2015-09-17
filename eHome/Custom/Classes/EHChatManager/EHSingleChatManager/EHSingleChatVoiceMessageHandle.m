@@ -8,6 +8,8 @@
 
 #import "EHSingleChatVoiceMessageHandle.h"
 #import "MessageModel+EHMessageParse.h"
+#import "EHChatMessageinfoModel.h"
+#import "EHSingleChatCacheManager.h"
 
 @implementation EHSingleChatVoiceMessageHandle
 
@@ -18,6 +20,31 @@
     if (model.isHistoryMessage) {
         return;
     }
+    if (model.msg == nil) {
+        return;
+    }
+    [self sendChatVoiceMessageWithMessage:model.msg];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma send Message method
+-(void)sendChatVoiceMessageWithMessage:(NSString*)message{
+    if (message == nil) {
+        return;
+    }
+    
+    NSData* messageData = [message dataUsingEncoding:NSUTF8StringEncoding];
+    
+    NSError *error;
+    
+    id responseObject = [NSJSONSerialization JSONObjectWithData:messageData options:NSJSONReadingMutableContainers error:&error];
+    
+    if (error != nil || responseObject == nil || ![responseObject isKindOfClass:[NSDictionary class]]) {
+        return;
+    }
+    
+    EHChatMessageinfoModel* chatMessageModel = [EHChatMessageinfoModel modelWithJSON:responseObject];
+    [[EHSingleChatCacheManager sharedCenter] recieveBabyChatMessage:chatMessageModel];
     
 }
 

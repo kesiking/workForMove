@@ -16,9 +16,6 @@
 -(void)sendRemoteMessageWithMessage:(EHSingleChatMessageModel*)chatMessagemodel{
     [super sendRemoteMessageWithMessage:chatMessagemodel];
     MessageModel *model = chatMessagemodel.model;
-    if (!(model.fileType == EHMessageFileType_text)) {
-        return;
-    }
     if (model.msg == nil) {
         return;
     }

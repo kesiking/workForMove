@@ -75,6 +75,13 @@
     return nil;
 }
 
++(KSLoginComponentItem*)userComponent{
+    if (![self isLogin]) {
+        return nil;
+    }
+    return [KSLoginComponentItem sharedInstance];
+}
+
 + (BOOL)isLogin{
     return [KSLoginComponentItem sharedInstance].isLogined;
 }

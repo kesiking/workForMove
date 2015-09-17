@@ -718,13 +718,7 @@ static CGPoint  delayOffset = {0.0};
 #pragma mark - RecorderPath Helper Method
 
 - (NSString *)getRecorderPath {
-    NSString *recorderPath = nil;
-    recorderPath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex: 0];
-    NSDate *now = [NSDate date];
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyyMMddHHmmssSSS"];
-    recorderPath = [recorderPath stringByAppendingFormat:@"%@-MySound.m4a", [dateFormatter stringFromDate:now]];
-    return recorderPath;
+    return [XHVoiceRecordHelper getRecorderPath];
 }
 
 #pragma mark - UITextView Helper Method

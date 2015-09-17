@@ -28,6 +28,7 @@ typedef void(^XHPeakPowerForChannel)(float peakPowerForChannel);
 @property (nonatomic) float maxRecordTime; // 默认 60秒为最大
 @property (nonatomic, readonly) NSTimeInterval currentTimeInterval;
 
++ (NSString *)getRecorderPath;
 - (void)prepareRecordingWithPath:(NSString *)path prepareRecorderCompletion:(XHPrepareRecorderCompletion)prepareRecorderCompletion;
 - (void)startRecordingWithStartRecorderCompletion:(XHStartRecorderCompletion)startRecorderCompletion;
 - (void)pauseRecordingWithPauseRecorderCompletion:(XHPauseRecorderCompletion)pauseRecorderCompletion;

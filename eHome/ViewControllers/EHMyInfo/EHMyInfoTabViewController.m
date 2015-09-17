@@ -23,6 +23,14 @@
 #import "EHAleatView.h"
 #import "EHAppQRImageViewController.h"
 #import "NSString+StringSize.h"
+#import "EHCollectionCellItem.h"
+#import "EHCollectionItemTableViewCell.h"
+#import "EHFamilyMemberViewController.h"
+#import "EHFamilyNumbersViewController.h"
+#import "EHBabyAlarmViewController.h"
+#import "EHBabyIdentityViewController.h"
+#import "EHBabyLocationModeViewController.h"
+#import "EHGeofenceListViewController.h"
 
 
 #define kTopViewHeight  250
@@ -31,28 +39,44 @@
 #define kCellHeight     50
 #define kHeaderViewHeight 45
 
-@interface EHMyInfoTabViewController()<UITableViewDataSource,UITableViewDelegate,EHSocialShareViewDelegate>
+
+// AdminItem.plist中的tag值一一对应
+typedef NS_ENUM(NSInteger, EHCollentionItemType) {
+    EHCollentionItemTypeFamilyMember = 1000,
+    EHCollentionItemTypeFamilyPhone,
+    EHCollentionItemTypeGeofence,
+    EHCollentionItemTypeBabyAlarm,
+    EHCollentionItemTypeBabyLocation,
+    EHCollentionItemTypeBabyIdentity
+    
+};
+
+
+@interface EHMyInfoTabViewController()<UITableViewDataSource,UITableViewDelegate,EHSocialShareViewDelegate, EHCollectionItemTableViewCellDelegate>
 
 @end
 
 @implementation EHMyInfoTabViewController
 {
-    //UIView *_topView;
     UITableView *_tableView;
-    UIImageView *_headImageView;
-    UILabel *_nameLabel;
-    NSArray *_babyArray;
+//    NSArray *_babyArray;
+//    EHGetBabyListService* _getBabyList;
     
-    EHGetBabyListService* _getBabyList;
+    EHGetBabyListRsp*  _currentSelectBaby;
+    NSMutableArray* _functionCollectionItemList;
+    NSArray *_appSettingConfigList;
 }
 
 #pragma mark - Life Circle
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.needLogin = YES;
-
+    
+    _currentSelectBaby = [[EHBabyListDataCenter sharedCenter] currentBabyUserInfo];
     [self initTableView];
-    [self initNavBarViews];
+    //[self initNavBarViews];
+    [self setupFunctionCollectionItemList];
+    [self initAppSettingItemList];
 }
 
 -(void)measureViewFrame{
@@ -61,22 +85,18 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-//    self.navigationController.navigationBar.translucent = YES;
-//    self.navigationController.navigationBar.hidden = YES;
-    
-    [self loadBabyUsers];
-//    [self setHeadImageAndName];
+    _currentSelectBaby =[[EHBabyListDataCenter sharedCenter] currentBabyUserInfo];
+    [self setupFunctionCollectionItemList];
+    [_tableView reloadData];
 }
 
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    [self.view setFrame:[self selectViewControllerRectForBounds:self.view.bounds]];
+
 }
 
 -(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
-//    self.navigationController.navigationBar.hidden = NO;
-//    self.navigationController.navigationBar.translucent = NO;
 }
 
 -(void)initNavBarViews{
@@ -89,11 +109,8 @@
     if (!_tableView)
     {
         _tableView = [[UITableView alloc]initWithFrame:CGRectZero style:UITableViewStyleGrouped];
-        _tableView.rowHeight = kCellHeight;
-        _tableView.sectionFooterHeight = 0;
         _tableView.dataSource = self;
         _tableView.delegate = self;
-        _tableView.tableFooterView = [[UIView alloc] init];
         
         [self.view addSubview:_tableView];
         
@@ -104,287 +121,314 @@
     }
 }
 
+-(void)babyHorizontalListViewBabyCliced:(EHGetBabyListRsp*)babyUserInfo
+{
+    _currentSelectBaby = babyUserInfo;
+    [self setupFunctionCollectionItemList];
+    [_tableView reloadData];
+}
+
+- (void)initAppSettingItemList
+{
+    NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"SettingConfig" ofType:@"plist"];
+    _appSettingConfigList = [[NSArray alloc] initWithContentsOfFile:plistPath];
+}
+
+- (void)setupFunctionCollectionItemList
+{
+    if (!_currentSelectBaby)
+    {
+        return;
+    }
+    static NSString * const nameKey = @"name";
+    static NSString * const imageNameKey = @"imagename";
+    static NSString * const tagKey = @"tag";
+    
+    NSString *path;
+    if ([EHUtils isAuthority:_currentSelectBaby.authority]) {
+        path = [[NSBundle mainBundle] pathForResource:@"AdminItem" ofType:@"plist"];
+    }
+    else
+    {
+        path = [[NSBundle mainBundle] pathForResource:@"NonAdminItem" ofType:@"plist"];
+    }
+    NSArray *array = [NSArray arrayWithContentsOfFile:path];
+    if (!array)
+    {
+        DDLogWarn(@"文件加载失败");
+    }
+    
+    _functionCollectionItemList = [NSMutableArray arrayWithCapacity:array.count];
+    [array enumerateObjectsUsingBlock:^(NSDictionary *dict, NSUInteger idx, BOOL *stop) {
+        EHCollectionCellItem *cellItem = [[EHCollectionCellItem alloc] init];
+        cellItem.itemName = dict[nameKey];
+        cellItem.itemImageName = dict[imageNameKey];;
+        cellItem.itemTag = [dict[tagKey] integerValue];
+        [_functionCollectionItemList addObject:cellItem];
+    }];
+}
 
 #pragma mark - UITableViewDataSource
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    if (section == 0) {
-        return _babyArray.count + 1;
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    if (_currentSelectBaby) {
+        return 5;
+    }
+    else
+    {
+        return 4;
+    }
+    
+}
 
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+    if (_currentSelectBaby)
+    {
+        if (section == 4) {
+            return 2;
+        }
+        else if (section == 1)
+        {
+            return (_functionCollectionItemList.count - 1)/kCollectionItemCount + 1;;
+        }
+        else
+        {
+            return 1;
+        }
     }
-    else if (section == 1 || section == 2){
-        return 1;
-    }
-    else {
-        return 2;
+    else
+    {
+        if (section == 3) {
+            return 2;
+        }
+        else
+        {
+            return 1;
+        }
     }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     static NSString *cellID = @"cellID";
-    EHMyInfoTabTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
     if(cell == nil){
-        cell = [[EHMyInfoTabTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
+        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
     }
-
-    //设置cell的四个属性
-    NSMutableDictionary *params = [[NSMutableDictionary alloc]init];
-    NSString *imageStr;         //图片路径
-    NSString *nameStr;          //名字路径
-    UIImage *QRcodeImage;       //二维码图片
-    NSString *adminImageStr;    //管理员图片路径
-    NSString* defaultImageStr;
-    BOOL isHeadImage = YES;
-    
-    if (indexPath.section == 0) {
-        
-        //我关注的宝贝列表
-        if (indexPath.row != _babyArray.count) {
-            //获取模型
-            EHGetBabyListRsp *model = _babyArray[indexPath.row];
-            
-            defaultImageStr = @"headportrait_list_boy";
-            if ([EHUtils isGirl:model.babySex]) {
-                defaultImageStr = @"headportrait_list_girl";
-            }
-            
-            imageStr = model.babyHeadImage ? model.babyHeadImage : defaultImageStr;
-            if ([EHUtils isAuthority:model.authority]) {
-                nameStr = model.babyName;
-            }
-            else
-            {
-                nameStr = model.babyNickName ? model.babyNickName : model.babyName;
-            }
-            
-            QRcodeImage = [MWQREncode qrImageForString:model.device_code imageSize:300];
-            [params setObject:QRcodeImage forKey:@"QRcodeImage"];
-            cell.qrImageViewClickBlock = ^(){
-                EHLogInfo(@"qrImageViewClickBlock");
-            };
-
-            if ([EHUtils isAuthority:model.authority]){
-                adminImageStr = @"ico_administrator";;
-                [params setObject:adminImageStr forKey:@"adminImageStr"];
-            }
-            [params setObject:model.babyId forKey:@"currentBabyId"];
-        }
-        
-        //添加宝贝
-        else{
-            defaultImageStr = @"ico_add";
-            imageStr = @"ico_add";
-            nameStr = kCellNameStr;
-            cell.addBtnClickBlock = ^(){
-                EHLogInfo(@"addBtnClickBlock");
-            };
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        }
-    }
-    //分享、关于、设置
-    else {
-        NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"SettingConfig" ofType:@"plist"];
-        NSArray *settingConfigArray = [[NSArray alloc] initWithContentsOfFile:plistPath];
-        NSDictionary *dic;
-        if (indexPath.section == 1) {
-            dic = settingConfigArray[0];
-        }else if (indexPath.section == 2) {
-            dic = settingConfigArray[1];
-        }
-        else {
-            dic = settingConfigArray[2+indexPath.row];
-        }
-        imageStr        = [dic objectForKey:@"image"];
-        defaultImageStr = [dic objectForKey:@"image"];
-        nameStr         = [dic objectForKey:@"name"];
-        isHeadImage = NO;
-    }
-    
-    [params setObject:imageStr forKey:@"imageStr"];
-    [params setObject:defaultImageStr forKey:@"defaultImageStr"];
-    [params setObject:nameStr forKey:@"nameStr"];
-    [params setObject:[NSNumber numberWithBool:isHeadImage ] forKey:@"isHeadImage"];
-
-    [cell configWithParams:params];
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    return cell;
-}
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 4;
-}
-
-#pragma mark - UITableViewDelegate
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.section == 0) {
-        if (indexPath.row < _babyArray.count)
-        {
-            EHBabyUserDetailViewController* babyUserDetailVC = [[EHBabyUserDetailViewController alloc] initWithNibName:NSStringFromClass([EHBabyUserDetailViewController class]) bundle:[NSBundle mainBundle]];
-            babyUserDetailVC.babyUser = _babyArray[indexPath.row];
-            babyUserDetailVC.name=babyUserDetailVC.babyUser.babyName;
-            [self.navigationController pushViewController:babyUserDetailVC animated:YES];
-            //[babyUserDetailVC.]
+    if (!_currentSelectBaby)
+    {
+        if (indexPath.section == 0) {
+            cell.textLabel.text = @"添加宝贝";
+            cell.imageView.image = [UIImage imageNamed:@"ico_add"];
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
         else
         {
-            EHBindDeviceViewController * bindVC = [[EHBindDeviceViewController alloc] initWithNibName:NSStringFromClass([EHBindDeviceViewController class]) bundle:[NSBundle mainBundle]];
-            [self.navigationController pushViewController:bindVC animated:YES];
+            NSDictionary *dic;
+            if (indexPath.section == 1) {
+                dic = _appSettingConfigList[0];
+            }else if (indexPath.section == 2) {
+                dic = _appSettingConfigList[1];
+            }
+            else {
+                dic = _appSettingConfigList[2+indexPath.row];
+            }
+            cell.textLabel.text = [dic objectForKey:@"name"];
+            cell.imageView.image = [UIImage imageNamed:[dic objectForKey:@"image"]];
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
-        
-    }
-    else if (indexPath.section == 1)
-    {
-        EHMyInfoViewController *myInfoVC = [[EHMyInfoViewController alloc]init];
-        [self.navigationController pushViewController:myInfoVC animated:YES];
-    }
-    else if (indexPath.section == 2)
-    {
-        EHSettingViewController *settingVC = [[EHSettingViewController alloc]init];
-        [self.navigationController pushViewController:settingVC animated:YES];
     }
     else
     {
-        if (indexPath.row == 0) {
-            [EHSocialShareHandle presentWithTypeArray:@[EHShareToWechatSession,EHShareToWechatTimeline,EHShareToQQ,EHShareToSina,EHShareToSms,EHShareToQRCode] Title:[NSString stringWithFormat:@"%@ %@",kEH_APP_NAME,kEH_WEBSITE_URL] Image:[UIImage imageNamed:kEH_LOGO_IMAGE_NAME] FromTarget:self];
+        if (indexPath.section == 0) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"babyDetailCellId"];
+            
+            cell.textLabel.text = _currentSelectBaby.babyNickName;
+            cell.detailTextLabel.text = @"宝贝详情";
+            NSString* defaultImageStr = @"headportrait_list_boy";
+            if ([EHUtils isGirl:_currentSelectBaby.babySex]) {
+                defaultImageStr = @"headportrait_list_girl";
+            }
+            [cell.imageView sd_setImageWithURL:[NSURL URLWithString:_currentSelectBaby.babyHeadImage] placeholderImage:[EHUtils getBabyHeadPlaceHolderImage:_currentSelectBaby.babyId newPlaceHolderImagePath:_currentSelectBaby.babyHeadImage defaultHeadImage:[UIImage imageNamed:defaultImageStr]]];
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
-        else {
-            EHAboutViewController *aboutViewController = [[EHAboutViewController alloc]init];
-            [self.navigationController pushViewController:aboutViewController animated:YES];
+        else if (indexPath.section == 1)
+        {
+            EHCollectionItemTableViewCell *cell = [[EHCollectionItemTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"kEHCollectionItemTableViewCell"];
+            NSInteger index = indexPath.row;
+            NSMutableArray *list = [NSMutableArray arrayWithCapacity:kCollectionItemCount];
+            for (NSInteger i = 0; i < kCollectionItemCount && index*kCollectionItemCount + i < _functionCollectionItemList.count; i++)
+            {
+                [list addObject:_functionCollectionItemList[index*kCollectionItemCount + i]];
+            }
+            
+            cell.cellDelegate = self;
+            [cell setupCollectionItems:list];
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            cell.separatorInset = UIEdgeInsetsMake(0, SCREEN_WIDTH, 0, 0);
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            return cell;
         }
-        
+        else
+        {
+            NSDictionary *dic;
+            if (indexPath.section == 2) {
+                dic = _appSettingConfigList[0];
+            }else if (indexPath.section == 3) {
+                dic = _appSettingConfigList[1];
+            }
+            else {
+                dic = _appSettingConfigList[2+indexPath.row];
+            }
+            cell.textLabel.text = [dic objectForKey:@"name"];
+            cell.imageView.image = [UIImage imageNamed:[dic objectForKey:@"image"]];
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        }
     }
+
+    return cell;
+}
+
+
+
+#pragma mark - UITableViewDelegate
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    if (_currentSelectBaby)
+    {
+        if (indexPath.section == 0) {
+            EHBabyUserDetailViewController* babyUserDetailVC = [[EHBabyUserDetailViewController alloc] initWithNibName:NSStringFromClass([EHBabyUserDetailViewController class]) bundle:[NSBundle mainBundle]];
+            babyUserDetailVC.babyUser = _currentSelectBaby;
+            babyUserDetailVC.name=babyUserDetailVC.babyUser.babyName;
+            [self.navigationController pushViewController:babyUserDetailVC animated:YES];
+        }
+        else if (indexPath.section == 2)
+        {
+            EHMyInfoViewController *myInfoVC = [[EHMyInfoViewController alloc]init];
+            [self.navigationController pushViewController:myInfoVC animated:YES];
+        }
+        else if (indexPath.section == 3)
+        {
+            EHSettingViewController *settingVC = [[EHSettingViewController alloc]init];
+            [self.navigationController pushViewController:settingVC animated:YES];
+        }
+        else if (indexPath.section == 4)
+        {
+            if (indexPath.row == 0) {
+                [EHSocialShareHandle presentWithTypeArray:@[EHShareToWechatSession,EHShareToWechatTimeline,EHShareToQQ,EHShareToSina,EHShareToSms,EHShareToQRCode] Title:[NSString stringWithFormat:@"%@ %@",kEH_APP_NAME,kEH_WEBSITE_URL] Image:[UIImage imageNamed:kEH_LOGO_IMAGE_NAME] FromTarget:self];
+            }
+            else {
+                EHAboutViewController *aboutViewController = [[EHAboutViewController alloc]init];
+                [self.navigationController pushViewController:aboutViewController animated:YES];
+            }
+            
+        }
+    }
+    else
+    {
+        if (indexPath.section == 0) {
+            EHBindDeviceViewController * bindVC = [[EHBindDeviceViewController alloc] initWithNibName:NSStringFromClass([EHBindDeviceViewController class]) bundle:[NSBundle mainBundle]];
+            [self.navigationController pushViewController:bindVC animated:YES];
+            
+        }
+        else if (indexPath.section == 1)
+        {
+            EHMyInfoViewController *myInfoVC = [[EHMyInfoViewController alloc]init];
+            [self.navigationController pushViewController:myInfoVC animated:YES];
+        }
+        else if (indexPath.section == 2)
+        {
+            EHSettingViewController *settingVC = [[EHSettingViewController alloc]init];
+            [self.navigationController pushViewController:settingVC animated:YES];
+        }
+        else
+        {
+            if (indexPath.row == 0) {
+                [EHSocialShareHandle presentWithTypeArray:@[EHShareToWechatSession,EHShareToWechatTimeline,EHShareToQQ,EHShareToSina,EHShareToSms,EHShareToQRCode] Title:[NSString stringWithFormat:@"%@ %@",kEH_APP_NAME,kEH_WEBSITE_URL] Image:[UIImage imageNamed:kEH_LOGO_IMAGE_NAME] FromTarget:self];
+            }
+            else {
+                EHAboutViewController *aboutViewController = [[EHAboutViewController alloc]init];
+                [self.navigationController pushViewController:aboutViewController animated:YES];
+            }
+            
+        }
+    }
+    
+    
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == 0) {
+        return 80;
+    }
+    
+    if (_currentSelectBaby && indexPath.section == 1)
+    {
+        return kEHCollectionItemTableViewCellHeight;
+    }
+    else
+    {
+        return 49;
+    }
+
+}
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if (section == 0) {
-        return kHeaderViewHeight;
-    }
-    else return 15;
+    return 8;
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    if (section == 0) {
-        UIView* customView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.frame), kHeaderViewHeight)];
-
-        UILabel *headerLabel = [[UILabel alloc]initWithFrame:CGRectMake(20, 50 / 2, 200, 10)];
-        headerLabel.textColor = EH_cor4;
-        headerLabel.font = EH_font6;
-        headerLabel.textAlignment = NSTextAlignmentLeft;
-        headerLabel.text = @"我关注的宝贝";
-        headerLabel.adjustsFontSizeToFitWidth = YES;
-        
-        [customView addSubview:headerLabel];
-        return customView;
-    }
-    else return nil;
-}
+//- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+//    if (section == 0) {
+//        UIView* customView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.frame), kHeaderViewHeight)];
+//
+//        UILabel *headerLabel = [[UILabel alloc]initWithFrame:CGRectMake(20, 50 / 2, 200, 10)];
+//        headerLabel.textColor = EH_cor4;
+//        headerLabel.font = EH_font6;
+//        headerLabel.textAlignment = NSTextAlignmentLeft;
+//        headerLabel.text = @"我关注的宝贝";
+//        headerLabel.adjustsFontSizeToFitWidth = YES;
+//        
+//        [customView addSubview:headerLabel];
+//        return customView;
+//    }
+//    else return nil;
+//}
 
 
 #pragma mark - Getters And Setters
-//设置头像和名字
-//- (void)setHeadImageAndName{
-//    NSURL *imageUrl = [NSURL URLWithString:[KSLoginComponentItem sharedInstance].user_head_img];
-//    [_headImageView sd_setImageWithURL:imageUrl placeholderImage:[EHUtils getUserHeadPlaceHolderImage:[NSNumber numberWithInteger:[[KSLoginComponentItem sharedInstance].userId integerValue]] newPlaceHolderImagePath:[KSLoginComponentItem sharedInstance].user_head_img defaultHeadImage:[UIImage imageNamed:@"headportrait_home_150"]] options:SDWebImageRetryFailed|SDWebImageLowPriority|SDWebImageProgressiveDownload completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-//    }];
-//    
-//    NSString *nickName = [KSLoginComponentItem sharedInstance].nick_name;
-//    EHLogInfo(@"nickName = %@",nickName);
-//    if (!nickName) {
-//        nickName = [KSLoginComponentItem sharedInstance].user_phone;
-//    }
-//    _nameLabel.text = nickName;
-//}
 
 //设置宝贝列表，获取宝贝信息
-- (void)loadBabyUsers{
-    
-    _getBabyList = [EHGetBabyListService new];
-    // service 返回成功 block
-    __weak UITableView* weakTableview = _tableView;
-    _getBabyList.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
-
-        EHLogInfo(@"GetBabyList成功");
-        {
-            _babyArray = service.dataList;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                __strong UITableView* strongTableView = weakTableview;
-                [strongTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationNone];
-            });
-        }
-    };
-
-    // service 返回失败 block
-    _getBabyList.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
-        [WeAppToast toast:@"获取宝贝列表失败"];
-    };
-    [_getBabyList loadData];
-    
-}
-
-
-#pragma mark - 消息响应 messageBtnClicked
--(void)messageBtnClicked:(id)sender{
-    // goto 消息列表页面
-    if ([self checkLogin]) {
-        NSMutableDictionary* params = [NSMutableDictionary dictionary];
-        if (_babyArray) {
-            [params setObject:_babyArray forKey:@"babyListArray"];
-        }
-        TBOpenURLFromSourceAndParams(internalURL(@"EHMessageInfoViewController"), self, params);
-    }
-}
-
-//头像和名字的TOP视图
-//- (UIView *)topView{
+//- (void)loadBabyUsers{
 //    
-//    if (!_topView) {
-//        _topView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_home"]];
-//        _topView.frame = CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetWidth(self.view.frame) * CGRectGetHeight(_topView.frame) / CGRectGetWidth(_topView.frame));
-//        _topView.userInteractionEnabled = YES;
-//        
-//        CGFloat headimageViewMinY = 20 + 70 / 2.0;
-//        CGFloat labelHeight = [@"text" sizeWithFontSize:EH_siz1 Width:CGRectGetWidth(_topView.frame)].height;
-//        CGFloat labelMaxY = headimageViewMinY + kImageHeight + 15 + labelHeight;
-//        //使名字与底部至少间距15
-//        if (CGRectGetHeight(_topView.frame) - labelMaxY < 15) {
-//            headimageViewMinY += CGRectGetHeight(_topView.frame) - labelMaxY - 15;
+//    _getBabyList = [EHGetBabyListService new];
+//    // service 返回成功 block
+//    __weak UITableView* weakTableview = _tableView;
+//    _getBabyList.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
+//
+//        EHLogInfo(@"GetBabyList成功");
+//        {
+//            _babyArray = service.dataList;
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                __strong UITableView* strongTableView = weakTableview;
+//                [strongTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationNone];
+//            });
 //        }
+//    };
 //
-//        _headImageView = [[UIImageView alloc] init];
-//        _headImageView.frame = CGRectMake(0, 0, kImageHeight, kImageHeight);
-//        _headImageView.center = CGPointMake(CGRectGetMidX(_topView.frame), headimageViewMinY + kImageHeight / 2.0);
-//        _headImageView.layer.cornerRadius = kImageHeight/2.0;
-//        _headImageView.layer.masksToBounds = YES;
-//        _headImageView.userInteractionEnabled = YES;
-//        
-//        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(headImageViewClick:)];
-//        [_headImageView addGestureRecognizer:tap];
-//
-//        UIImageView *circleView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"cirle_headportrait_home"]];
-//        circleView.frame = CGRectMake(0, 0, kImageHeight + 5, kImageHeight + 5);
-//        circleView.center = _headImageView.center;
-//        
-//        _nameLabel = [[UILabel alloc]initWithFrame:CGRectMake(kSpaceX, 0, CGRectGetWidth(_topView.frame) - kSpaceX * 2, labelHeight)];
-//        _nameLabel.center = CGPointMake(CGRectGetMidX(_topView.frame), CGRectGetMaxY(circleView.frame) + 15 + labelHeight / 2.0);
-//        _nameLabel.textAlignment = NSTextAlignmentCenter;
-//        _nameLabel.font = EH_font1;
-//        _nameLabel.textColor = EH_cor1;
-//        
-//        [_topView addSubview:_headImageView];
-//        [_topView addSubview:circleView];
-//        [_topView addSubview:_nameLabel];
-//    }
-//
-//    return _topView;
+//    // service 返回失败 block
+//    _getBabyList.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
+//        [WeAppToast toast:@"获取宝贝列表失败"];
+//    };
+//    [_getBabyList loadData];
+//    
 //}
+
+
+
 
 #pragma mark - Events Response
-//- (void)headImageViewClick:(UITapGestureRecognizer *)tap{
-//    EHMyInfoViewController *myInfoVC = [[EHMyInfoViewController alloc]init];
-//    [self.navigationController pushViewController:myInfoVC animated:YES];
-//}
+
 
 #pragma mark - EHSocialShareViewDelegate
 - (void)shareWithType:(NSInteger)type Title:(NSString *)title Image:(UIImage *)image{
@@ -473,6 +517,79 @@
         [WeAppToast toast:@"分享失败！"];
     }
 }
+
+#pragma mark- EHCollectionItemTableViewCellDelegate
+
+- (void)collectionItemCell:(EHCollectionItemTableViewCell *)cell actionWithTag:(NSInteger)tag
+{
+    switch (tag) {
+        case EHCollentionItemTypeFamilyMember:
+        {
+            EHFamilyMemberViewController *familyMemberVC=[[EHFamilyMemberViewController alloc] init];
+            familyMemberVC.babyName = [EHUtils isEmptyString:_currentSelectBaby.babyNickName] ? _currentSelectBaby.babyName : _currentSelectBaby.babyNickName;
+            familyMemberVC.babyId = _currentSelectBaby.babyId;
+            familyMemberVC.authority = _currentSelectBaby.authority;
+//                familyMemberVC.familyMemberDidChanged = ^(BOOL bChanged){
+//                    if (bChanged) {
+//                        [self getBabyAttentionUsers];
+//                    }
+//                };
+            [self.navigationController pushViewController:familyMemberVC animated:YES];
+        }
+            break;
+        case EHCollentionItemTypeFamilyPhone:
+        {
+            EHFamilyNumbersViewController *familyNumVC=[[EHFamilyNumbersViewController alloc] init];
+            //familyNumVC.familyNumberList = [NSMutableArray arrayWithArray:self.familyPhoneList];
+            familyNumVC.babyId = _currentSelectBaby.babyId;
+            [self.navigationController pushViewController:familyNumVC animated:YES];
+            NSString* name = [EHUtils isEmptyString:_currentSelectBaby.babyNickName] ? _currentSelectBaby.babyName : _currentSelectBaby.babyNickName;
+            NSString *phoneListTitle = [NSString stringWithFormat:@"%@的亲情号码", name];
+            
+            familyNumVC.title=phoneListTitle;
+        }
+            break;
+        case EHCollentionItemTypeGeofence:
+        {
+
+            EHGeofenceListViewController *glvc = [[EHGeofenceListViewController alloc]init];
+            glvc.babyUser = _currentSelectBaby;
+            [self.navigationController pushViewController:glvc animated:YES];
+        }
+            break;
+        case EHCollentionItemTypeBabyAlarm:
+        {
+            EHBabyAlarmViewController *alarmVC = [[EHBabyAlarmViewController alloc]init];
+            alarmVC.babyUser = _currentSelectBaby;
+            [self.navigationController pushViewController:alarmVC animated:YES];
+        }
+            break;
+        case EHCollentionItemTypeBabyLocation:
+        {
+            EHBabyLocationModeViewController *locationModeVC=[[EHBabyLocationModeViewController alloc] init];
+            locationModeVC.babyId=_currentSelectBaby.babyId;
+            locationModeVC.locationMode=_currentSelectBaby.workMode;
+            locationModeVC.modifyLocationModeSuccess = ^(NSString*locationMode){
+                
+                _currentSelectBaby.workMode=locationMode;
+                
+            };
+            
+            [self.navigationController pushViewController:locationModeVC animated:YES];
+        }
+            break;
+        case EHCollentionItemTypeBabyIdentity:
+        {
+            EHBabyIdentityViewController* babyIdVC = [[EHBabyIdentityViewController alloc] initWithDeviceCode:_currentSelectBaby.device_code];
+            
+            [self.navigationController pushViewController:babyIdVC animated:YES];
+        }
+            break;
+        default:
+            break;
+    }
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark- KSTabBarViewControllerProtocol

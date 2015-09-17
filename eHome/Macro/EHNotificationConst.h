@@ -11,7 +11,7 @@
 
 #define EHBindBabySuccessNotification @"EHBindBabySuccessNotification"             // 宝贝关注
 #define EHUNBindBabySuccessNotification @"EHUNBindBabySuccessNotification"         // 宝贝解绑
-#define EHUNBabyRelationChangedNotification @"EHUNBabyRelationChangedNotification" // 宝贝关系变化
+#define EHBabyInfoChangedNotification @"EHBabyInfoChangedNotification"             // 宝贝信息变化
 
 #define EHCurrentSelectBabyChangedNotification @"EHCurrentSelectBabyChangedNotification" // 当前选中宝贝变化消息
 
@@ -26,8 +26,12 @@
 
 #define EHBabySOSMessageNotification @"EHBabySOSMessageNotification"                // 宝贝SOS消息
 
+#define EHRecieveBabyChatMessageNotification  @"EHRecieveBabyChatMessageNotification"  // 收到宝贝聊天消息
+
 #define EHFORCE_REFRESH_DATA   @"__forceRefreshData__"
 #define EHSELEC_BABY_ID_DATA   @"__selectBabyIdData__"
 #define EHMESSAGE_BABY_ID_DATA @"__messageBabyIdData__"
+#define EHBabyChatMessageModel_DATA   @"__babyChatMessageModelData__"
+
 
 #endif

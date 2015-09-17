@@ -29,6 +29,19 @@
 
 @implementation XHVoiceRecordHelper
 
++ (NSString *)getRecorderPath {
+    NSString *recorderPath = nil;
+    NSDate *now = [NSDate date];
+    static NSDateFormatter *dateFormatter = nil;
+    if(dateFormatter == nil){
+        dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.dateFormat = @"yyyyMMddHHmmssSSS";
+    }
+    recorderPath = [[NSString alloc] initWithFormat:@"%@/Documents/", NSHomeDirectory()];
+    recorderPath = [recorderPath stringByAppendingFormat:@"%@-MySound.caf", [dateFormatter stringFromDate:now]];
+    return recorderPath;
+}
+
 - (id)init {
     self = [super init];
     if (self) {

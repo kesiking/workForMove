@@ -32,6 +32,7 @@
 /**
  *	firstView包含的内容
  */
+@property (strong, nonatomic) UIImageView *firstBgImageView;
 @property(strong,nonatomic) UIButton *babyHeadBtn;
 @property(strong,nonatomic) UILabel *babyNameLabel;
 @property(strong,nonatomic) UILabel *dateLabel;
@@ -48,6 +49,8 @@
 /**
  *	thirdView包含的内容
  */
+
+
 @property(strong,nonatomic) UILabel *sDistanceLabel;
 @property(strong,nonatomic) UILabel *distanceLabel;
 @property(strong,nonatomic) PNCircleChart *distanceChart;
@@ -57,6 +60,12 @@
 @property(strong,nonatomic) UILabel *sRatioLabel;
 @property(strong,nonatomic) UILabel *ratioLabel;
 @property(strong,nonatomic) PNCircleChart *ratioChart;
+
+@property(strong,nonatomic) UIView *lineOne;
+@property(strong,nonatomic) UIView *lineTwo;
+@property(strong,nonatomic) UIView *lineThree;
+@property(strong,nonatomic) UIView *lineFour;
+
 
 /**
  *	fourthView包含的内容

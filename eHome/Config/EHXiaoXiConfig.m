@@ -15,6 +15,7 @@
 #import "EHAleatView.h"
 #import "EHTabBarViewController.h"
 #import "EHSingleChatMessageHandleFactory.h"
+#import "MessageModel+EHMessageParse.h"
 
 #define REPEATE_LOGIN_ERROR @"账号在其他设备重复登录"
 
@@ -98,7 +99,10 @@
         if (!(model.chatType == EHMessageChatType_single)) {
             return;
         }
-        EHSingleChatMessageBasicHandle* chatMessageHandle = [EHSingleChatMessageHandleFactory getMessageHandleByType:[EHSingleChatMessageHandleFactory getMessageTypeWithEHMessageFileType:model.fileType]];
+        if (!(model.fileType == EHMessageFileType_text)) {
+            return;
+        }
+        EHSingleChatMessageBasicHandle* chatMessageHandle = [EHSingleChatMessageHandleFactory getMessageHandleByType:[EHSingleChatMessageHandleFactory getMessageTypeWithEHMsgid:model.msgid]];
         [chatMessageHandle sendRemoteMessageWithMessage:[[EHSingleChatMessageModel alloc] initWithMessageModel:model]];
     };
     

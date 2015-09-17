@@ -156,8 +156,8 @@
         self.currentVC = self.dayVC;
         self.dayButton.enabled=YES;
         self.weekButton.enabled=YES;
-        [_dayButton setTitleColor:EH_cor9 forState:UIControlStateNormal];
-        [_weekButton setTitleColor:EH_cor4 forState:UIControlStateNormal];
+        [_dayButton setTitleColor:EHCor6 forState:UIControlStateNormal];
+        [_weekButton setTitleColor:EHCor5 forState:UIControlStateNormal];
         [self.dayVC reloadDataWhenDayOrWeekChanged];
     }];
     [self.healthScrollView setContentOffset:CGPointMake(0, 0) animated:YES];
@@ -174,8 +174,8 @@
         self.currentVC = self.weekVC;
         self.dayButton.enabled=YES;
         self.weekButton.enabled=YES;
-        [_weekButton setTitleColor:EH_cor9 forState:UIControlStateNormal];
-        [_dayButton setTitleColor:EH_cor4 forState:UIControlStateNormal];
+        [_weekButton setTitleColor:EHCor6 forState:UIControlStateNormal];
+        [_dayButton setTitleColor:EHCor5 forState:UIControlStateNormal];
     }];
     [self.healthScrollView
      setContentOffset:CGPointMake(
@@ -398,8 +398,8 @@
         _dayButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
         _dayButton.tag = 1;
         [_dayButton setTitle:@"日" forState:UIControlStateNormal];
-        [_dayButton setTitleColor:EH_cor9 forState:UIControlStateNormal];
-        _dayButton.titleLabel.font = [UIFont systemFontOfSize:15.0];
+        [_dayButton setTitleColor:EHCor6 forState:UIControlStateNormal];
+        _dayButton.titleLabel.font = EH_font6;
     }
     return _dayButton;
 }
@@ -409,8 +409,8 @@
         _weekButton = [[UIButton alloc]initWithFrame:CGRectMake(60, 0, 30, 30)];
         _weekButton.tag = 2;
         [_weekButton setTitle:@"周" forState:UIControlStateNormal];
-        [_weekButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        _weekButton.titleLabel.font = [UIFont systemFontOfSize:15.0];
+        [_weekButton setTitleColor:EHCor5 forState:UIControlStateNormal];
+        _weekButton.titleLabel.font = EH_font6;
     }
     return _weekButton;
 }

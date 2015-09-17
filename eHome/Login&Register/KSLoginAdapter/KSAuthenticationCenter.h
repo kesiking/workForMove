@@ -21,6 +21,8 @@
 
 + (NSString*)preUserPhone;
 
++ (KSLoginComponentItem*)userComponent;
+
 + (BOOL)isLogin;
 
 + (BOOL)isTestAccount;

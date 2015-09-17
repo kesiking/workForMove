@@ -6,7 +6,7 @@
 		<key>name</key>
 		<string>家庭成员</string>
 		<key>imagename</key>
-		<string>fl01</string>
+		<string>headportrait_boy_160</string>
 		<key>tag</key>
 		<integer>1000</integer>
 	</dict>
@@ -14,17 +14,17 @@
 		<key>name</key>
 		<string>安全围栏</string>
 		<key>imagename</key>
-		<string>fl06</string>
+		<string>headportrait_boy_160</string>
 		<key>tag</key>
-		<integer>1005</integer>
+		<real>1002</real>
 	</dict>
 	<dict>
 		<key>name</key>
-		<string>手表信息</string>
+		<string>分享宝贝</string>
 		<key>imagename</key>
-		<string>fl02</string>
+		<string>headportrait_boy_160</string>
 		<key>tag</key>
-		<real>1001</real>
+		<real>1005</real>
 	</dict>
 </array>
 </plist>

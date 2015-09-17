@@ -10,7 +10,9 @@
 #import "XHDisplayTextViewController.h"
 #import "XHDisplayMediaViewController.h"
 #import "XHDisplayLocationViewController.h"
+#import "EHSingleChatCacheManager.h"
 #import "XHAudioPlayerHelper.h"
+#import "XHBabyChatMessage.h"
 
 @interface EHBabySingleChatMessageViewController () <XHAudioPlayerHelperDelegate>
 
@@ -22,32 +24,8 @@
 
 @implementation EHBabySingleChatMessageViewController
 
-- (XHMessage *)getTextMessageWithBubbleMessageType:(XHBubbleMessageType)bubbleMessageType {
-    XHMessage *textMessage = [[XHMessage alloc] initWithText:@"这是华捷微信，希望大家喜欢这个开源库，请大家帮帮忙支持这个开源库吧！我是Jack，叫华仔也行，曾宪华就是我啦！" sender:@"华仔" timestamp:[NSDate distantPast]];
-    textMessage.avatar = [UIImage imageNamed:@"avatar"];
-    textMessage.avatarUrl = @"http://www.pailixiu.com/jack/meIcon@2x.png";
-    textMessage.bubbleMessageType = bubbleMessageType;
-    
-    return textMessage;
-}
-
-- (XHMessage *)getVoiceMessageWithBubbleMessageType:(XHBubbleMessageType)bubbleMessageType {
-    XHMessage *voiceMessage = [[XHMessage alloc] initWithVoicePath:nil voiceUrl:nil voiceDuration:@"1" sender:@"Jayson" timestamp:[NSDate date] isRead:NO];
-    voiceMessage.avatar = [UIImage imageNamed:@"avatar"];
-    voiceMessage.avatarUrl = @"http://www.pailixiu.com/jack/JieIcon@2x.png";
-    voiceMessage.bubbleMessageType = bubbleMessageType;
-    
-    return voiceMessage;
-}
-
 - (NSMutableArray *)getTestMessages {
     NSMutableArray *messages = [[NSMutableArray alloc] init];
-    
-    for (NSInteger i = 0; i < 5; i ++) {
-        [messages addObject:[self getVoiceMessageWithBubbleMessageType:(i % 4) ? XHBubbleMessageTypeSending : XHBubbleMessageTypeReceiving]];
-        
-        [messages addObject:[self getTextMessageWithBubbleMessageType:(i % 2) ? XHBubbleMessageTypeSending : XHBubbleMessageTypeReceiving]];
-    }
     return messages;
 }
 
@@ -85,6 +63,10 @@
     return _babyUserInfo?_babyUserInfo:[[EHBabyListDataCenter sharedCenter] currentBabyUserInfo];
 }
 
+-(KSLoginComponentItem *)userInfoComponentItem{
+    return [KSAuthenticationCenter userComponent];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -95,12 +77,12 @@
     self.title = NSLocalizedStringFromTable(@"Chat", @"MessageDisplayKitString", @"聊天");
     
     // Custom UI
-    [self setBackgroundColor:[UIColor clearColor]];
+    [self setBackgroundColor:[UIColor whiteColor]];
     
     // 设置自身用户名
     self.messageSender = [KSAuthenticationCenter userPhone];
     
-    [self loadDemoDataSource];
+//    [self loadDemoDataSource];
 }
 
 - (void)didReceiveMemoryWarning
@@ -112,11 +94,6 @@
 - (void)dealloc {
     [[XHAudioPlayerHelper shareInstance] setDelegate:nil];
 }
-
-/*
- [self removeMessageAtIndexPath:indexPath];
- [self insertOldMessages:self.messages];
- */
 
 #pragma mark - XHMessageTableViewCell delegate
 
@@ -208,11 +185,13 @@
  *  @param date   发送时间
  */
 - (void)didSendText:(NSString *)text fromSender:(NSString *)sender onDate:(NSDate *)date {
-    XHMessage *textMessage = [[XHMessage alloc] initWithText:text sender:sender timestamp:date];
-    textMessage.avatar = [UIImage imageNamed:@"Avatar"];
-    textMessage.avatarUrl = @"http://www.pailixiu.com/jack/meIcon@2x.png";
-    [self addMessage:textMessage];
-    [self finishSendMessageWithBubbleMessageType:XHBubbleMessageMediaTypeText];
+    text = [self trimTextWithText:text];;
+    if (![self checkTextValid:text]) {
+        return;
+    }
+    XHBabyChatMessage *textMessage = [[XHBabyChatMessage alloc] initWithText:text sender:sender timestamp:date];
+    [self configMessage:textMessage];
+    [self sendMessage:textMessage];
 }
 
 /**
@@ -224,11 +203,37 @@
  *  @param date             发送时间
  */
 - (void)didSendVoice:(NSString *)voicePath voiceDuration:(NSString *)voiceDuration fromSender:(NSString *)sender onDate:(NSDate *)date {
-    XHMessage *voiceMessage = [[XHMessage alloc] initWithVoicePath:voicePath voiceUrl:nil voiceDuration:voiceDuration sender:sender timestamp:date];
-    voiceMessage.avatar = [UIImage imageNamed:@"avatar"];
-    voiceMessage.avatarUrl = @"http://www.pailixiu.com/jack/meIcon@2x.png";
-    [self addMessage:voiceMessage];
-    [self finishSendMessageWithBubbleMessageType:XHBubbleMessageMediaTypeVoice];
+    XHBabyChatMessage *voiceMessage = [[XHBabyChatMessage alloc] initWithVoicePath:voicePath voiceUrl:nil voiceDuration:voiceDuration sender:sender timestamp:date];
+    [self configMessage:voiceMessage];
+    [self sendMessage:voiceMessage];
+}
+
+-(void)sendMessage:(XHBabyChatMessage*)message{
+    [[EHSingleChatCacheManager sharedCenter] sendBabyChatMessage:message writeSuccess:^(BOOL success, XHBabyChatMessage *chatMessage) {
+        EHLogInfo(@"issuccess：%d ",success);
+    } sendSuccess:^(BOOL success, XHBabyChatMessage *chatMessage) {
+        ;
+    }];
+}
+
+-(void)configMessage:(XHBabyChatMessage*)message{
+    message.avatarUrl = self.userInfoComponentItem.user_head_img;
+    message.recieverBabyID = self.babyUserInfo.babyId;
+    message.msgStatus = EHBabyChatMessageStatusSending;
+    [self addMessage:message];
+    [self finishSendMessageWithBubbleMessageType:message.messageMediaType];
+}
+
+-(BOOL)checkTextValid:(NSString*)text{
+    if (text.length > 50) {
+        [WeAppToast toast:@"输入字数超出限制"];
+        return NO;
+    }
+    return YES;
+}
+
+-(NSString*)trimTextWithText:(NSString*)text{
+    return [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 /**

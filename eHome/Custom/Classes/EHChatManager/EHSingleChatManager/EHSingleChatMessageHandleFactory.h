@@ -16,6 +16,6 @@
 
 + (BOOL)addMessageHandleClass:(Class)singleChatMessageHandleClass withKey:(NSString*)key;
 
-+ (NSString*)getMessageTypeWithEHMessageFileType:(EHMessageFileType)messageFileType;
++ (NSString*)getMessageTypeWithEHMsgid:(NSString*)msgid;
 
 @end

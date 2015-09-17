@@ -10,6 +10,7 @@
 #import <objc/runtime.h>
 
 static char MessageModelHistoryMessageKey;
+static char MessageModelMessageMsgidKey;
 
 @implementation MessageModel (EHMessageParse)
 
@@ -42,6 +43,10 @@ static inline void eh_message_model_swizzleSelector(Class class, SEL originalSel
         if (msg) {
             messageModel.msg = msg;
         }
+        NSString* msgid = [[messageXml elementForName:@"msgid"] stringValue];
+        if (msgid) {
+            [messageModel setMsgid:msgid];
+        }
     }
     NSXMLElement* messageDelayXML = [message elementForName:@"delay"];
     if (messageDelayXML) {
@@ -64,5 +69,16 @@ static inline void eh_message_model_swizzleSelector(Class class, SEL originalSel
 {
     return [objc_getAssociatedObject(self, &MessageModelHistoryMessageKey) boolValue];
 }
+
+-(void)setMsgid:(NSString*)msgid
+{
+    objc_setAssociatedObject(self, &MessageModelMessageMsgidKey,msgid, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+-(NSString*)msgid
+{
+    return objc_getAssociatedObject(self, &MessageModelMessageMsgidKey);
+}
+
 
 @end

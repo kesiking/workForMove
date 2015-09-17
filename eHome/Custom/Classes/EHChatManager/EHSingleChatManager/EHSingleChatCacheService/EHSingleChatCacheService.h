@@ -8,6 +8,11 @@
 
 #import "KSAdapterCacheService.h"
 
+typedef NS_ENUM(NSInteger, EHMessageContextType) {
+    EHMessageContextType_Text,      // 文字
+    EHMessageContextType_Voice,     // 语音
+};
+
 #define EHSingleChatCacheDefaultTableName @"SINGLE_CHAT_CACHE"
 
 @interface EHSingleChatCacheService : KSAdapterCacheService

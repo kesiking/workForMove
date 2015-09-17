@@ -12,6 +12,7 @@
 #import "EHPopMenuLIstView.h"
 #import "EHAddBabyFamilyPhoneService.h"
 #import "EHDelBabyFamilyPhoneService.h"
+#import "EHGetBabyFamilyPhoneListService.h"
 
 #define kLines 5
 
@@ -25,6 +26,7 @@ typedef enum : NSUInteger {
 @interface EHFamilyNumbersViewController ()<UITableViewDataSource,UITableViewDelegate>
 {
     EHDelBabyFamilyPhoneService *_delBabyFamilyPhoneService;
+    EHGetBabyFamilyPhoneListService * _getBabyFamilyPhoneListService;
 }
 
 
@@ -62,6 +64,7 @@ typedef enum : NSUInteger {
     [self.view addSubview:self.tableView];
     //self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     //[self setRightBarItem:EHRightItemMore];
+    [self getBabyFamilyPhoneList];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -193,6 +196,42 @@ typedef enum : NSUInteger {
 }
 
 
+- (void)getBabyFamilyPhoneList
+{
+
+    _getBabyFamilyPhoneListService = [EHGetBabyFamilyPhoneListService new];
+    
+    WEAKSELF
+    _getBabyFamilyPhoneListService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
+        EHLogInfo(@"getBabyFamilyPhoneList完成！");
+        STRONGSELF
+        
+        EHLogInfo(@"%@",service.dataList);
+        strongSelf.familyNumberList = [NSMutableArray arrayWithArray:service.dataList];
+        
+        strongSelf.selectedArray = [[NSMutableArray alloc]init];
+        for (int i = 0; i < kLines; i++) {
+            [strongSelf.selectedArray addObject:@NO];
+        }
+        
+        NSUInteger num = MIN(strongSelf.familyNumberList.count, kLines);
+        
+        //把获得的数据按照phone_type排列
+        for (NSUInteger j = 0; j < num; j++) {
+            EHBabyFamilyPhone *data = [strongSelf.familyNumberList objectAtIndex:j];
+            [strongSelf.familyNumberListWithType replaceObjectAtIndex:[data.phone_type integerValue] withObject:data];
+        }
+        
+        [strongSelf.tableView reloadData];
+        
+        
+    };
+    _getBabyFamilyPhoneListService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
+        
+    };
+    
+    [_getBabyFamilyPhoneListService getBabyFamilyPhoneListById:self.babyId];
+}
 
 #pragma mark - UITableViewDataSource
 

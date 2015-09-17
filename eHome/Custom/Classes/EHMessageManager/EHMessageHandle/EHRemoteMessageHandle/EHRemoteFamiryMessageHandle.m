@@ -14,7 +14,7 @@
     [super remoteMessageHandle:messageInfoModel];
     if (self.remoteMessageCategory == EHMessageInfoCatergoryType_Family) {
         // to do
-        [[NSNotificationCenter defaultCenter] postNotificationName:EHUNBabyRelationChangedNotification object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:EHBabyInfoChangedNotification object:nil];
     }
 }
 
