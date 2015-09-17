@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="EHBabyMsgInfoCell">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="160"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Xbp-ws-QDj">
+                    <rect key="frame" x="59" y="37" width="304" height="116.5"/>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SOS" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EkN-OT-Iaq">
+                    <rect key="frame" x="76" y="49" width="35.5" height="20.5"/>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                    <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="陈维发出求救消息" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="awA-ps-h0w">
+                    <rect key="frame" x="76" y="81" width="275" height="18"/>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="陈维" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JfH-ZB-f1N">
+                    <rect key="frame" x="211" y="49.5" width="140" height="18"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="140" id="agB-l1-2y3"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="地址：浙江省杭州市余杭区文一" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JUe-Bb-kek">
+                    <rect key="frame" x="76" y="107" width="275" height="18"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="275" id="pey-sr-XNq"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CBR-pd-Xmz">
+                    <rect key="frame" x="0.0" y="37" width="59" height="116.5"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ico_point_sos_message.png" translatesAutoresizingMaskIntoConstraints="NO" id="Asq-bA-oqp">
+                            <rect key="frame" x="25" y="14" width="9" height="9"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="9" id="224-Lj-chN"/>
+                                <constraint firstAttribute="width" constant="9" id="hgR-Yy-Ugf"/>
+                            </constraints>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="今天" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="am7-bJ-p4v">
+                            <rect key="frame" x="14" y="34" width="30" height="18"/>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="08:00" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yZO-Pe-FtT">
+                            <rect key="frame" x="10" y="61" width="38.5" height="18"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                            <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="am7-bJ-p4v" firstAttribute="top" secondItem="Asq-bA-oqp" secondAttribute="bottom" priority="750" constant="11" id="08X-4D-6OT"/>
+                        <constraint firstItem="am7-bJ-p4v" firstAttribute="top" secondItem="CBR-pd-Xmz" secondAttribute="top" priority="250" constant="14" id="6Kf-42-Qc3"/>
+                        <constraint firstItem="yZO-Pe-FtT" firstAttribute="centerX" secondItem="am7-bJ-p4v" secondAttribute="centerX" id="9Dy-nL-bbc"/>
+                        <constraint firstAttribute="width" constant="59" id="9LZ-BX-vNX"/>
+                        <constraint firstItem="yZO-Pe-FtT" firstAttribute="top" secondItem="am7-bJ-p4v" secondAttribute="bottom" constant="9" id="gRf-JJ-PIr"/>
+                        <constraint firstAttribute="centerX" secondItem="Asq-bA-oqp" secondAttribute="centerX" id="qac-lX-aCr"/>
+                        <constraint firstAttribute="centerX" secondItem="am7-bJ-p4v" secondAttribute="centerX" id="wGK-QJ-c9X"/>
+                        <constraint firstItem="Asq-bA-oqp" firstAttribute="top" secondItem="CBR-pd-Xmz" secondAttribute="top" constant="14" id="zUA-oA-NhE"/>
+                    </constraints>
+                </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="今天" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GdF-ry-y0B">
+                    <rect key="frame" x="176" y="9" width="22" height="13.5"/>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="11"/>
+                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="awA-ps-h0w" firstAttribute="leading" secondItem="Xbp-ws-QDj" secondAttribute="leading" constant="17" id="2Dc-aV-ASM"/>
+                <constraint firstItem="awA-ps-h0w" firstAttribute="trailing" secondItem="Xbp-ws-QDj" secondAttribute="trailing" constant="-12" id="2lO-0H-v4h"/>
+                <constraint firstItem="Xbp-ws-QDj" firstAttribute="top" secondItem="GdF-ry-y0B" secondAttribute="bottom" priority="750" constant="15" id="8Hc-hh-h4c"/>
+                <constraint firstAttribute="bottom" secondItem="Xbp-ws-QDj" secondAttribute="bottom" constant="6" id="Bmi-lv-6MT"/>
+                <constraint firstItem="Xbp-ws-QDj" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" priority="250" constant="6" id="FKl-YB-Key"/>
+                <constraint firstItem="JUe-Bb-kek" firstAttribute="leading" secondItem="Xbp-ws-QDj" secondAttribute="leading" constant="17" id="GKs-9n-nAI"/>
+                <constraint firstItem="JfH-ZB-f1N" firstAttribute="trailing" secondItem="Xbp-ws-QDj" secondAttribute="trailing" constant="-12" id="H03-Dq-ig6"/>
+                <constraint firstItem="JfH-ZB-f1N" firstAttribute="top" secondItem="Xbp-ws-QDj" secondAttribute="top" constant="12" id="HD0-GP-DH2"/>
+                <constraint firstItem="awA-ps-h0w" firstAttribute="top" secondItem="Xbp-ws-QDj" secondAttribute="top" priority="250" constant="12" id="JBB-uI-yWm"/>
+                <constraint firstAttribute="bottom" secondItem="CBR-pd-Xmz" secondAttribute="bottom" constant="6" id="KQY-tM-HmY"/>
+                <constraint firstItem="EkN-OT-Iaq" firstAttribute="leading" secondItem="Xbp-ws-QDj" secondAttribute="leading" constant="17" id="Q7D-jO-4cY"/>
+                <constraint firstItem="JUe-Bb-kek" firstAttribute="top" secondItem="awA-ps-h0w" secondAttribute="bottom" constant="8" id="V93-ki-XlF"/>
+                <constraint firstAttribute="trailing" secondItem="Xbp-ws-QDj" secondAttribute="trailing" constant="12" id="bE7-zK-toi"/>
+                <constraint firstItem="GdF-ry-y0B" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="9" id="brO-2w-lqv"/>
+                <constraint firstItem="CBR-pd-Xmz" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="hEH-HF-FIS"/>
+                <constraint firstAttribute="centerX" secondItem="GdF-ry-y0B" secondAttribute="centerX" id="lGq-OD-eTe"/>
+                <constraint firstItem="CBR-pd-Xmz" firstAttribute="height" secondItem="Xbp-ws-QDj" secondAttribute="height" id="rIG-tw-JBC"/>
+                <constraint firstItem="EkN-OT-Iaq" firstAttribute="top" secondItem="Xbp-ws-QDj" secondAttribute="top" constant="12" id="sMU-XS-H3o"/>
+                <constraint firstItem="Xbp-ws-QDj" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="59" id="slY-cS-VeV"/>
+                <constraint firstItem="awA-ps-h0w" firstAttribute="top" secondItem="EkN-OT-Iaq" secondAttribute="bottom" priority="750" constant="12" id="xaO-aN-G9o"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <nil key="simulatedTopBarMetrics"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="babyNameLabel" destination="JfH-ZB-f1N" id="QRf-ZC-BwC"/>
+                <outlet property="bgImageToTimeStamp" destination="8Hc-hh-h4c" id="N0h-ro-wYb"/>
+                <outlet property="bgImageTosuper" destination="FKl-YB-Key" id="nfn-6e-PCF"/>
+                <outlet property="bgMsgImageView" destination="Xbp-ws-QDj" id="7ck-fC-IQN"/>
+                <outlet property="dateLabel" destination="am7-bJ-p4v" id="WqG-s8-3l0"/>
+                <outlet property="dateToSosConstraint" destination="08X-4D-6OT" id="1MS-vU-QuW"/>
+                <outlet property="dateToSuperConstraint" destination="6Kf-42-Qc3" id="alc-Mw-4Wg"/>
+                <outlet property="messageInfoLabel" destination="JUe-Bb-kek" id="VML-QE-lry"/>
+                <outlet property="messageNameLabel" destination="awA-ps-h0w" id="vEw-o5-A54"/>
+                <outlet property="msgNameToBgConstraint" destination="JBB-uI-yWm" id="x05-v0-1Wa"/>
+                <outlet property="msgNameToSosMsgConstraint" destination="xaO-aN-G9o" id="nSN-94-vbM"/>
+                <outlet property="sosMessageLabel" destination="EkN-OT-Iaq" id="Wxx-GZ-0va"/>
+                <outlet property="sosPointImageView" destination="Asq-bA-oqp" id="lDg-jt-FhX"/>
+                <outlet property="timeLabel" destination="yZO-Pe-FtT" id="1Wa-0Z-AiB"/>
+                <outlet property="timeStampLabel" destination="GdF-ry-y0B" id="hcI-oE-X4f"/>
+            </connections>
+            <point key="canvasLocation" x="364.5" y="304"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="ico_point_sos_message.png" width="9" height="9"/>
+    </resources>
+</document>

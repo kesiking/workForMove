@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>name</key>
+		<string>家庭成员</string>
+		<key>imagename</key>
+		<string>fl01</string>
+		<key>tag</key>
+		<integer>1000</integer>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>手表信息</string>
+		<key>imagename</key>
+		<string>fl02</string>
+		<key>tag</key>
+		<real>1001</real>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>亲情号码</string>
+		<key>imagename</key>
+		<string>fl03</string>
+		<key>tag</key>
+		<integer>1002</integer>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>宝贝闹钟</string>
+		<key>imagename</key>
+		<string>fl04</string>
+		<key>tag</key>
+		<integer>1003</integer>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>定位模式</string>
+		<key>imagename</key>
+		<string>fl05</string>
+		<key>tag</key>
+		<integer>1004</integer>
+	</dict>
+	<dict>
+		<key>name</key>
+		<string>安全围栏</string>
+		<key>imagename</key>
+		<string>fl06</string>
+		<key>tag</key>
+		<integer>1005</integer>
+	</dict>
+</array>
+</plist>

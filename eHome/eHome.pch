@@ -1,0 +1,43 @@
+//
+//  eHome.pch
+//  eHome
+//
+//  Created by louzhenhua on 15/6/2.
+//  Copyright (c) 2015年 com.cmcc. All rights reserved.
+//
+
+#ifndef eHome_eHome_pch
+#define eHome_eHome_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#ifdef __OBJC__
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
+#endif
+
+#import "EHLog.h"
+// for third library
+#import "KSLibHeader.h"
+// for navigation url
+#import "KSConfigCenter.h"
+#import "KSBasicNavigator.h"
+// for common UI
+#import "UIMacro.h"
+#import "EHMAMapMacro.h"
+#import "EHPageMapMacro.h"
+// for login&register
+#import "KSLoginHeader.h"
+// for baby list data center
+#import "EHBabyListDataCenter.h"
+
+#import "EHInterfaceFieldConst.h"
+#import "EHNotificationConst.h"
+#import "EHUtils.h"
+#import "EHCustomConst.h"
+#import "NSString+TrimmingAdditions.h"
+#import "View+MASAdditions.h"
+
+#endif

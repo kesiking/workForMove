@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6751" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EHBabyUserDetailViewController">
+            <connections>
+                <outlet property="babyDetailTableView" destination="gA2-27-qoW" id="lGm-vs-mpx"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="gA2-27-qoW">
+                    <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                    <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
+                    <connections>
+                        <outlet property="dataSource" destination="-1" id="htw-os-mxE"/>
+                        <outlet property="delegate" destination="-1" id="2Vb-ru-Vw7"/>
+                    </connections>
+                </tableView>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="gA2-27-qoW" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="6Gc-jq-8Du"/>
+                <constraint firstItem="gA2-27-qoW" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="VGS-ij-Mq2"/>
+                <constraint firstAttribute="trailing" secondItem="gA2-27-qoW" secondAttribute="trailing" id="YkM-W7-VdR"/>
+                <constraint firstAttribute="bottom" secondItem="gA2-27-qoW" secondAttribute="bottom" constant="-9" id="y5h-gL-bfo"/>
+            </constraints>
+            <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+            <variation key="default">
+                <mask key="subviews">
+                    <exclude reference="gA2-27-qoW"/>
+                </mask>
+                <mask key="constraints">
+                    <exclude reference="6Gc-jq-8Du"/>
+                    <exclude reference="VGS-ij-Mq2"/>
+                    <exclude reference="YkM-W7-VdR"/>
+                    <exclude reference="y5h-gL-bfo"/>
+                </mask>
+            </variation>
+            <variation key="heightClass=regular-widthClass=compact">
+                <mask key="subviews">
+                    <include reference="gA2-27-qoW"/>
+                </mask>
+                <mask key="constraints">
+                    <include reference="6Gc-jq-8Du"/>
+                    <include reference="VGS-ij-Mq2"/>
+                    <include reference="YkM-W7-VdR"/>
+                    <include reference="y5h-gL-bfo"/>
+                </mask>
+            </variation>
+        </view>
+    </objects>
+</document>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>name_to_class</key>
+	<dict>
+		<key>babyAtteintionPage</key>
+		<string>EHBindDeviceViewController</string>
+	</dict>
+	<key>object_list</key>
+	<array>
+		<dict>
+			<key>name</key>
+			<string>ehome_home_url</string>
+			<key>class</key>
+			<string>KSTabbarURLResolver</string>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>ehome_healthy_url</string>
+			<key>class</key>
+			<string>KSTabbarURLResolver</string>
+		</dict>
+		<dict>
+			<key>name</key>
+			<string>ehome_myinfo_url</string>
+			<key>class</key>
+			<string>KSTabbarURLResolver</string>
+		</dict>
+	</array>
+</dict>
+</plist>
