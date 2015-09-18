@@ -129,6 +129,13 @@
                 }
                 errorBlock(errorDic);
             }
+        }else{
+            NSError *error = [NSError errorWithDomain:@"apiRequestErrorDomain" code:0 userInfo:@{NSLocalizedDescriptionKey: @"连接成功，请求数据不存在"}];
+            NSMutableDictionary* errorDic = [NSMutableDictionary dictionary];
+            if (error) {
+                [errorDic setObject:error forKey:@"responseError"];
+            }
+            errorBlock(errorDic);
         }
         [self hideNetworkActivityIndicatorVisible];
     };

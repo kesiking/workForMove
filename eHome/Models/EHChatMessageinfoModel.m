@@ -23,6 +23,11 @@ static NSDateFormatter *dateFormatter = nil;
     return @"msgId";
 }
 
++(BOOL)isContainParent
+{
+    return YES;
+}
+
 -(void)setFromDictionary:(NSDictionary *)dict{
     [super setFromDictionary:dict];
     self.babyChatMessage = [self getBabyChatMessageWithMessageModel:self];

@@ -24,6 +24,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 #pragma mark- write cache value with single item
+
 // write cache value with single item
 -(void)writeCacheWithApiName:(NSString *)apiName withParam:(NSDictionary *)param componentItem:(WeAppComponentBaseItem *)componentItem writeSuccess:(WriteSuccessCacheBlock)writeSuccessBlock{
     if (apiName == nil) {
@@ -214,6 +215,20 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 #pragma mark- read cache value
+
+-(NSInteger)rowCountWithApiName:(NSString *)apiName
+                      withParam:(NSDictionary *)param
+                  componentItemClass:(Class)componentItemClass
+             withFetchCondition:(NSDictionary*)fetchCondition{
+    if (apiName == nil) {
+        return -1;
+    }
+    NSString* where = [fetchCondition objectForKey:@"where"];
+    NSString* db_tableName = [self getTableNameFromApiName:apiName withParam:param];
+    NSInteger count = [[LKDBHelper getUsingLKDBHelper] rowCountWithTableName:db_tableName where:where];
+    
+    return count;
+}
 
 -(void)readCacheWithApiName:(NSString *)apiName
                   withParam:(NSDictionary *)param

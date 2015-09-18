@@ -23,7 +23,7 @@
 @property(nonatomic,strong) NSString *user_nick_name;
 
 // for app native
-@property(nonatomic,assign) NSUInteger msgId;
+@property(nonatomic,assign) NSInteger msgId;
 
 @property(nonatomic,strong) XHBabyChatMessage *babyChatMessage;
 

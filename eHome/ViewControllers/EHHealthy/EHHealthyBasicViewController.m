@@ -60,15 +60,6 @@
         self.healthyView.thirdView.hidden=YES;
     }
 }
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    if ([self.delegate respondsToSelector:@selector(loadUIWhenAppear:)]) {
-        if (self.babyId) {
-            [self.delegate loadUIWhenAppear:self.healthyView];
-        }
-    }
-}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.

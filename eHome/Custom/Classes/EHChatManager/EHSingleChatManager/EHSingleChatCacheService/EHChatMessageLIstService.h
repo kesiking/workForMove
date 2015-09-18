@@ -10,6 +10,6 @@
 
 @interface EHChatMessageLIstService : KSAdapterService
 
--(void)loadChatMessageListWithBabyId:(NSNumber*)babyId userPhone:(NSString*)userPhone context:(NSString*)context contextType:(NSString*)contextType;
+-(void)loadChatMessageListWithBabyId:(NSNumber*)babyId userPhone:(NSString*)userPhone;
 
 @end

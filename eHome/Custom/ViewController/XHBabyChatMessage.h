@@ -25,6 +25,6 @@ typedef enum {
 
 @property (nonatomic, assign) EHBabyChatMessageStatus msgStatus;
 
-@property (nonatomic, assign) NSUInteger              msgId;
+@property (nonatomic, assign) NSInteger              msgId;
 
 @end

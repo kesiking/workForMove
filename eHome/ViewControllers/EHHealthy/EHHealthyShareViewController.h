@@ -22,8 +22,12 @@
 @property (strong,nonatomic) UILabel *energyDigitLabel;
 @property (strong,nonatomic) UILabel *finishDigitRateLabel;
 
+@property(strong,nonatomic) UIView *lineThree;
+@property(strong,nonatomic) UIView *lineFour;
+
 //完成步数
 @property (nonatomic,strong) UILabel *finishedSteps;
+@property(nonatomic,strong) UILabel *step;
 @property(strong,nonatomic) UILabel *babyTargetSteps;
 //提示语
 @property(strong,nonatomic)UILabel *markedWordsLabel;

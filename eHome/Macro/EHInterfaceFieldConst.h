@@ -93,7 +93,7 @@ static NSString *const kEHGetBabyBindingStatusListApiName=@"PersonSafeManagement
 
 static NSString *const KEHCheckBabyIsAgreeApiName=@"PersonSafeManagement/babyAction/checkBabyIsAgree.do";
 
-
+static NSString *const KEHGetChatMessageListApiName = @"PersonSafeManagement/babyAction/checkBabyIsAgree.do";
 
 // 请求、响应字段名
 static NSString * const kEHOutputMsg    = @"outPut_msg";

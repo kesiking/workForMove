@@ -8,9 +8,7 @@
 
 #import "EHHealthyBasicViewController.h"
 #import "EHHealthyDayService.h"
+
 @interface EHHealthyDayViewController :EHHealthyBasicViewController
 @property (strong, nonatomic) EHHealthyDayModel *dayVCmodel;
-//@property (strong, nonatomic) NSString *selectedDate;
-
-
 @end

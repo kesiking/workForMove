@@ -8,6 +8,11 @@
 
 #import "KSPageList.h"
 
+typedef enum {
+    EHChatMessageaginationDirectionNextPage = 0,                // 当前时间与timestamp
+    EHChatMessagePaginationDirectionBetweenTimestampAndNow = 1, // 翻页 BeforeTimestamp之间的数据
+}EHChatMessagePaginationDirection;
+
 @interface EHChatMessagePageList : KSPageList
 
 @end

@@ -41,6 +41,7 @@ typedef BOOL(^IsObjectEnableBlock)(id obj);
 @interface WeAppBasicPagedList : WeAppItemList<TBSNSPageListProtocol>{
     WeAppPaginationItem*   _pagination;
 }
+
 @property (nonatomic, strong,setter = setPagination:) WeAppPaginationItem*   pagination;
 @property (nonatomic) BOOL isRefresh;
 @property (nonatomic) BOOL isForceRemoveAllObject;//强制删除

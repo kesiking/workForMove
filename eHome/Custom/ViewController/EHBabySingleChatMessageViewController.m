@@ -7,18 +7,22 @@
 //
 
 #import "EHBabySingleChatMessageViewController.h"
+#import "EHChatMessageLIstService.h"
 #import "XHDisplayTextViewController.h"
 #import "XHDisplayMediaViewController.h"
 #import "XHDisplayLocationViewController.h"
 #import "EHSingleChatCacheManager.h"
 #import "XHAudioPlayerHelper.h"
 #import "XHBabyChatMessage.h"
+#import "EHBabyMessageTableViewCell.h"
 
 @interface EHBabySingleChatMessageViewController () <XHAudioPlayerHelperDelegate>
 
 @property (nonatomic, strong) NSArray *emotionManagers;
 
-@property (nonatomic, strong) XHMessageTableViewCell *currentSelectedCell;
+@property (nonatomic, strong) XHMessageTableViewCell   * currentSelectedCell;
+
+@property (nonatomic, strong) EHChatMessageLIstService * chatMessageListService;
 
 @end
 
@@ -29,18 +33,12 @@
     return messages;
 }
 
-- (void)loadDemoDataSource {
-    WEAKSELF
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSMutableArray *messages = [weakSelf getTestMessages];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            weakSelf.messages = messages;
-            [weakSelf.messageTableView reloadData];
-            
-            [weakSelf scrollToBottomAnimated:NO];
-        });
-    });
+- (void)loadSingleChatMessageListDataSource {
+    NSNumber* babyId = self.babyUserInfo.babyId;
+    if (babyId == nil) {
+        babyId = [NSNumber numberWithInteger:[[[EHBabyListDataCenter sharedCenter] currentBabyId] integerValue]];
+    }
+    [self.chatMessageListService loadChatMessageListWithBabyId:babyId userPhone:[KSAuthenticationCenter userPhone]];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -82,7 +80,7 @@
     // 设置自身用户名
     self.messageSender = [KSAuthenticationCenter userPhone];
     
-//    [self loadDemoDataSource];
+    [self loadSingleChatMessageListDataSource];
 }
 
 - (void)didReceiveMemoryWarning
@@ -93,6 +91,33 @@
 
 - (void)dealloc {
     [[XHAudioPlayerHelper shareInstance] setDelegate:nil];
+}
+
+-(EHChatMessageLIstService *)chatMessageListService{
+    if (_chatMessageListService == nil) {
+        _chatMessageListService = [EHChatMessageLIstService new];
+        WEAKSELF
+        _chatMessageListService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
+            STRONGSELF
+            if (service.pagedList) {
+                [strongSelf.messages removeAllObjects];
+                [strongSelf.messages addObjectsFromArray:[service.pagedList getItemList]];
+            }
+            [strongSelf.messageTableView reloadData];
+            if (service.pagedList.isRefresh) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [strongSelf scrollToBottomAnimated:NO];
+                });
+            }else{
+                strongSelf.loadingMoreMessage = NO;
+            }
+        };
+        _chatMessageListService.serviceDidFailLoadBlock = ^(WeAppBasicService* service, NSError* error){
+            STRONGSELF
+            strongSelf.loadingMoreMessage = NO;
+        };
+    }
+    return _chatMessageListService;
 }
 
 #pragma mark - XHMessageTableViewCell delegate
@@ -162,18 +187,17 @@
 }
 
 - (void)loadMoreMessagesScrollTotop {
-    return;
     if (!self.loadingMoreMessage) {
         self.loadingMoreMessage = YES;
-        
-        WEAKSELF
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSMutableArray *messages = [weakSelf getTestMessages];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf insertOldMessages:messages];
-                weakSelf.loadingMoreMessage = NO;
-            });
-        });
+        [self.chatMessageListService nextPage];
+//        WEAKSELF
+//        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//            NSMutableArray *messages = [weakSelf getTestMessages];
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                [weakSelf insertOldMessages:messages];
+//                weakSelf.loadingMoreMessage = NO;
+//            });
+//        });
     }
 }
 
@@ -259,6 +283,50 @@
     } else {
         return NO;
     }
+}
+
+#pragma mark - XHMessageTableViewController DataSource
+
+- (id <XHMessageModel>)messageForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row > self.messages.count) {
+        return [[XHBabyChatMessage alloc] init];
+    }
+    id messageInfoObj = self.messages[indexPath.row];
+    if ([messageInfoObj isKindOfClass:[EHChatMessageinfoModel class]]) {
+        EHChatMessageinfoModel* messageInfoModel = messageInfoObj;
+        return messageInfoModel.babyChatMessage;
+    }else if([messageInfoObj isKindOfClass:[XHBabyChatMessage class]]){
+        return (XHBabyChatMessage*)messageInfoObj;
+    }
+    return [[XHBabyChatMessage alloc] init];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath targetMessage:(id<XHMessageModel>)message{
+    
+    BOOL displayTimestamp = YES;
+    
+    if ([self.delegate respondsToSelector:@selector(shouldDisplayTimestampForRowAtIndexPath:)]) {
+        displayTimestamp = [self.delegate shouldDisplayTimestampForRowAtIndexPath:indexPath];
+    }
+    
+    static NSString *cellIdentifier = @"EHBabyMessageTableViewCell";
+    
+    EHBabyMessageTableViewCell *messageTableViewCell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    
+    if (!messageTableViewCell) {
+        messageTableViewCell = [[EHBabyMessageTableViewCell alloc] initWithMessage:message displaysTimestamp:displayTimestamp reuseIdentifier:cellIdentifier];
+        messageTableViewCell.delegate = self;
+    }
+    
+    messageTableViewCell.indexPath = indexPath;
+    [messageTableViewCell configureCellWithMessage:message displaysTimestamp:displayTimestamp];
+    [messageTableViewCell setBackgroundColor:tableView.backgroundColor];
+    
+    if ([self.delegate respondsToSelector:@selector(configureCell:atIndexPath:)]) {
+        [self.delegate configureCell:messageTableViewCell atIndexPath:indexPath];
+    }
+    
+    return messageTableViewCell;
 }
 
 /**

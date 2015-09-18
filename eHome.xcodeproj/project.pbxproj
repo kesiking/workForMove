@@ -48,6 +48,7 @@
 		01787C8C1BA7C38300FA07D3 /* EHCollectionCellItemButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 01787C861BA7C38300FA07D3 /* EHCollectionCellItemButton.m */; };
 		01787C8D1BA7C38300FA07D3 /* EHCollectionItemTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 01787C881BA7C38300FA07D3 /* EHCollectionItemTableViewCell.m */; };
 		01787C8E1BA7C38300FA07D3 /* NonAdminItem.plist in Resources */ = {isa = PBXBuildFile; fileRef = 01787C891BA7C38300FA07D3 /* NonAdminItem.plist */; };
+		01787D191BABAA6800FA07D3 /* GroupedTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 01787D181BABAA6800FA07D3 /* GroupedTableView.m */; };
 		018ECFBA1B5F8BE20095656C /* ico_mandatory@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 018ECFB81B5F8BE20095656C /* ico_mandatory@2x.png */; };
 		018ECFBB1B5F8BE20095656C /* ico_mandatory@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 018ECFB91B5F8BE20095656C /* ico_mandatory@3x.png */; };
 		0199807B1B2AC52D00F50B8F /* EHGetBabyListRsp.m in Sources */ = {isa = PBXBuildFile; fileRef = 0199807A1B2AC52D00F50B8F /* EHGetBabyListRsp.m */; };
@@ -675,17 +676,18 @@
 		5F6D885F1BAA6B5E001A3248 /* EHChatMessageinfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F6D885E1BAA6B5E001A3248 /* EHChatMessageinfoModel.m */; };
 		5F6D88631BAA884B001A3248 /* XHBabyChatMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F6D88621BAA884B001A3248 /* XHBabyChatMessage.m */; };
 		5F6D88661BAA91F3001A3248 /* NSData+EHVoiceDataTransform.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F6D88651BAA91F3001A3248 /* NSData+EHVoiceDataTransform.m */; };
+		5F6D886D1BAB9BDB001A3248 /* EHChatMessageLIstService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F6D88681BAB9BDB001A3248 /* EHChatMessageLIstService.m */; };
+		5F6D886E1BAB9BDB001A3248 /* EHChatMessagePageList.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F6D886A1BAB9BDB001A3248 /* EHChatMessagePageList.m */; };
+		5F6D886F1BAB9BDB001A3248 /* EHChatMessagePaginationItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F6D886C1BAB9BDB001A3248 /* EHChatMessagePaginationItem.m */; };
 		5F7CA1CD1BA6717E0050DDC0 /* AMapSearchKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7CA1CB1BA6717E0050DDC0 /* AMapSearchKit.framework */; };
 		5F7CA1CE1BA6717E0050DDC0 /* MAMapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7CA1CC1BA6717E0050DDC0 /* MAMapKit.framework */; };
+		5F7CF5DC1BABA476005E58BB /* EHBabyMessageTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F7CF5DB1BABA476005E58BB /* EHBabyMessageTableViewCell.m */; };
 		5F7EA3DC1BA7FB1600C82F25 /* EHBabySingleChatMessageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F7EA3DB1BA7FB1600C82F25 /* EHBabySingleChatMessageViewController.m */; };
 		5F7EA3DE1BA7FD4200C82F25 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7EA3DD1BA7FD4200C82F25 /* CoreMedia.framework */; };
 		5F7EA3E01BA7FD4D00C82F25 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7EA3DF1BA7FD4C00C82F25 /* MediaPlayer.framework */; };
 		5F7EA3E21BA7FD8E00C82F25 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7EA3E11BA7FD8E00C82F25 /* MobileCoreServices.framework */; };
 		5F7EA3E41BA7FDAC00C82F25 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7EA3E31BA7FDAC00C82F25 /* CoreText.framework */; };
 		5F7EA3E61BA7FDBC00C82F25 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7EA3E51BA7FDBC00C82F25 /* AVFoundation.framework */; };
-		5F8DE1671BAAEAB800BB24F3 /* EHChatMessagePageList.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F8DE1661BAAEAB800BB24F3 /* EHChatMessagePageList.m */; };
-		5F8DE16A1BAAEDC900BB24F3 /* EHChatMessagePaginationItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F8DE1691BAAEDC900BB24F3 /* EHChatMessagePaginationItem.m */; };
-		5F8DE16D1BAAEEC600BB24F3 /* EHChatMessageLIstService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F8DE16C1BAAEEC600BB24F3 /* EHChatMessageLIstService.m */; };
 		5FCC2AF71B57804000C18FBD /* sosalerm.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 5FCC2AF61B57804000C18FBD /* sosalerm.mp3 */; };
 		5FD01EA01B79C29F00F98222 /* EHCoordinationInterpolation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FD01E9F1B79C29F00F98222 /* EHCoordinationInterpolation.m */; };
 		5FD01EA31B79CA3800F98222 /* EHMovingPointAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FD01EA21B79CA3800F98222 /* EHMovingPointAnnotation.m */; };
@@ -1059,6 +1061,8 @@
 		CC16E72F1BAA911700EA563E /* icon_calendar@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC16E7291BAA911700EA563E /* icon_calendar@3x.png */; };
 		CC16E7301BAA911700EA563E /* icon_week_selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC16E72A1BAA911700EA563E /* icon_week_selected@2x.png */; };
 		CC16E7311BAA911700EA563E /* icon_week_selected@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC16E72B1BAA911700EA563E /* icon_week_selected@3x.png */; };
+		CC16E7361BABAF2D00EA563E /* public_date_selected01@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC16E7341BABAF2D00EA563E /* public_date_selected01@2x.png */; };
+		CC16E7371BABAF2D00EA563E /* public_date_selected01@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC16E7351BABAF2D00EA563E /* public_date_selected01@3x.png */; };
 		CC2D7C661BA65D9000A12B12 /* iCarousel.m in Sources */ = {isa = PBXBuildFile; fileRef = CC2D7C651BA65D9000A12B12 /* iCarousel.m */; };
 		CC2FA3F51B90575200803888 /* bg_message@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC2FA3F11B90575200803888 /* bg_message@2x.png */; };
 		CC2FA3F61B90575200803888 /* bg_message@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CC2FA3F21B90575200803888 /* bg_message@3x.png */; };
@@ -1240,6 +1244,8 @@
 		01787C871BA7C38300FA07D3 /* EHCollectionItemTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHCollectionItemTableViewCell.h; sourceTree = "<group>"; };
 		01787C881BA7C38300FA07D3 /* EHCollectionItemTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHCollectionItemTableViewCell.m; sourceTree = "<group>"; };
 		01787C891BA7C38300FA07D3 /* NonAdminItem.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = NonAdminItem.plist; sourceTree = "<group>"; };
+		01787D171BABAA6800FA07D3 /* GroupedTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupedTableView.h; sourceTree = "<group>"; };
+		01787D181BABAA6800FA07D3 /* GroupedTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GroupedTableView.m; sourceTree = "<group>"; };
 		018ECFB81B5F8BE20095656C /* ico_mandatory@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico_mandatory@2x.png"; sourceTree = "<group>"; };
 		018ECFB91B5F8BE20095656C /* ico_mandatory@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico_mandatory@3x.png"; sourceTree = "<group>"; };
 		019980791B2AC52D00F50B8F /* EHGetBabyListRsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHGetBabyListRsp.h; sourceTree = "<group>"; };
@@ -2305,10 +2311,18 @@
 		5F6D88621BAA884B001A3248 /* XHBabyChatMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XHBabyChatMessage.m; sourceTree = "<group>"; };
 		5F6D88641BAA91F3001A3248 /* NSData+EHVoiceDataTransform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+EHVoiceDataTransform.h"; sourceTree = "<group>"; };
 		5F6D88651BAA91F3001A3248 /* NSData+EHVoiceDataTransform.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+EHVoiceDataTransform.m"; sourceTree = "<group>"; };
+		5F6D88671BAB9BDB001A3248 /* EHChatMessageLIstService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHChatMessageLIstService.h; sourceTree = "<group>"; };
+		5F6D88681BAB9BDB001A3248 /* EHChatMessageLIstService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHChatMessageLIstService.m; sourceTree = "<group>"; };
+		5F6D88691BAB9BDB001A3248 /* EHChatMessagePageList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHChatMessagePageList.h; sourceTree = "<group>"; };
+		5F6D886A1BAB9BDB001A3248 /* EHChatMessagePageList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHChatMessagePageList.m; sourceTree = "<group>"; };
+		5F6D886B1BAB9BDB001A3248 /* EHChatMessagePaginationItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHChatMessagePaginationItem.h; sourceTree = "<group>"; };
+		5F6D886C1BAB9BDB001A3248 /* EHChatMessagePaginationItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHChatMessagePaginationItem.m; sourceTree = "<group>"; };
 		5F7CA1C31BA66F410050DDC0 /* AMapSearchKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AMapSearchKit.framework; path = eHome/ThirdParty/AMapSearchKit.framework; sourceTree = "<group>"; };
 		5F7CA1C41BA66F410050DDC0 /* MAMapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MAMapKit.framework; path = eHome/ThirdParty/MAMapKit.framework; sourceTree = "<group>"; };
 		5F7CA1CB1BA6717E0050DDC0 /* AMapSearchKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AMapSearchKit.framework; sourceTree = "<group>"; };
 		5F7CA1CC1BA6717E0050DDC0 /* MAMapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MAMapKit.framework; sourceTree = "<group>"; };
+		5F7CF5DA1BABA476005E58BB /* EHBabyMessageTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHBabyMessageTableViewCell.h; sourceTree = "<group>"; };
+		5F7CF5DB1BABA476005E58BB /* EHBabyMessageTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHBabyMessageTableViewCell.m; sourceTree = "<group>"; };
 		5F7EA3DA1BA7FB1600C82F25 /* EHBabySingleChatMessageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHBabySingleChatMessageViewController.h; sourceTree = "<group>"; };
 		5F7EA3DB1BA7FB1600C82F25 /* EHBabySingleChatMessageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHBabySingleChatMessageViewController.m; sourceTree = "<group>"; };
 		5F7EA3DD1BA7FD4200C82F25 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -2316,12 +2330,6 @@
 		5F7EA3E11BA7FD8E00C82F25 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		5F7EA3E31BA7FDAC00C82F25 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		5F7EA3E51BA7FDBC00C82F25 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		5F8DE1651BAAEAB800BB24F3 /* EHChatMessagePageList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHChatMessagePageList.h; sourceTree = "<group>"; };
-		5F8DE1661BAAEAB800BB24F3 /* EHChatMessagePageList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHChatMessagePageList.m; sourceTree = "<group>"; };
-		5F8DE1681BAAEDC900BB24F3 /* EHChatMessagePaginationItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHChatMessagePaginationItem.h; sourceTree = "<group>"; };
-		5F8DE1691BAAEDC900BB24F3 /* EHChatMessagePaginationItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHChatMessagePaginationItem.m; sourceTree = "<group>"; };
-		5F8DE16B1BAAEEC600BB24F3 /* EHChatMessageLIstService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHChatMessageLIstService.h; sourceTree = "<group>"; };
-		5F8DE16C1BAAEEC600BB24F3 /* EHChatMessageLIstService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHChatMessageLIstService.m; sourceTree = "<group>"; };
 		5FCC2AF61B57804000C18FBD /* sosalerm.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = sosalerm.mp3; sourceTree = "<group>"; };
 		5FD01E9E1B79C29F00F98222 /* EHCoordinationInterpolation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EHCoordinationInterpolation.h; sourceTree = "<group>"; };
 		5FD01E9F1B79C29F00F98222 /* EHCoordinationInterpolation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EHCoordinationInterpolation.m; sourceTree = "<group>"; };
@@ -2874,6 +2882,8 @@
 		CC16E7291BAA911700EA563E /* icon_calendar@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_calendar@3x.png"; sourceTree = "<group>"; };
 		CC16E72A1BAA911700EA563E /* icon_week_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_week_selected@2x.png"; sourceTree = "<group>"; };
 		CC16E72B1BAA911700EA563E /* icon_week_selected@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_week_selected@3x.png"; sourceTree = "<group>"; };
+		CC16E7341BABAF2D00EA563E /* public_date_selected01@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "public_date_selected01@2x.png"; sourceTree = "<group>"; };
+		CC16E7351BABAF2D00EA563E /* public_date_selected01@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "public_date_selected01@3x.png"; sourceTree = "<group>"; };
 		CC2D7C641BA65D9000A12B12 /* iCarousel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iCarousel.h; sourceTree = "<group>"; };
 		CC2D7C651BA65D9000A12B12 /* iCarousel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iCarousel.m; sourceTree = "<group>"; };
 		CC2FA3F11B90575200803888 /* bg_message@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_message@2x.png"; sourceTree = "<group>"; };
@@ -3097,6 +3107,15 @@
 			path = CustomCollectionTableviewCell;
 			sourceTree = "<group>";
 		};
+		01787D161BABAA6800FA07D3 /* GroupedTableView */ = {
+			isa = PBXGroup;
+			children = (
+				01787D171BABAA6800FA07D3 /* GroupedTableView.h */,
+				01787D181BABAA6800FA07D3 /* GroupedTableView.m */,
+			);
+			path = GroupedTableView;
+			sourceTree = "<group>";
+		};
 		018D7C571B1EDFBD00F4F131 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -3166,6 +3185,8 @@
 				CC16E7271BAA911700EA563E /* bg_date@3x.png */,
 				CC16E7281BAA911700EA563E /* icon_calendar@2x.png */,
 				CC16E7291BAA911700EA563E /* icon_calendar@3x.png */,
+				CC16E7341BABAF2D00EA563E /* public_date_selected01@2x.png */,
+				CC16E7351BABAF2D00EA563E /* public_date_selected01@3x.png */,
 				CC16E72A1BAA911700EA563E /* icon_week_selected@2x.png */,
 				CC16E72B1BAA911700EA563E /* icon_week_selected@3x.png */,
 				39D855091B7C262F00B0C2A4 /* finish_health@2x.png */,
@@ -3826,6 +3847,7 @@
 		01E8579C1B1D9CAF00BCE70E /* ThirdParty */ = {
 			isa = PBXGroup;
 			children = (
+				01787D161BABAA6800FA07D3 /* GroupedTableView */,
 				5F7EA3D41BA7C0FC00C82F25 /* MessageDisplayKit */,
 				5F7CA1CB1BA6717E0050DDC0 /* AMapSearchKit.framework */,
 				5F7CA1CC1BA6717E0050DDC0 /* MAMapKit.framework */,
@@ -5495,18 +5517,18 @@
 		5F6D88561BA968A0001A3248 /* EHSingleChatCacheService */ = {
 			isa = PBXGroup;
 			children = (
+				5F6D88671BAB9BDB001A3248 /* EHChatMessageLIstService.h */,
+				5F6D88681BAB9BDB001A3248 /* EHChatMessageLIstService.m */,
+				5F6D88691BAB9BDB001A3248 /* EHChatMessagePageList.h */,
+				5F6D886A1BAB9BDB001A3248 /* EHChatMessagePageList.m */,
+				5F6D886B1BAB9BDB001A3248 /* EHChatMessagePaginationItem.h */,
+				5F6D886C1BAB9BDB001A3248 /* EHChatMessagePaginationItem.m */,
 				5F6D88571BA968D5001A3248 /* EHSingleChatCacheService.h */,
 				5F6D88581BA968D5001A3248 /* EHSingleChatCacheService.m */,
 				5F6D885A1BA96908001A3248 /* EHSingleChatCacheManager.h */,
 				5F6D885B1BA96908001A3248 /* EHSingleChatCacheManager.m */,
 				5F6D88641BAA91F3001A3248 /* NSData+EHVoiceDataTransform.h */,
 				5F6D88651BAA91F3001A3248 /* NSData+EHVoiceDataTransform.m */,
-				5F8DE1651BAAEAB800BB24F3 /* EHChatMessagePageList.h */,
-				5F8DE1661BAAEAB800BB24F3 /* EHChatMessagePageList.m */,
-				5F8DE1681BAAEDC900BB24F3 /* EHChatMessagePaginationItem.h */,
-				5F8DE1691BAAEDC900BB24F3 /* EHChatMessagePaginationItem.m */,
-				5F8DE16B1BAAEEC600BB24F3 /* EHChatMessageLIstService.h */,
-				5F8DE16C1BAAEEC600BB24F3 /* EHChatMessageLIstService.m */,
 			);
 			path = EHSingleChatCacheService;
 			sourceTree = "<group>";
@@ -5525,6 +5547,8 @@
 			children = (
 				5F7EA3DA1BA7FB1600C82F25 /* EHBabySingleChatMessageViewController.h */,
 				5F7EA3DB1BA7FB1600C82F25 /* EHBabySingleChatMessageViewController.m */,
+				5F7CF5DA1BABA476005E58BB /* EHBabyMessageTableViewCell.h */,
+				5F7CF5DB1BABA476005E58BB /* EHBabyMessageTableViewCell.m */,
 				5F6D88611BAA884B001A3248 /* XHBabyChatMessage.h */,
 				5F6D88621BAA884B001A3248 /* XHBabyChatMessage.m */,
 			);
@@ -6819,6 +6843,7 @@
 				5FE75FD51B462EC00055FD6F /* public_ico_footprint_point_girl_normal@2x.png in Resources */,
 				392EEBAB1B5F44B000A14DA8 /* ico_contacts_qinqingdianhua_normal@2x.png in Resources */,
 				5FFFF0CE1B93E1ED00AFBC62 /* footpoint_initial@3x.png in Resources */,
+				CC16E7371BABAF2D00EA563E /* public_date_selected01@3x.png in Resources */,
 				5FE75F581B4619B30055FD6F /* public_arrow_tbar_down@3x.png in Resources */,
 				CC7417291B4A0C0A009BEE77 /* ico_share_child@2x.png in Resources */,
 				3518C2261B720B2100AA45BE /* ico_feedback_send_press@2x.png in Resources */,
@@ -6971,6 +6996,7 @@
 				01E309C71B428BA100AB11D8 /* input_createfence_normal@3x.png in Resources */,
 				01E309C51B428BA100AB11D8 /* ico_outputequipmentcode@3x.png in Resources */,
 				357FA9C31B67756500D4E89B /* ico_add_green@2x.png in Resources */,
+				CC16E7361BABAF2D00EA563E /* public_date_selected01@2x.png in Resources */,
 				CC7416F51B4A0C0A009BEE77 /* arrow_day_left@2x.png in Resources */,
 				9BE0996E1B96A3A30071F3C3 /* CalendarViewController.xib in Resources */,
 				014438CD1B4504CA0081A442 /* ico_family_mom@3x.png in Resources */,
@@ -7206,7 +7232,6 @@
 				35AB52E91B53A18700791436 /* MJRefreshHeader.m in Sources */,
 				5FFD58D11B280ED200310255 /* KeychainItemWrapper.m in Sources */,
 				356ADEFF1B5F4630000C9005 /* EHBaseGeofenceViewController.m in Sources */,
-				5F8DE16A1BAAEDC900BB24F3 /* EHChatMessagePaginationItem.m in Sources */,
 				5F3E60011B8C5C7E00DA56DF /* EHMapNavigationManager.m in Sources */,
 				CC7416A81B4A0AA7009BEE77 /* PNLineChart.m in Sources */,
 				35C17E6E1B43CF1300306332 /* EHLoadingHud.m in Sources */,
@@ -7230,7 +7255,6 @@
 				35AB52E51B53A18700791436 /* MJRefreshAutoFooter.m in Sources */,
 				356ADF001B5F4630000C9005 /* EHGeofenceAddressSearchViewController.m in Sources */,
 				5F4E42621B1FF8B6004AE7C0 /* WeAppLoadingView.m in Sources */,
-				5F8DE16D1BAAEEC600BB24F3 /* EHChatMessageLIstService.m in Sources */,
 				5FF393A11B4106FF00C214D9 /* UIImage+Cut.m in Sources */,
 				5F4E41571B1FEA13004AE7C0 /* UIScrollView+SVPullToRefresh.m in Sources */,
 				5FF41C2C1B5F6640001A2881 /* EHHealthyAdapterService.m in Sources */,
@@ -7360,9 +7384,11 @@
 				5F4E411A1B1FEA13004AE7C0 /* AFURLRequestSerialization.m in Sources */,
 				9B177B691B9D74A300620C7C /* JTVerticalCalendarView.m in Sources */,
 				5FFD58D51B280ED200310255 /* KSRegisterViewCtl.m in Sources */,
+				01787D191BABAA6800FA07D3 /* GroupedTableView.m in Sources */,
 				5F4E42781B1FF8B6004AE7C0 /* TBDetailSystemUtil.m in Sources */,
 				5F4E416F1B1FEA61004AE7C0 /* KSNavigator+RDVTabBarController.m in Sources */,
 				5F6D88101BA800DC001A3248 /* SECompatibility.m in Sources */,
+				5F6D886F1BAB9BDB001A3248 /* EHChatMessagePaginationItem.m in Sources */,
 				5FFE28EB1B7053B300151BC1 /* EHMapHistoryTraceCellModelInfoItem.m in Sources */,
 				35FF6FD91B3CE6CB007A5AD9 /* EHPhotoBrowserViewController.m in Sources */,
 				5FE75F391B45183A0055FD6F /* EHAttentionMessageModel.m in Sources */,
@@ -7511,6 +7537,7 @@
 				5FD5AE101B3D2169004BE4EE /* EHBabyHorizontalBasicListView.m in Sources */,
 				3529D7FD1B8DA9FC007D01CB /* EHDeleteGeofenceRemindService.m in Sources */,
 				5FD033A11B2FDDEB0053D04B /* KSCheckRegisterService.m in Sources */,
+				5F6D886E1BAB9BDB001A3248 /* EHChatMessagePageList.m in Sources */,
 				5F4E41541B1FEA13004AE7C0 /* UIImageView+WebCache.m in Sources */,
 				5F0295341B69C96100A6DA1B /* EHMapOverLayServiceContainer.m in Sources */,
 				5F4E41551B1FEA13004AE7C0 /* UIView+WebCacheOperation.m in Sources */,
@@ -7524,6 +7551,7 @@
 				5F6D88661BAA91F3001A3248 /* NSData+EHVoiceDataTransform.m in Sources */,
 				5F4E41231B1FEA13004AE7C0 /* WeAppComponentBaseItem.m in Sources */,
 				CC7417341B4A4DA9009BEE77 /* EHHealthyDayService.m in Sources */,
+				5F7CF5DC1BABA476005E58BB /* EHBabyMessageTableViewCell.m in Sources */,
 				5FF68E3A1B2C032300DB7C85 /* KSRegisterValidateCodeViewController.m in Sources */,
 				5F4E42561B1FF8B6004AE7C0 /* KSScrollViewConfigObject.m in Sources */,
 				5F4E41911B1FEC4F004AE7C0 /* KSPageList.m in Sources */,
@@ -7638,6 +7666,7 @@
 				5F6D880F1BA800DC001A3248 /* LKBadgeView.m in Sources */,
 				5FFD58D41B280ED200310255 /* KSLoginViewCtl.m in Sources */,
 				5F4E41381B1FEA13004AE7C0 /* NSObject+LKDBHelper.m in Sources */,
+				5F6D886D1BAB9BDB001A3248 /* EHChatMessageLIstService.m in Sources */,
 				5FD05A521B3BA870007DBFE8 /* EHMessageInfoViewController.m in Sources */,
 				5F32C79A1BA69F4A006FF56B /* EHSingleChatMessageHandleFactory.m in Sources */,
 				3901E6AE1B9D917F006E5AF8 /* EHBaseBabyAlarmViewController.m in Sources */,
@@ -7695,7 +7724,6 @@
 				CC74169C1B4A0AA7009BEE77 /* MASViewConstraint.m in Sources */,
 				35FF6FBE1B3C6FE9007A5AD9 /* EHAboutViewController.m in Sources */,
 				5F4E41391B1FEA13004AE7C0 /* NSObject+LKModel.m in Sources */,
-				5F8DE1671BAAEAB800BB24F3 /* EHChatMessagePageList.m in Sources */,
 				5F6D880C1BA800DC001A3248 /* XHShareMenuItem.m in Sources */,
 				01E4AC1D1B5E196000AA4BC6 /* EHModifyBabyNameViewController.m in Sources */,
 				5FFE28CE1B6B2F5F00151BC1 /* EHMapHistoryTracePolylineViewController.m in Sources */,

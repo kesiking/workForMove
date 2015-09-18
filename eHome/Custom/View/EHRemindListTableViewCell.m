@@ -59,6 +59,7 @@
 #pragma mark - Events Response
 - (void)_isActiveButtonClick:(id)sender {
     self.isActiveButton.selected = !self.isActiveButton.selected;
+    //判断代码块是否存在
     !self.activeStatusChangeBlock?:self.activeStatusChangeBlock(self.isActiveButton.selected);
 }
 

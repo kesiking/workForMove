@@ -269,7 +269,8 @@
         STRONGSELF
         // 如果登陆成功就跳转到当前
         strongSelf.isLoginLoading = NO;
-        [strongSelf.rdv_tabBarController setSelectedViewController:strongSelf];
+//        [strongSelf.rdv_tabBarController setSelectedViewController:strongSelf];
+        [strongSelf.rdv_tabBarController setSelectedIndex:EHTabBarViewControllerType_Home];
     };
     if (!self.isLoginLoading) {
         self.isLoginLoading = YES;

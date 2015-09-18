@@ -42,18 +42,18 @@ typedef enum : NSUInteger {
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.selectedArray = [[NSMutableArray alloc]init];
-    for (int i = 0; i < kLines; i++) {
-        [self.selectedArray addObject:@NO];
-    }
-    
-    NSUInteger num = MIN(self.familyNumberList.count, kLines);
-    
-    //把获得的数据按照phone_type排列
-    for (NSUInteger j = 0; j < num; j++) {
-        EHBabyFamilyPhone *data = [self.familyNumberList objectAtIndex:j];
-    [self.familyNumberListWithType replaceObjectAtIndex:[data.phone_type integerValue] withObject:data];
-    }
+//    self.selectedArray = [[NSMutableArray alloc]init];
+//    for (int i = 0; i < kLines; i++) {
+//        [self.selectedArray addObject:@NO];
+//    }
+//    
+//    NSUInteger num = MIN(self.familyNumberList.count, kLines);
+//    
+//    //把获得的数据按照phone_type排列
+//    for (NSUInteger j = 0; j < num; j++) {
+//        EHBabyFamilyPhone *data = [self.familyNumberList objectAtIndex:j];
+//    [self.familyNumberListWithType replaceObjectAtIndex:[data.phone_type integerValue] withObject:data];
+//    }
 //    [NSNumber numberWithInteger:[self.phoneModel.phone_type integerValue]]
     
     self.tableView=[[UITableView alloc]initWithFrame:self.view.frame style:UITableViewStyleGrouped];
@@ -62,31 +62,14 @@ typedef enum : NSUInteger {
     UINib *nib = [UINib nibWithNibName:@"EHFamilyNumbersTableViewCell" bundle:nil];
     [self.tableView registerNib:nib forCellReuseIdentifier:@"EHFamilyNumberTableViewCell"];
     [self.view addSubview:self.tableView];
-    //self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     //[self setRightBarItem:EHRightItemMore];
-    [self getBabyFamilyPhoneList];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    NSInteger i = 0;
-    for (id obj in self.familyNumberListWithType) {
-        
-        if ([obj isKindOfClass:[NSString class]] && [obj isEqualToString:@""]) {
-            i++;
-        }
-    }
-    if (i == 5) {
-        [self setRightBarItem:EHRightItemNone];
-        self.footerViewLabel.text = @"您一共可以添加5个宝贝亲情电话，宝贝的亲情电话可以与宝贝的手表进行双向通话。";
+    [self getBabyFamilyPhoneList];
 
-    }
-    else{
-        [self setRightBarItem:EHRightItemMore];
-        self.footerViewLabel.text = @"宝贝的亲情电话可以与宝贝的手表进行双向通话。";
-    }
-
-
+    
 }
 
 
@@ -108,12 +91,10 @@ typedef enum : NSUInteger {
     EHLogInfo(@"self.markArray = %@",self.markArray);
     //如果0个被选中
     if (self.markArray.count == 0) {
-        self.markShowing = NO;
-        //
-        [self.tableView reloadData];
-        //
-        [self setRightBarItem:EHRightItemMore];
-        //self.
+        [WeAppToast toast:@"请选择您要移除的亲情号码"];
+        //self.markShowing = NO;
+        //[self.tableView reloadData];
+        //[self setRightBarItem:EHRightItemMore];
         return;
     }
     NSString *phone = [[KSLoginComponentItem sharedInstance] user_phone];
@@ -221,6 +202,25 @@ typedef enum : NSUInteger {
             EHBabyFamilyPhone *data = [strongSelf.familyNumberList objectAtIndex:j];
             [strongSelf.familyNumberListWithType replaceObjectAtIndex:[data.phone_type integerValue] withObject:data];
         }
+        
+        NSInteger m = 0;
+        for (id obj in strongSelf.familyNumberListWithType) {
+            
+            if ([obj isKindOfClass:[NSString class]] && [obj isEqualToString:@""]) {
+                m++;
+            }
+        }
+        if (m == 5) {
+            [strongSelf setRightBarItem:EHRightItemNone];
+            strongSelf.footerViewLabel.text = @"您一共可以添加5个宝贝亲情电话，宝贝的亲情电话可以与宝贝的手表进行双向通话。";
+            
+        }
+        else{
+            [strongSelf setRightBarItem:EHRightItemMore];
+            strongSelf.footerViewLabel.text = @"宝贝的亲情电话可以与宝贝的手表进行双向通话。";
+        }
+        
+
         
         [strongSelf.tableView reloadData];
         

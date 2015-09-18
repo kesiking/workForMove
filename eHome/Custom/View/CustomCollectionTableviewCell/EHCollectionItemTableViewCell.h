@@ -12,7 +12,7 @@
 
 
 #define kCollectionItemCount 3
-#define kEHCollectionItemTableViewCellHeight 80
+#define kEHCollectionItemTableViewCellHeight 90
 
 @class EHCollectionItemTableViewCell;
 @protocol EHCollectionItemTableViewCellDelegate <NSObject>

@@ -150,7 +150,7 @@
     self.weekButton.enabled=NO;
     [UIView animateWithDuration:0.2 animations:^{
         CGRect lineViewFrame=self.underlineView.frame;
-        lineViewFrame.origin.x -=60;
+        lineViewFrame.origin.x -= 44;
         self.underlineView.frame=lineViewFrame;
     } completion:^(BOOL finished) {
         self.currentVC = self.dayVC;
@@ -168,7 +168,7 @@
     self.weekButton.enabled=NO;
     [UIView animateWithDuration:0.2 animations:^{
         CGRect lineViewFrame=self.underlineView.frame;
-        lineViewFrame.origin.x +=60;
+        lineViewFrame.origin.x += 44;
         self.underlineView.frame=lineViewFrame;
     } completion:^(BOOL finished) {
         self.currentVC = self.weekVC;
@@ -218,7 +218,7 @@
 }
 - (void) initRightBarButtonItemsWithFlag: (BOOL)isTestAccount
 {
-    UIView *rightBgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 100, 30)];
+    UIView *rightBgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 90, 30)];
     [rightBgView addSubview:self.dayButton];
     [self.dayButton addTarget:self
                        action:@selector(onClickButton:)
@@ -229,7 +229,7 @@
                         action:@selector(onClickButton:)
               forControlEvents:UIControlEventTouchUpInside];
     if (_underlineView == nil) {
-        self.underlineView= [[UIView alloc]initWithFrame:CGRectMake(0, 28, 30, 2)];
+        self.underlineView= [[UIView alloc]initWithFrame:CGRectMake(12, 28, 20, 3)];
         _underlineView.backgroundColor = EH_cor9;
     }
     [rightBgView addSubview:_underlineView];
@@ -395,22 +395,22 @@
 - (UIButton *)dayButton
 {
     if (!_dayButton) {
-        _dayButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
+        _dayButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 44, 30)];
         _dayButton.tag = 1;
         [_dayButton setTitle:@"日" forState:UIControlStateNormal];
         [_dayButton setTitleColor:EHCor6 forState:UIControlStateNormal];
-        _dayButton.titleLabel.font = EH_font6;
+        _dayButton.titleLabel.font = EH_font5;
     }
     return _dayButton;
 }
 - (UIButton *)weekButton
 {
     if (!_weekButton) {
-        _weekButton = [[UIButton alloc]initWithFrame:CGRectMake(60, 0, 30, 30)];
+        _weekButton = [[UIButton alloc]initWithFrame:CGRectMake(44, 0, 44, 30)];
         _weekButton.tag = 2;
         [_weekButton setTitle:@"周" forState:UIControlStateNormal];
         [_weekButton setTitleColor:EHCor5 forState:UIControlStateNormal];
-        _weekButton.titleLabel.font = EH_font6;
+        _weekButton.titleLabel.font = EH_font5;
     }
     return _weekButton;
 }

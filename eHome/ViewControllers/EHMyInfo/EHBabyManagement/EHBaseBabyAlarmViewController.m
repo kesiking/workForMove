@@ -202,7 +202,7 @@
     }
     else {
         NSRange range = NSMakeRange(3, 2);
-        [muStr replaceCharactersInRange:range withString:[NSString stringWithFormat:@"%.2ld",(row * 10)]];
+        [muStr replaceCharactersInRange:range withString:[NSString stringWithFormat:@"%.2d",(row * 10)]];
         EHLogInfo(@"2.1 time = %@",self.alarmModel.time);
     }
     self.alarmModel.time = (NSString *)muStr;
@@ -259,7 +259,7 @@
 
 
 
-
+//显示当前时间
 - (NSString *)showTime {
     
     NSString *showTime = [EHUtils stringFromDate:[NSDate date] withFormat:@"HH:mm"];
@@ -275,7 +275,7 @@
         hour = (hour + 1) % 24;
     }
     
-    showTime = [NSString stringWithFormat:@"%.2ld:%.2ld",hour,min];
+    showTime = [NSString stringWithFormat:@"%.2ld:%.2ld",(long)hour,(long)min];
     
     return showTime;
 }
@@ -328,7 +328,7 @@
         _hourArray = [[NSMutableArray alloc]init];
         NSString *hourStr;
         for (NSInteger i = 0; i < 24; i++) {
-            hourStr = [NSString stringWithFormat:@"%.2ld",i];
+            hourStr = [NSString stringWithFormat:@"%.2ld",(long)i];
             [_hourArray addObject:hourStr];
         }
     }
@@ -338,15 +338,15 @@
 - (NSMutableArray *)minuteArray {
     if (!_minuteArray) {
         _minuteArray = [[NSMutableArray alloc]init];
-        NSString *hourStr;
+        NSString *minStr;
         for (NSInteger i = 0; i < 6; i++) {
             if (i == 0) {
-                hourStr = [NSString stringWithFormat:@"0%ld",i];
+                minStr = [NSString stringWithFormat:@"0%ld",(long)i];
             }
             else {
-                hourStr = [@(i * 10) stringValue];
+                minStr = [@(i * 10) stringValue];
             }
-            [_minuteArray addObject:hourStr];
+            [_minuteArray addObject:minStr];
         }
     }
     return _minuteArray;

@@ -212,7 +212,7 @@ double labelChangeheight = 0;
                 //                                           self.frame.size.height - kXLabelHeight - _chartMargin + label.frame.size.height /2.0 + _labelMarginTop);
                 //设置x轴的坐标
                 label.center = CGPointMake(labelXPosition,
-                                           171*SCREEN_SCALE + label.frame.size.height /2.0 + _labelMarginTop+10*SCREEN_SCALE);
+                                           108*SCREEN_SCALE + label.frame.size.height /2.0 + _labelMarginTop+10*SCREEN_SCALE);
                 
 //                NSLog(@"\n\nlabel.frame.size.heightlabel.frame.size.height\n\n\n%f",label.frame.size.height);
                 labelAddCount = 0;
@@ -280,10 +280,10 @@ double labelChangeheight = 0;
                 //                                           self.frame.size.height - kXLabelHeight - _chartMargin + label.frame.size.height /2.0 + _labelMarginTop);
                 if (index == 0 || index == (_xLabels.count-1)) {
                     label.center = CGPointMake(labelXPosition,
-                                               171*SCREEN_SCALE + label.frame.size.height /2.0 + _labelMarginTop+10*SCREEN_SCALE);
+                                               108*SCREEN_SCALE + label.frame.size.height /2.0 + _labelMarginTop+10*SCREEN_SCALE);
 
                 }else{
-                    label.frame = CGRectMake(labelXPosition - barWidth/2.0, 171*SCREEN_SCALE + label.frame.size.height /2.0 + _labelMarginTop+10*SCREEN_SCALE - label.frame.size.height/2.0, label.frame.size.width, label.frame.size.height);
+                    label.frame = CGRectMake(labelXPosition - barWidth/2.0, 108*SCREEN_SCALE + label.frame.size.height /2.0 + _labelMarginTop+10*SCREEN_SCALE - label.frame.size.height/2.0, label.frame.size.width, label.frame.size.height);
                 }
                 
                
@@ -415,7 +415,7 @@ double labelChangeheight = 0;
     
     //Add bars
     //    CGFloat chartCavanHeight = self.frame.size.height - _chartMargin * 2 - kXLabelHeight;
-    CGFloat chartCavanHeight = 171*SCREEN_SCALE;  //柱状图的高度171
+    CGFloat chartCavanHeight = 108*SCREEN_SCALE;  //柱状图的高度171
     NSInteger index = 0;
     
     for (NSNumber *valueString in _yValues) {
@@ -497,7 +497,7 @@ double labelChangeheight = 0;
     
     //Add bars
     //    CGFloat chartCavanHeight = self.frame.size.height - _chartMargin * 2 - kXLabelHeight;
-    CGFloat chartCavanHeight = 171*SCREEN_SCALE;  //柱状图的高度171
+    CGFloat chartCavanHeight = 108*SCREEN_SCALE;  //柱状图的高度171
     NSInteger index = 0;
     
     for (NSNumber *valueString in _yValues) {

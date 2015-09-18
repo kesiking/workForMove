@@ -7,36 +7,62 @@
 //
 
 #import "EHChatMessagePageList.h"
+#import "EHChatMessagePaginationItem.h"
 
 @implementation EHChatMessagePageList
 
 -(void)refresh{
-    _pagination.isTimestampEnable = NO;
-    _pagination.curPage = 0;
-    _pagination.reallyCurpage = 0;
-    
-    _pagination.beforTimestamp = 0;
-    if (_pagination.useTimesatmpAsReference) {
-        _pagination.afterTimestamp = [self timestampAtIndex:self.count - 1];
-    }else {
-        _pagination.afterTimestamp = 0;
+    if ([_pagination isKindOfClass:[EHChatMessagePaginationItem class]]) {
+        EHChatMessagePaginationItem* pagination = (EHChatMessagePaginationItem*)_pagination;
+        pagination.isTimestampEnable = NO;
+        pagination.curPage = 0;
+        pagination.reallyCurpage = 0;
+        
+        pagination.beforTimestampStr = nil;
+        if (pagination.useTimesatmpAsReference) {
+            pagination.afterTimestampStr = [self timestampStrAtIndex:self.count - 1];
+        }else {
+            pagination.afterTimestampStr = nil;
+        }
+        
+        pagination.direction = EHChatMessagePaginationDirectionBetweenTimestampAndNow;
+        self.isRefresh = YES;
+    }else{
+        [super refresh];
     }
-    
-    _pagination.direction = WeAppPaginationDirectionBetweenTimestampAndNow;
-    self.isRefresh = YES;
-
 }
 
 -(void)nextPage{
-    _pagination.isTimestampEnable = YES;
-    _pagination.curPage ++;
+    if ([_pagination isKindOfClass:[EHChatMessagePaginationItem class]]) {
+        EHChatMessagePaginationItem* pagination = (EHChatMessagePaginationItem*)_pagination;
+        pagination.isTimestampEnable = YES;
+        pagination.curPage ++;
+        
+        pagination.beforTimestampStr = [self timestampStrAtIndex:0];
+        pagination.afterTimestampStr = nil;
+        
+        pagination.direction = EHChatMessageaginationDirectionNextPage;
+        self.isRefresh = NO;
+    }else{
+        [super nextPage];
+    }
     
-    _pagination.beforTimestamp = [self timestampAtIndex:0];
-    _pagination.afterTimestamp = 0;
+}
 
-    _pagination.direction = WeAppPaginationDirectionNextPage;
-
-    self.isRefresh = NO;
+-(NSString*)timestampStrAtIndex:(NSInteger)index{
+    if (self.count <= 0) {
+        return nil;
+    }
+    
+    if ([self objectAtIndex:index]) {
+        id obj = [self objectAtIndex:index];
+        
+        if ([obj respondsToSelector:@selector(create_time)]) {
+            return [obj valueForKey:@"create_time"];
+        }
+    }
+    
+    return nil;
 }
 
 @end

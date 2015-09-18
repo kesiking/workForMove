@@ -13,6 +13,14 @@
 #import "LKDBHelper.h"
 #import "EHUtils.h"
 
+@interface EHSingleChatCacheManager()
+
+@property (nonatomic,strong) EHChatMessageLIstService* chatMessageListService;
+
+@property (nonatomic,strong) EHSingleChatCacheService* chatCacheService;
+
+@end
+
 @implementation EHSingleChatCacheManager
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -45,6 +53,12 @@
 #pragma mark -
 #pragma mark send message to network Method
 
+- (void)loadChatMessageListWithBabyId:(NSNumber*)babyId
+                         successBlock:(void(^)(NSArray* chatMessageList))successBlock
+                         failedBlock:(void(^)(NSError* error))failedBlock{
+    
+}
+
 - (void)sendBabyChatMessage:(XHBabyChatMessage *)message
                writeSuccess:(CacheWriteSuccessCacheBlock)writeSuccessBlock
                 sendSuccess:(ServiceWriteSuccessCacheBlock)sendSuccessBlock{
@@ -76,14 +90,14 @@
     }];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:EHRecieveBabyChatMessageNotification object:nil userInfo:@{EHBabyChatMessageModel_DATA:message}];
-
+    
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 #pragma mark - send network service Method
 -(void)sendBabyChatMessageWithNetwork:(XHBabyChatMessage *)message
-                         sendSuccess:(ServiceWriteSuccessCacheBlock)sendSuccessBlock{
+                          sendSuccess:(ServiceWriteSuccessCacheBlock)sendSuccessBlock{
     NSString *context = nil;
     EHMessageContextType context_type = EHMessageContextType_Text;
     switch (message.messageMediaType) {
@@ -120,13 +134,21 @@
         }
     };
     
-    [chatMessageService loadChatMessageListWithBabyId:message.recieverBabyID userPhone:[KSAuthenticationCenter userPhone] context:context contextType:[NSString stringWithFormat:@"%@",@(context_type)]];
-
+//    [chatMessageService loadChatMessageListWithBabyId:message.recieverBabyID userPhone:[KSAuthenticationCenter userPhone] context:context contextType:[NSString stringWithFormat:@"%@",@(context_type)]];
+    
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 #pragma mark - insert cache Method
+
+-(EHSingleChatCacheService *)chatCacheService{
+    if (_chatCacheService == nil) {
+        _chatCacheService = [EHSingleChatCacheService new];
+    }
+    return _chatCacheService;
+}
+
 -(void)insertBabyChatMessage:(XHBabyChatMessage *)message
                 writeSuccess:(WriteSuccessCacheBlock)writeSuccessBlock{
     [self insertCacheWithBabyID:[NSString stringWithFormat:@"%@",message.recieverBabyID] componentItem:[EHChatMessageinfoModel makeMessage:message] writeSuccess:writeSuccessBlock];
@@ -138,29 +160,24 @@
     if (componentItem == nil) {
         return;
     }
-    componentItem.db_tableName = [EHSingleChatCacheService getSingleChatCacheTableNameWithBabyID:babyID];
-    BOOL inseted = [[LKDBHelper getUsingLKDBHelper] insertToDB:componentItem];
-    if (writeSuccessBlock) {
-        writeSuccessBlock(inseted);
-    }
+    componentItem.babyChatMessage.db_tableName = [NSString stringWithFormat:@"XHBabyChatMessage_%@",[EHSingleChatCacheService getSingleChatCacheTableNameWithBabyID:babyID]];
+    [self.chatCacheService writeCacheWithApiName:KEHGetChatMessageListApiName withParam:@{@"baby_id":babyID} componentItem:componentItem writeSuccess:writeSuccessBlock];
 }
 
 -(void)deleteCacheWithBabyID:(NSString*)babyID
-                componentItem:(EHChatMessageinfoModel*)componentItem
-                 writeSuccess:(WriteSuccessCacheBlock)writeSuccessBlock{
+               componentItem:(EHChatMessageinfoModel*)componentItem
+                writeSuccess:(WriteSuccessCacheBlock)writeSuccessBlock{
     if (componentItem == nil) {
         return;
     }
-    componentItem.db_tableName = [EHSingleChatCacheService getSingleChatCacheTableNameWithBabyID:babyID];
-    BOOL inseted = [[LKDBHelper getUsingLKDBHelper] deleteToDB:componentItem];
-    if (writeSuccessBlock) {
-        writeSuccessBlock(inseted);
-    }
+    componentItem.babyChatMessage.db_tableName = [NSString stringWithFormat:@"XHBabyChatMessage_%@",[EHSingleChatCacheService getSingleChatCacheTableNameWithBabyID:babyID]];
+    NSDictionary* fechtCondtionDict = @{@"where":[NSString stringWithFormat:@"msgId = '%ld'",componentItem.msgId]};
+    [self.chatCacheService deleteCacheWithApiName:KEHGetChatMessageListApiName withParam:@{@"baby_id":babyID} withFetchCondition:fechtCondtionDict componentItem:componentItem writeSuccess:writeSuccessBlock];
 }
 
 -(void)clearCacheWithBabyID:(NSString*)babyID
-          componentItemClass:(Class)componentItemClass{
-    [[LKDBHelper getUsingLKDBHelper] deleteWithTableName:[EHSingleChatCacheService getSingleChatCacheTableNameWithBabyID:babyID] where:nil];
+         componentItemClass:(Class)componentItemClass{
+    [self.chatCacheService clearCacheWithApiName:KEHGetChatMessageListApiName withParam:@{@"baby_id":babyID} withFetchCondition:nil componentItemClass:componentItemClass];
 }
 
 @end

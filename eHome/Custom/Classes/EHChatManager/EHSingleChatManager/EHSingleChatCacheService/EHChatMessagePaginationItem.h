@@ -10,4 +10,7 @@
 
 @interface EHChatMessagePaginationItem : KSPaginationItem
 
+@property (nonatomic, strong) NSString*        afterTimestampStr;
+@property (nonatomic, strong) NSString*        beforTimestampStr;
+
 @end

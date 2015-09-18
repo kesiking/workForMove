@@ -12,7 +12,6 @@
 
 @protocol EHHealthyDelegate <NSObject>
 @required
-- (void)loadUIWhenAppear:(EHHealthyBasicView *)healthyView;
 - (void)configDateBtnClick:(EHHealthyBasicView *)healthyView;
 //点击左上角切换当前宝贝，调用的delegate方法
 - (void)reloadDataWhenHeadBtnClick;

@@ -12,6 +12,15 @@
 
 @implementation XHBabyChatMessage
 
++(BOOL)isContainParent
+{
+    return YES;
+}
+
++(NSString*)getPrimaryKey{
+    return @"msgId";
+}
+
 - (instancetype)init
 {
     self = [super init];

@@ -72,12 +72,11 @@
  */
 @property(strong,nonatomic) PNBarChart *barChart;
 
-@property(strong,nonatomic)UIImageView *sosoSmileView;
-@property(strong,nonatomic)UIImageView *badSmileView;
-
 
 //y轴的Label
 @property(strong,nonatomic)UILabel *maxYValueLabel;
+@property(strong,nonatomic)UILabel *middleValueLabel;
+@property(strong,nonatomic)UILabel *minYValueLabel;
 
 @property(strong,nonatomic)UIView *bgChartView;
 @property(strong,nonatomic)UIImageView *lineViewOne;

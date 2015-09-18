@@ -12,4 +12,9 @@
 
 -(NSString*)getTableNameFromApiName:(NSString*)apiName withParam:(NSDictionary *)param;
 
+-(void)deleteCacheWithApiName:(NSString*)apiName
+                    withParam:(NSDictionary*)param
+           withFetchCondition:(NSDictionary*)fetchCondition
+                componentItem:(WeAppComponentBaseItem*)componentItem
+                 writeSuccess:(WriteSuccessCacheBlock)writeSuccessBlock;
 @end

@@ -17,10 +17,13 @@ typedef void(^ServiceWriteSuccessCacheBlock)(BOOL success, XHBabyChatMessage* ch
 
 + (instancetype)sharedCenter;
 
+- (void)loadChatMessageListWithBabyId:(NSNumber*)babyId;
+
 - (void)sendBabyChatMessage:(XHBabyChatMessage *)message
                writeSuccess:(CacheWriteSuccessCacheBlock)writeSuccessBlock
                 sendSuccess:(ServiceWriteSuccessCacheBlock)sendSuccessBlock;
 
 - (void)recieveBabyChatMessage:(XHBabyChatMessage *)message;
+
 
 @end

@@ -243,9 +243,9 @@ typedef NS_ENUM(NSInteger, EHCollentionItemType) {
             
             cell.textLabel.text = _currentSelectBaby.babyNickName;
             cell.detailTextLabel.text = @"宝贝详情";
-            NSString* defaultImageStr = @"headportrait_list_boy";
+            NSString* defaultImageStr = @"headportrait_boy_160";
             if ([EHUtils isGirl:_currentSelectBaby.babySex]) {
-                defaultImageStr = @"headportrait_list_girl";
+                defaultImageStr = @"headportrait_girl_160";
             }
             [cell.imageView sd_setImageWithURL:[NSURL URLWithString:_currentSelectBaby.babyHeadImage] placeholderImage:[EHUtils getBabyHeadPlaceHolderImage:_currentSelectBaby.babyId newPlaceHolderImagePath:_currentSelectBaby.babyHeadImage defaultHeadImage:[UIImage imageNamed:defaultImageStr]]];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -360,7 +360,7 @@ typedef NS_ENUM(NSInteger, EHCollentionItemType) {
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == 0) {
-        return 80;
+        return 90;
     }
     
     if (_currentSelectBaby && indexPath.section == 1)
