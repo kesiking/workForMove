@@ -133,9 +133,9 @@
         if (pageSize <= 0) {
             return nil;
         }
-        return @{@"orderBy":@"msgid asc",@"count":@(pageSize),@"offset":@(0)};
+        return @{@"orderBy":@"msgTimestamp asc",@"count":@(pageSize),@"offset":@(0)};
     }
-    return @{@"orderBy":@"msgid asc",@"count":@(pagination.pageSize),@"offset":@(_count - pagination.pageSize * (pagination.curPage + 1))};
+    return @{@"orderBy":@"msgTimestamp asc",@"count":@(pagination.pageSize),@"offset":@(_count - pagination.pageSize * (pagination.curPage + 1))};
 }
 
 @end

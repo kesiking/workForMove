@@ -76,16 +76,16 @@
     [self sendBabyChatMessageWithNetwork:message sendSuccess:sendSuccessBlock];
 }
 
-- (void)recieveBabyChatMessage:(XHBabyChatMessage *)message{
-    if (message == nil) {
+- (void)recieveBabyChatMessage:(EHChatMessageinfoModel *)message{
+    if (message == nil || message.babyChatMessage == nil) {
         return;
     }
     
-    [self insertBabyChatMessage:message writeSuccess:^(BOOL success) {
+    [self insertCacheWithBabyID:[NSString stringWithFormat:@"%@",message.babyChatMessage.recieverBabyID] componentItem:message writeSuccess:^(BOOL success) {
         if (success) {
             EHLogInfo(@"-----> EHSingleChatCacheManager recieveBabyChatMessage insert Cache success");
         }else{
-            EHLogInfo(@"-----> EHSingleChatCacheManager recieveBabyChatMessage insert Cache failed: %@", message.recieverBabyID);
+            EHLogInfo(@"-----> EHSingleChatCacheManager recieveBabyChatMessage insert Cache failed: %@", message.babyChatMessage.recieverBabyID);
         }
     }];
     

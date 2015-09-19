@@ -23,7 +23,7 @@ typedef void(^ServiceWriteSuccessCacheBlock)(BOOL success, XHBabyChatMessage* ch
                writeSuccess:(CacheWriteSuccessCacheBlock)writeSuccessBlock
                 sendSuccess:(ServiceWriteSuccessCacheBlock)sendSuccessBlock;
 
-- (void)recieveBabyChatMessage:(XHBabyChatMessage *)message;
+- (void)recieveBabyChatMessage:(EHChatMessageinfoModel *)message;
 
 
 @end

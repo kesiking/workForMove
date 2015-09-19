@@ -28,10 +28,26 @@ static NSDateFormatter *dateFormatter = nil;
     return YES;
 }
 
++(void)dbDidSeleted:(NSObject *)entity{
+    if (![entity isKindOfClass:[self class]]) {
+        return;
+    }
+    EHChatMessageinfoModel* chatMessageInfoModel = (EHChatMessageinfoModel*)entity;
+    chatMessageInfoModel.head_imag_small = chatMessageInfoModel.userInfoModel.head_imag_small;
+    chatMessageInfoModel.user_nick_name = chatMessageInfoModel.userInfoModel.user_nick_name;
+    
+    chatMessageInfoModel.babyChatMessage.avatarUrl = chatMessageInfoModel.head_imag_small;
+}
+
 -(void)setFromDictionary:(NSDictionary *)dict{
     [super setFromDictionary:dict];
-    self.babyChatMessage = [self getBabyChatMessageWithMessageModel:self];
-    self.msgId = self.babyChatMessage.msgId;
+    if (dict != nil) {
+        self.babyChatMessage = [self getBabyChatMessageWithMessageModel:self];
+        self.msgId = self.babyChatMessage.msgId;
+        self.msgTimestamp = self.babyChatMessage.msgTimestamp;
+        self.babyInfoModel = [EHChatMessageBabyInfoModel modelWithJSON:dict];
+        self.userInfoModel = [EHChatMessageUserPhoneInfoModel modelWithJSON:dict];
+    }
 }
 
 - (XHBabyChatMessage*)getBabyChatMessageWithMessageModel:(EHChatMessageinfoModel*)message{
@@ -56,6 +72,7 @@ static NSDateFormatter *dateFormatter = nil;
             break;
     }
     babyChatMessage.recieverBabyID = message.baby_id;
+    babyChatMessage.user_nick_name = message.user_nick_name;
     babyChatMessage.msgStatus = EHBabyChatMessageStatusReceived;
     
     return babyChatMessage;
@@ -87,9 +104,38 @@ static NSDateFormatter *dateFormatter = nil;
     }
     message.head_imag_small = [KSAuthenticationCenter userComponent].user_head_img;
     message.user_nick_name = [KSAuthenticationCenter userComponent].nick_name;
+    message.msgTimestamp = babyChatMessage.msgTimestamp;
+    message.user_phone = [KSAuthenticationCenter userPhone];
+
+    message.babyInfoModel = [EHChatMessageBabyInfoModel new];
+    message.babyInfoModel.baby_id = message.baby_id;
+    message.babyInfoModel.user_nick_name = message.user_nick_name;
+    message.babyInfoModel.head_imag_small = message.head_imag_small;
+    
+    message.userInfoModel = [EHChatMessageUserPhoneInfoModel new];
+    message.userInfoModel.user_phone = message.user_phone;
+    message.userInfoModel.user_nick_name = message.user_nick_name;
+    message.userInfoModel.head_imag_small = message.head_imag_small;
+    
     message.babyChatMessage = babyChatMessage;
     
     return message;
+}
+
+@end
+
+@implementation EHChatMessageBabyInfoModel
+
++(NSString*)getPrimaryKey{
+    return @"baby_id";
+}
+
+@end
+
+@implementation EHChatMessageUserPhoneInfoModel
+
++(NSString*)getPrimaryKey{
+    return @"user_phone";
 }
 
 @end

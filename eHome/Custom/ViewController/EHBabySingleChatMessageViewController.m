@@ -73,7 +73,8 @@
         self.navigationController.interactivePopGestureRecognizer.delaysTouchesBegan=NO;
     }
     self.title = NSLocalizedStringFromTable(@"Chat", @"MessageDisplayKitString", @"聊天");
-    
+    // 设置chatMessage外框
+    [self configChatMessageView];
     // Custom UI
     [self setBackgroundColor:[UIColor whiteColor]];
     
@@ -81,6 +82,10 @@
     self.messageSender = [KSAuthenticationCenter userPhone];
     
     [self loadSingleChatMessageListDataSource];
+}
+
+- (void)configChatMessageView{
+    [[XHConfigurationHelper appearance] setupPopMenuTitles:@[NSLocalizedStringFromTable(@"copy", @"MessageDisplayKitString", @"复制文本消息")]] ;
 }
 
 - (void)didReceiveMemoryWarning
@@ -254,8 +259,14 @@
     message.avatarUrl = self.userInfoComponentItem.user_head_img;
     message.recieverBabyID = self.babyUserInfo.babyId;
     message.msgStatus = EHBabyChatMessageStatusSending;
+    message.user_nick_name = [KSAuthenticationCenter userComponent].nick_name;
     [self addMessage:message];
     [self finishSendMessageWithBubbleMessageType:message.messageMediaType];
+}
+
+-(void)addMessage:(XHMessage *)addedMessage{
+    [super addMessage:addedMessage];
+    [self.chatMessageListService.pagedList addObject:addedMessage];
 }
 
 -(BOOL)checkTextValid:(NSString*)text{

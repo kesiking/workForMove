@@ -155,6 +155,7 @@
 
 -(void)setup{
     self.msgId = [XHBabyChatMessage getMessageID];
+    self.msgTimestamp = [self.timestamp timeIntervalSince1970];
 }
 
 + (NSUInteger)getMessageID

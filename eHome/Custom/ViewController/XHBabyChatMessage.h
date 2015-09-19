@@ -23,8 +23,13 @@ typedef enum {
 
 @property (nonatomic, strong) NSNumber               *recieverBabyID;
 
+@property (nonatomic, strong) NSString               *user_nick_name;
+
 @property (nonatomic, assign) EHBabyChatMessageStatus msgStatus;
 
 @property (nonatomic, assign) NSInteger              msgId;
+
+@property (nonatomic, assign) NSUInteger             msgTimestamp;
+
 
 @end
