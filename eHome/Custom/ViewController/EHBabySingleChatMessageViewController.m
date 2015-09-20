@@ -381,6 +381,9 @@
 
 -(void)recieveBabyChatMessage:(NSNotification*)notification{
     EHChatMessageinfoModel* chatMessageModel = [notification.userInfo objectForKey:EHBabyChatMessageModel_DATA];
+    if ([chatMessageModel.baby_id integerValue] != [self.babyUserInfo.babyId integerValue]) {
+        return;
+    }
     [self addMessage:chatMessageModel.babyChatMessage];
 }
 
