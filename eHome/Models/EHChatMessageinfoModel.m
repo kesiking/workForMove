@@ -74,7 +74,8 @@ static NSDateFormatter *dateFormatter = nil;
     babyChatMessage.recieverBabyID = message.baby_id;
     babyChatMessage.user_nick_name = message.user_nick_name;
     babyChatMessage.msgStatus = EHBabyChatMessageStatusReceived;
-    
+    [babyChatMessage configMessageID];
+
     return babyChatMessage;
 }
 

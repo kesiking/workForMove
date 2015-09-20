@@ -21,6 +21,8 @@ typedef enum {
 
 + (NSUInteger)getMessageID;
 
+- (void)configMessageID;
+
 @property (nonatomic, strong) NSNumber               *recieverBabyID;
 
 @property (nonatomic, strong) NSString               *user_nick_name;

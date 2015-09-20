@@ -154,13 +154,19 @@
 }
 
 -(void)setup{
-    self.msgId = [XHBabyChatMessage getMessageID];
     self.msgTimestamp = [self.timestamp timeIntervalSince1970];
+}
+
+- (void)configMessageID{
+    self.msgId = [XHBabyChatMessage getMessageID];
 }
 
 + (NSUInteger)getMessageID
 {
     NSInteger messageID = [[NSUserDefaults standardUserDefaults] integerForKey:EHChatMessageinfo_ID_Key];
+    if (messageID == 0) {
+        messageID = 1;
+    }
     NSInteger resultMessageID = messageID;
     messageID ++;
     [[NSUserDefaults standardUserDefaults] setInteger:messageID forKey:EHChatMessageinfo_ID_Key];

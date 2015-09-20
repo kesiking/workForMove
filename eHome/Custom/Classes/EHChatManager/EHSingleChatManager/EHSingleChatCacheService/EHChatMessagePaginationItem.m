@@ -19,6 +19,11 @@
     return self;
 }
 
+-(void)paginationPlus{
+    self.reallyCurpage++;
+    self.curPage = self.reallyCurpage;
+}
+
 -(void)addParams:(NSDictionary *)params withDict:(NSMutableDictionary *)dict{
     if (dict && [dict isKindOfClass:[NSMutableDictionary class]]) {
         

@@ -12,4 +12,6 @@
 
 -(void)loadChatMessageListWithBabyId:(NSNumber*)babyId userPhone:(NSString*)userPhone;
 
+-(BOOL)hasMoreData;
+
 @end

@@ -24,6 +24,7 @@
 
 @property (nonatomic, strong) EHChatMessageLIstService * chatMessageListService;
 
+@property (nonatomic, strong) UILabel                  * headerHasNoDatalabel;
 @end
 
 @implementation EHBabySingleChatMessageViewController
@@ -65,6 +66,18 @@
     return [KSAuthenticationCenter userComponent];
 }
 
+-(UILabel *)headerHasNoDatalabel{
+    if (_headerHasNoDatalabel == nil) {
+        UIView* headerContainerView = [self valueForKey:@"_headerContainerView"];
+        _headerHasNoDatalabel = [[UILabel alloc] initWithFrame:headerContainerView.bounds];
+        [_headerHasNoDatalabel setTextAlignment:NSTextAlignmentCenter];
+        _headerHasNoDatalabel.hidden = YES;
+        [_headerHasNoDatalabel setText:@"没有更多数据了"];
+        [headerContainerView addSubview:_headerHasNoDatalabel];
+    }
+    return _headerHasNoDatalabel;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -78,6 +91,8 @@
     // Custom UI
     [self setBackgroundColor:[UIColor whiteColor]];
     
+    [self initNotification];
+    
     // 设置自身用户名
     self.messageSender = [KSAuthenticationCenter userPhone];
     
@@ -88,6 +103,10 @@
     [[XHConfigurationHelper appearance] setupPopMenuTitles:@[NSLocalizedStringFromTable(@"copy", @"MessageDisplayKitString", @"复制文本消息")]] ;
 }
 
+-(void)initNotification{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recieveBabyChatMessage:) name:EHRecieveBabyChatMessageNotification object:nil];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -96,6 +115,7 @@
 
 - (void)dealloc {
     [[XHAudioPlayerHelper shareInstance] setDelegate:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 -(EHChatMessageLIstService *)chatMessageListService{
@@ -192,17 +212,13 @@
 }
 
 - (void)loadMoreMessagesScrollTotop {
-    if (!self.loadingMoreMessage) {
+    if (!self.loadingMoreMessage && [self.chatMessageListService hasMoreData]) {
         self.loadingMoreMessage = YES;
+        self.headerHasNoDatalabel.hidden = YES;
         [self.chatMessageListService nextPage];
-//        WEAKSELF
-//        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//            NSMutableArray *messages = [weakSelf getTestMessages];
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                [weakSelf insertOldMessages:messages];
-//                weakSelf.loadingMoreMessage = NO;
-//            });
-//        });
+    }else{
+        self.loadingMoreMessage = NO;
+        self.headerHasNoDatalabel.hidden = NO;
     }
 }
 
@@ -259,6 +275,7 @@
     message.avatarUrl = self.userInfoComponentItem.user_head_img;
     message.recieverBabyID = self.babyUserInfo.babyId;
     message.msgStatus = EHBabyChatMessageStatusSending;
+    [message configMessageID];
     message.user_nick_name = [KSAuthenticationCenter userComponent].nick_name;
     [self addMessage:message];
     [self finishSendMessageWithBubbleMessageType:message.messageMediaType];
@@ -357,6 +374,14 @@
  */
 - (BOOL)shouldPreventScrollToBottomWhileUserScrolling {
     return YES;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark - 添加或是接触宝贝消息响应
+
+-(void)recieveBabyChatMessage:(NSNotification*)notification{
+    EHChatMessageinfoModel* chatMessageModel = [notification.userInfo objectForKey:EHBabyChatMessageModel_DATA];
+    [self addMessage:chatMessageModel.babyChatMessage];
 }
 
 @end

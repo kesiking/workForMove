@@ -127,6 +127,12 @@
     return YES;
 }
 
+-(BOOL)hasMoreData{
+    BOOL cacheHasMore = _count > self.pagedList.count;
+    BOOL serviceHasMore = [self.pagedList hasMore];
+    return cacheHasMore || serviceHasMore;
+}
+
 -(NSDictionary*)getFetchDictionaryWithPagination:(WeAppPaginationItem*)pagination{
     if (_count <= pagination.pageSize * (pagination.curPage + 1)) {
         NSInteger pageSize = _count - pagination.pageSize * (pagination.curPage);
