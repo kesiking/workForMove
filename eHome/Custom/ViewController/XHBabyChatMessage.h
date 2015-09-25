@@ -29,9 +29,12 @@ typedef enum {
 
 @property (nonatomic, assign) EHBabyChatMessageStatus msgStatus;
 
-@property (nonatomic, assign) NSInteger              msgId;
+@property (nonatomic, assign) NSInteger               msgId;
 
-@property (nonatomic, assign) NSUInteger             msgTimestamp;
+@property (nonatomic, assign) NSUInteger              msgTimestamp;
 
+@property (nonatomic, assign) BOOL                    needShowTimestamp;
+
+@property (nonatomic, assign) BOOL                    messageIsFromBaby;
 
 @end

@@ -7,7 +7,6 @@
 //
 
 #import "EHChatMessageLIstService.h"
-#import "EHChatMessagePageList.h"
 #import "EHChatMessagePaginationItem.h"
 #import "EHSingleChatCacheService.h"
 #import "EHChatMessageinfoModel.h"
@@ -105,10 +104,8 @@
                 if (componentItems && [componentItems count] > 0) {
                     NSRange range = NSMakeRange(0, [componentItems count]);
                     [strongSelf.requestModel.pagedList insertObjects:componentItems atIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
-                    [strongSelf modelDidFinishLoad:self.requestModel];
-                }else{
-                    
                 }
+                [strongSelf modelDidFinishLoad:self.requestModel];
             }];
             return;
         }

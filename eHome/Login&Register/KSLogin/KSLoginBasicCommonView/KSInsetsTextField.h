@@ -13,6 +13,7 @@
 @property (nonatomic, assign) UIEdgeInsets       textEdgeInsets;
 
 @property (nonatomic, assign) UIEdgeInsets       leftViewEdgeInsets;
+@property (nonatomic, assign) UIEdgeInsets       rightViewEdgeInsets;
 
 @property (nonatomic, assign) UIEdgeInsets       clearButtonEdgeInsets;
 

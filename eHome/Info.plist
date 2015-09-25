@@ -56,11 +56,13 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>3250</string>
+	<string>3478</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>iosamap</string>
 		<string>baidumap</string>
+		<string>wechat</string>
+		<string>weixin</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>

@@ -115,9 +115,9 @@
     if (!_radiusSlider) {
         _radiusSlider = [[UISlider alloc]initWithFrame:CGRectMake(20, 20, CGRectGetWidth(self.frame) - 40, 20)];
         
-        [_radiusSlider setThumbImage:[UIImage imageNamed:@"radiusgauge_bbar_createfence_pointer"] forState:UIControlStateNormal];
-        _radiusSlider.minimumTrackTintColor = RGB(90, 179, 59);
-        _radiusSlider.maximumTrackTintColor = RGB(182, 182, 182);
+        [_radiusSlider setThumbImage:[UIImage imageNamed:@"icon_drag"] forState:UIControlStateNormal];
+//        _radiusSlider.minimumTrackTintColor = RGB(90, 179, 59);
+//        _radiusSlider.maximumTrackTintColor = RGB(182, 182, 182);
         _radiusSlider.minimumValue = 300;
         _radiusSlider.maximumValue = 2000;
         _radiusSlider.value = _radius;

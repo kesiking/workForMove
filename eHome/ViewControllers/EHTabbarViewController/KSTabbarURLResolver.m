@@ -25,6 +25,7 @@
     if (urlAction.urlPath == nil) {
         return;
     }
+    [super preprocessURLAction:urlAction];
     TBNavigationType type = TBNavigationTypeNone;
     
     NSURL* url = [NSURL URLWithString:urlAction.urlPath];

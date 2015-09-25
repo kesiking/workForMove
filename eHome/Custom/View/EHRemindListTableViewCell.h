@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "EHRemindViewModel.h"
+#import "EHSwitch.h"
 
 /**
  *  提醒类型
@@ -30,6 +31,8 @@ typedef void (^ActiveStatusChangeBlock)(BOOL isOn);
 @interface EHRemindListTableViewCell : UITableViewCell
 
 @property (nonatomic, strong) UIButton *isActiveButton;
+
+@property (nonatomic, strong)EHSwitch *isActiveSwitch;
 
 @property(nonatomic,strong)ActiveStatusChangeBlock activeStatusChangeBlock;
 

@@ -44,6 +44,8 @@
             [strongSelf hideLoadingView];
             [WeAppToast toast:@"添加成功"];
             [strongSelf.navigationController popViewControllerAnimated:YES];
+            !strongSelf.remindNeedAdd?:strongSelf.remindNeedAdd(strongSelf.remindModel);
+
         };
         _insertRemindService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
             STRONGSELF

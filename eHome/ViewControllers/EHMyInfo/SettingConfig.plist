@@ -6,25 +6,25 @@
 		<key>name</key>
 		<string>我的信息</string>
 		<key>image</key>
-		<string>ico_set</string>
+		<string>icon_my_message</string>
 	</dict>
 	<dict>
 		<key>name</key>
 		<string>设置</string>
 		<key>image</key>
-		<string>ico_set</string>
+		<string>icon_my_set</string>
 	</dict>
 	<dict>
 		<key>name</key>
 		<string>分享App</string>
 		<key>image</key>
-		<string>ico_share</string>
+		<string>icon_my_share</string>
 	</dict>
 	<dict>
 		<key>name</key>
 		<string>关于童行</string>
 		<key>image</key>
-		<string>ico_about</string>
+		<string>icon_my_about</string>
 	</dict>
 </array>
 </plist>

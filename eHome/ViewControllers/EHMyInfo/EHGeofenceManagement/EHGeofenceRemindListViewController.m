@@ -10,6 +10,7 @@
 #import "EHGetGeofenceRemindService.h"
 #import "EHUpdateGeofenceRemindService.h"
 #import "EHRemindListTableViewCell.h"
+#import "EHBabyDetailTableViewCell.h"
 #import "EHGeofenceRemindModel.h"
 #import "EHRemindViewModel.h"
 #import "NSString+StringSize.h"
@@ -18,11 +19,15 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
 
 @interface EHGeofenceRemindListViewController ()<UITableViewDataSource,UITableViewDelegate>
 
-@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) GroupedTableView      *tableView;
 
-@property (nonatomic, strong) NSIndexPath *activeChangedIndexPath;
+@property (nonatomic, strong) UIView                *footerView;
 
-@property (nonatomic, strong) NSMutableArray      *geofenceRemindList;
+@property (nonatomic, strong) UIView                *noDataView;
+
+@property (nonatomic, strong) NSMutableArray        *geofenceRemindList;
+
+@property (nonatomic, strong) EHGeofenceRemindModel *needUpdateModel;
 
 @end
 
@@ -30,14 +35,9 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
 {
     EHGetGeofenceRemindService *_getRemindService;
     EHUpdateGeofenceRemindService *_updateRemindService;
-    
-    UIImageView *_babyHeadImageView;
-    UILabel     *_babyNameLabel;
-    UILabel     *_geofenceNameLabel;
-    
-    UILabel     *_remindLabel;
 }
 
+#pragma mark - Life Cycle
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -47,25 +47,23 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"public_ico_tbar_add"] style:UIBarButtonItemStylePlain target:self action:@selector(rightItemClick:)];
     self.navigationItem.rightBarButtonItem = rightItem;
     
-    self.activeChangedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    
+    [self.view addSubview:self.noDataView];
     [self.view addSubview:self.tableView];
-    [self.view addSubview:[self remindLabel]];
+    
+    [self reloadData];
+    
+    [self showLoadingView];
+    [self configGetRemindService];
+    [_getRemindService getGeofenceRemindWithGeofenceID:self.geofence_id];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    [self reloadData];
-    [self configGetRemindService];
-    [_getRemindService getGeofenceRemindWithGeofenceID:self.geofence_id];
-    [self showLoadingView];
+    
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-}
-
+#pragma mark - Events Response
 - (void)rightItemClick:(id)sender {
     if (self.geofenceRemindList.count == 5) {
         [WeAppToast toast:@"您的围栏提醒数量已经到5个，无法继续新增围栏提醒"];
@@ -73,25 +71,37 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
     }
     EHGeofenceRemindAddViewController *grdVC = [[EHGeofenceRemindAddViewController alloc]init];
     grdVC.remindModel.geofence_id = self.geofence_id;
+    grdVC.babyUser = self.babyUser;
+    grdVC.geofenceName = self.geofenceName;
+    grdVC.remindStatusType = EHRemindStatusTypeAdd;
+    WEAKSELF
+    grdVC.remindNeedAdd = ^(EHGeofenceRemindModel *remindModel) {
+        STRONGSELF
+        strongSelf.needUpdateModel = remindModel;
+        [strongSelf updateRemindList:EHRemindListStatusTypeAdd];
+    };
     [self.navigationController pushViewController:grdVC animated:YES];
 }
 
+#pragma mark - Private Methods
 - (void)reloadData{
     [self.tableView reloadData];
+    [self checkGeofenceRemindList];
+}
+
+- (void)checkGeofenceRemindList {
     if (self.geofenceRemindList.count == 0) {
         self.tableView.hidden = YES;
-        CGRect frame = _remindLabel.frame;
-        frame.origin.y = 20;
-        _remindLabel.frame = frame;
+        self.noDataView.hidden = NO;
     }
     else {
         self.tableView.hidden = NO;
-        CGRect frame = _remindLabel.frame;
-        frame.origin.y = CGRectGetHeight(self.tableView.frame) + 20;
-        _remindLabel.frame = frame;
+        self.noDataView.hidden = YES;
     }
 }
-
+/**
+ *  数据源重排序
+ */
 - (NSMutableArray *)remindListSorted:(NSArray *)remindList {
     NSMutableArray *resultArray = [[NSMutableArray alloc]init];
     NSMutableArray *onArray = [[NSMutableArray alloc]init];
@@ -124,6 +134,9 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
     return resultArray;
 }
 
+/**
+ *  按时间进行排序
+ */
 - (NSMutableArray *)remindListSortedByTime:(NSMutableArray *)array {
     for (NSInteger i = 0; i < (array.count - 1); i++) {
         for (NSInteger j = 0; j < (array.count - 1) - i; j++) {
@@ -144,44 +157,131 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
     return array;
 }
 
+/**
+ *  对编辑过的数据源进行更新，并动画移动重排序后的位置
+ */
+- (void)updateRemindList:(EHRemindListStatusType)remindListStatusType {
+    switch (remindListStatusType) {
+            
+        case EHRemindListStatusTypeAdd: {
+            [self.geofenceRemindList addObject:self.needUpdateModel];
+            self.geofenceRemindList = [self remindListSorted:self.geofenceRemindList];
+            NSInteger updatedRow = [self.geofenceRemindList indexOfObject:self.needUpdateModel];
+            NSIndexPath *updatedIndexPath = [NSIndexPath indexPathForRow:updatedRow inSection:1];
+        
+            [self.tableView insertRowsAtIndexPaths:@[updatedIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+        }
+            break;
+            
+        case EHRemindListStatusTypeUpdate: {
+            NSInteger needUpdateRow = [self.geofenceRemindList indexOfObject:self.needUpdateModel];
+            NSIndexPath *needUpdateIndexPath = [NSIndexPath indexPathForRow:needUpdateRow inSection:1];
+            EHGeofenceRemindModel *model = self.geofenceRemindList[needUpdateRow];
+            EHRemindViewModel *viewModel = [[EHRemindViewModel alloc]initWithGeofenceRemindModel:model];
+            EHRemindListTableViewCell *cell = [self.tableView cellForRowAtIndexPath:needUpdateIndexPath];
+            [cell configWithRemindModel:viewModel RemindType:EHRemindTypeGeofence];
+                                     
+            self.geofenceRemindList = [self remindListSorted:self.geofenceRemindList];
+            NSInteger updatedRow = [self.geofenceRemindList indexOfObject:self.needUpdateModel];
+            NSIndexPath *updatedIndexPath = [NSIndexPath indexPathForRow:updatedRow inSection:1];
+            
+            [self.tableView moveRowAtIndexPath:needUpdateIndexPath toIndexPath:updatedIndexPath];
+        }
+            break;
+            
+        case EHRemindListStatusTypeDelete: {
+            NSInteger index = [self.geofenceRemindList indexOfObject:self.needUpdateModel];
+            [self.geofenceRemindList removeObjectAtIndex:index];
+            
+            NSIndexPath *updatedIndexPath = [NSIndexPath indexPathForRow:index inSection:1];
+            [self.tableView deleteRowsAtIndexPaths:@[updatedIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+        }
+            break;
+
+        default:
+            break;
+    }
+    
+}
+
 #pragma mark - UITableViewDataSource
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return 2;
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return self.geofenceRemindList.count;
+    if (section == 0) {
+        return 1;
+    }
+    else {
+        return self.geofenceRemindList.count;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    static NSString *cellID = @"cellID";
-    EHRemindListTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
-    if (!cell) {
-        cell = [[EHRemindListTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
-    }
-    EHGeofenceRemindModel *model = self.geofenceRemindList[indexPath.row];
-    EHRemindViewModel *viewModel = [[EHRemindViewModel alloc]initWithGeofenceRemindModel:model];
-    [cell configWithRemindModel:viewModel RemindType:EHRemindTypeGeofence];
-
-    WEAKSELF
-    cell.activeStatusChangeBlock = ^(BOOL isOn){
-        STRONGSELF
-        model.is_active = @((NSInteger)isOn);
-
-        //进行状态更新请求再排序显示
-        strongSelf.activeChangedIndexPath = indexPath;
-        [strongSelf showLoadingView];
+    
+    if (indexPath.section == 0) {
+        EHBabyDetailTableViewCell * cell = [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass([EHBabyDetailTableViewCell class]) owner:self options:nil] firstObject];;
         
-        [self configUpdateRemindService];
-        [_updateRemindService UpdateGeofenceRemind:model];
-        EHLogInfo(@"isOn = %d",isOn);
-    };
-    return cell;
+        UIImage *defaultHeadImage = [UIImage imageNamed:@"headportrait_boy_160"];
+        NSURL *imageUrl = [NSURL URLWithString:self.babyUser.babyHeadImage];
+        [cell.babyHeadImageView sd_setImageWithURL:imageUrl placeholderImage:[EHUtils getBabyHeadPlaceHolderImage:self.babyUser.babyId newPlaceHolderImagePath:self.babyUser.babyHeadImage defaultHeadImage:defaultHeadImage]];
+        
+        cell.babyNameLabel.text = self.babyUser.babyNickName;
+        cell.babyDetalLabel.text = [NSString stringWithFormat:@"围栏：%@",self.geofenceName];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        return cell;
+    }
+    else {
+        static NSString *cellID = @"cellID";
+        EHRemindListTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
+        if (!cell) {
+            cell = [[EHRemindListTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
+        }
+        EHGeofenceRemindModel *model = self.geofenceRemindList[indexPath.row];
+        EHRemindViewModel *viewModel = [[EHRemindViewModel alloc]initWithGeofenceRemindModel:model];
+        [cell configWithRemindModel:viewModel RemindType:EHRemindTypeGeofence];
+        
+        WEAKSELF
+        cell.activeStatusChangeBlock = ^(BOOL isOn){
+            STRONGSELF
+            strongSelf.needUpdateModel = model;
+            model.is_active = @(!([model.is_active boolValue]));
+            
+            //进行状态更新请求再排序显示
+            [strongSelf showLoadingView];
+            
+            [self configUpdateRemindService];
+            [_updateRemindService UpdateGeofenceRemind:model];
+        };
+        return cell;
+    }
 }
 
 #pragma mark - UITableViewDelegate
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    return 80;
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 0) {
+        return 80;
+    }
+    else {
+        CGFloat labelHeight = [@"text" sizeWithFontSize:EH_siz5 Width:SCREEN_WIDTH].height;
+        return labelHeight * 2 + 24/2.0 + 31/2.0*2;
+    }
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    return [self headerViewForTableView];
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    if (section == 0) {
+        return 0.1;
+    }
+    else return 60;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return 12;
+}
+
+- (nullable UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
+    return section == 0?nil:self.footerView;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -189,21 +289,33 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
     EHGeofenceRemindEditViewController *greVC =[[EHGeofenceRemindEditViewController alloc] init];
     greVC.remindModel = self.geofenceRemindList[indexPath.row];
     greVC.remindModel.geofence_id = self.geofence_id;
+    greVC.babyUser = self.babyUser;
+    greVC.geofenceName = self.geofenceName;
+    greVC.remindStatusType = EHRemindStatusTypeEdit;
+    EHLogInfo(@"1 remindNeedUpdate = %@",self.geofenceRemindList[indexPath.row]);
+    EHLogInfo(@"1 self.geofenceRemindList = %@",self.geofenceRemindList);
+
+    WEAKSELF
+    greVC.remindNeedUpdate = ^(EHGeofenceRemindModel *remindModel){
+        STRONGSELF
+        EHLogInfo(@"2 remindNeedUpdate = %@",remindModel);
+        EHLogInfo(@"2 self.geofenceRemindList = %@",self.geofenceRemindList);
+
+        strongSelf.needUpdateModel = remindModel;
+        [strongSelf updateRemindList:EHRemindListStatusTypeUpdate];
+    };
+    greVC.remindNeedDelete = ^(EHGeofenceRemindModel *remindModel){
+        STRONGSELF
+        strongSelf.needUpdateModel = remindModel;
+        [strongSelf updateRemindList:EHRemindListStatusTypeDelete];
+        [self checkGeofenceRemindList];
+    };
     [self.navigationController pushViewController:greVC animated:YES];
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-
-
 #pragma mark - Getters And Setters
-- (NSMutableArray *)geofenceRemindList {
-    if (!_geofenceRemindList) {
-        _geofenceRemindList = [[NSMutableArray alloc]init];
-    }
-    return _geofenceRemindList;
-}
-
 - (void)configGetRemindService{
     if (!_getRemindService) {
         _getRemindService = [EHGetGeofenceRemindService new];
@@ -211,15 +323,13 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
         WEAKSELF
         _getRemindService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
             STRONGSELF
-            //请求完后
-            EHLogInfo(@"success - count = %ld",service.dataList.count);
             strongSelf.geofenceRemindList = [strongSelf remindListSorted:service.dataList];
             [strongSelf reloadData];
             [strongSelf hideLoadingView];
         };
         
         _getRemindService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
-            
+            [WeAppToast toast:@"获取围栏提醒失败"];
             EHLogInfo(@"error = %@",error);
             [weakSelf hideLoadingView];
         };
@@ -233,92 +343,95 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
         _updateRemindService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
             STRONGSELF
             [strongSelf hideLoadingView];
-            
-            strongSelf.geofenceRemindList = [strongSelf remindListSorted:strongSelf.geofenceRemindList];
-            [strongSelf reloadData];
+            //            [strongSelf configGetRemindService];
+            //            [_getRemindService getGeofenceRemindWithGeofenceID:self.geofence_id];
+            [strongSelf updateRemindList:EHRemindListStatusTypeUpdate];
         };
         _updateRemindService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
             STRONGSELF
-            EHRemindListTableViewCell *cell = (EHRemindListTableViewCell *)[strongSelf.tableView cellForRowAtIndexPath:strongSelf.activeChangedIndexPath];
-            cell.isActiveButton.selected = !cell.isActiveButton.selected;
             [strongSelf hideLoadingView];
             [WeAppToast toast:@"更新失败"];
+            
+            strongSelf.needUpdateModel.is_active = @(!([strongSelf.needUpdateModel.is_active boolValue]));
+            NSInteger row = [strongSelf.geofenceRemindList indexOfObject:strongSelf.needUpdateModel];
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:1];
+            EHRemindListTableViewCell *cell = (EHRemindListTableViewCell *)[strongSelf.tableView cellForRowAtIndexPath:indexPath];
+            [cell.isActiveSwitch setOn:!cell.isActiveSwitch.on animated:YES];
         };
     }
+}
+
+- (NSMutableArray *)geofenceRemindList {
+    if (!_geofenceRemindList) {
+        _geofenceRemindList = [[NSMutableArray alloc]init];
+    }
+    return _geofenceRemindList;
+}
+
+- (EHGeofenceRemindModel *)needUpdateModel {
+    if (!_needUpdateModel) {
+        _needUpdateModel = [[EHGeofenceRemindModel alloc] init];
+    }
+    return _needUpdateModel;
 }
 
 - (UITableView *)tableView{
     if (!_tableView){
-        _tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame)) style:UITableViewStylePlain];
+        _tableView = [[GroupedTableView alloc]initWithFrame:CGRectMake(8, 0, CGRectGetWidth(self.view.frame) - 16, CGRectGetHeight(self.view.frame)) style:UITableViewStyleGrouped];
         _tableView.backgroundColor = [UIColor clearColor];
-        _tableView.rowHeight = kCellHeight;
         _tableView.dataSource = self;
         _tableView.delegate = self;
         _tableView.tableFooterView = [[UIView alloc] init];
+        _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     }
     return _tableView;
 }
 
-- (UILabel *)remindLabel{
-    if (!_remindLabel) {
-        CGRect frame = CGRectMake(kSpaceX, 20, CGRectGetWidth(self.view.frame) - kSpaceX * 2,60);
-        _remindLabel = [[UILabel alloc]initWithFrame:frame];
-        _remindLabel.text = kEHGeofenceRemindStr;
-        _remindLabel.font = EH_font3;
-        _remindLabel.textAlignment = NSTextAlignmentLeft;
-        _remindLabel.numberOfLines = 0;
-        _remindLabel.lineBreakMode = NSLineBreakByWordWrapping;
+- (UIView *)footerView {
+    if (!_footerView) {
+        CGFloat height = [kEHGeofenceRemindStr sizeWithFontSize:EH_siz5 Width:CGRectGetWidth(self.tableView.frame)].height;
         
-        CGSize size = [kEHGeofenceRemindStr sizeWithFontSize:EH_siz3 Width:CGRectGetWidth(_remindLabel.frame)];
-        frame.size.height = size.height;
-        _remindLabel.frame = frame;
+        _footerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.frame), height)];
+        _footerView.backgroundColor = [UIColor clearColor];
+        
+        CGRect frame = CGRectMake(kSpaceX, 12, CGRectGetWidth(_footerView.frame) - kSpaceX * 2, height);
+        UILabel * remindLabel = [[UILabel alloc]initWithFrame:frame];
+        remindLabel.text = kEHGeofenceRemindStr;
+        remindLabel.font = EH_font5;
+        remindLabel.textColor = EHCor4;
+        remindLabel.textAlignment = NSTextAlignmentLeft;
+        remindLabel.numberOfLines = 0;
+        remindLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        
+        [_footerView addSubview:remindLabel];
     }
-    return _remindLabel;
+    return _footerView;
 }
 
-- (UIView *)headerViewForTableView {
-    CGFloat height = [self tableView:self.tableView heightForHeaderInSection:0];
-    CGFloat imageWidth = 40;
-    CGFloat nameHeight = [@"name" sizeWithFontSize:EH_siz3 Width:160].height;
-    
-    UIView *headView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.frame), height)];
-    
-    _babyHeadImageView = [[UIImageView alloc]initWithFrame:CGRectMake(kSpaceX, (height - imageWidth) / 2.0, imageWidth, imageWidth)];
-    _babyHeadImageView.layer.masksToBounds = YES;
-    _babyHeadImageView.layer.cornerRadius = imageWidth / 2.0;
-    UIImage *defaultHeadImage = [UIImage imageNamed:@"headportrait_boy_160"];
-    NSURL *imageUrl = [NSURL URLWithString:self.babyUser.babyHeadImage];
-    [_babyHeadImageView sd_setImageWithURL:imageUrl placeholderImage:[EHUtils getBabyHeadPlaceHolderImage:self.babyUser.babyId newPlaceHolderImagePath:self.babyUser.babyHeadImage defaultHeadImage:defaultHeadImage]];
-    
-    
-    _babyNameLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMaxX(_babyHeadImageView.frame) + 5, (height - nameHeight) / 2.0, 160, nameHeight)];
-    _babyNameLabel.font = EH_font3;
-    _babyNameLabel.textAlignment = NSTextAlignmentLeft;
-    NSString *nameStr;
-    if ([EHUtils isAuthority:self.babyUser.authority]) {
-        nameStr = self.babyUser.babyName;
+- (UIView *)noDataView {
+    if (!_noDataView) {
+        CGFloat imageHeight = 90;
+        CGFloat labelHeight = [kEHGeofenceRemindStr sizeWithFontSize:EH_siz5 Width:CGRectGetWidth(self.tableView.frame)].height;
+        CGFloat viewHeight = 137 / 2.0 + imageHeight + 50 + labelHeight;
+        
+        _noDataView = [[UIView alloc]initWithFrame:CGRectMake(8, 0, CGRectGetWidth(self.tableView.frame) - 16, viewHeight)];
+        _noDataView.backgroundColor = [UIColor clearColor];
+        
+        UIImageView *clockImv = [[UIImageView alloc]initWithFrame:CGRectMake((CGRectGetWidth(_noDataView.frame) - imageHeight) / 2.0, 137 / 2.0, imageHeight, imageHeight)];
+        clockImv.image = [UIImage imageNamed:@"icon_clock"];
+        
+        UILabel * remindLabel = [[UILabel alloc]initWithFrame:CGRectMake(kSpaceX, viewHeight - labelHeight, CGRectGetWidth(_noDataView.frame) - kSpaceX * 2, labelHeight)];
+        remindLabel.text = kEHGeofenceRemindStr;
+        remindLabel.font = EH_font5;
+        remindLabel.textColor = EHCor4;
+        remindLabel.textAlignment = NSTextAlignmentCenter;
+        remindLabel.numberOfLines = 0;
+        remindLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        
+        [_noDataView addSubview:clockImv];
+        [_noDataView addSubview:remindLabel];
     }
-    else
-    {
-        nameStr = self.babyUser.babyNickName ? self.babyUser.babyNickName : self.babyUser.babyName;
-    }
-    _babyNameLabel.text = nameStr;
-    
-    
-    UIImageView *geofenceImageView = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetMaxX(_babyNameLabel.frame) + kSpaceX, (height - imageWidth) / 2.0, imageWidth, imageWidth)];
-    geofenceImageView.image = [UIImage imageNamed:@"ico_crawl_normal"];
-    
-    _geofenceNameLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMaxX(geofenceImageView.frame) + 5, (height - nameHeight) / 2.0, 100, nameHeight)];
-    _geofenceNameLabel.font = EH_font3;
-    _geofenceNameLabel.textAlignment = NSTextAlignmentLeft;
-    _geofenceNameLabel.text = self.geofenceName;
-    
-    [headView addSubview:_babyHeadImageView];
-    [headView addSubview:_babyNameLabel];
-    [headView addSubview:geofenceImageView];
-    [headView addSubview:_geofenceNameLabel];
-    
-    return headView;
+    return _noDataView;
 }
 
 - (void)didReceiveMemoryWarning {

@@ -33,6 +33,8 @@
     self.view.backgroundColor = EH_bgcor1;
     
     self.deviceCodeTextField.placeholder = @"请输入宝贝手表的设备码";
+    
+    self.deviceCodeTextField.borderStyle = UITextBorderStyleRoundedRect;
     self.deviceCodeTextField.font = [UIFont systemFontOfSize:EH_siz3];
     self.deviceCodeTextField.textColor = EH_cor3;
     self.deviceCodeTextField.delegate = self;
@@ -89,7 +91,7 @@
         else
         {
             // 手表未被绑定，直接成为管理员，完善宝贝信息
-            EHAddBabyInfoViewController* addBabyInfoVC = [[EHAddBabyInfoViewController alloc] initWithNibName:@"EHAddBabyInfoViewController" bundle:[NSBundle mainBundle]];
+            EHAddBabyInfoViewController* addBabyInfoVC = [[EHAddBabyInfoViewController alloc] init];
             addBabyInfoVC.deviceCode = strongSelf.deviceCodeTextField.text;
             [strongSelf.navigationController pushViewController:addBabyInfoVC animated:YES];
         }

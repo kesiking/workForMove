@@ -34,9 +34,12 @@
     self.title = @"更改密码";
     [self.view addSubview:self.modifyPasswordView];
     
-    UIBarButtonItem *rightButtonItem = [[UIBarButtonItem alloc]initWithCustomView:self.modifyPasswordView.resetViewCtl.btn_nextStep];
-    self.modifyPasswordView.resetViewCtl.btn_nextStep.enabled = NO;
-    self.navigationItem.rightBarButtonItem = rightButtonItem;
+//    UIBarButtonItem *rightButtonItem = [[UIBarButtonItem alloc]initWithCustomView:self.modifyPasswordView.resetViewCtl.btn_nextStep];
+//    self.modifyPasswordView.resetViewCtl.btn_nextStep.enabled = NO;
+//    self.navigationItem.rightBarButtonItem = rightButtonItem;
+    
+    
+ 
 }
 
 -(void)viewWillAppear:(BOOL)animated{

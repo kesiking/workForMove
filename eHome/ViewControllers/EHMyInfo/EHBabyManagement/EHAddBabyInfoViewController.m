@@ -11,39 +11,125 @@
 #import "EHAddBabyInfoService.h"
 #import "EHAddBabyUserService.h"
 #import "EHBabyInfo.h"
+#import "KSInsetsTextField.h"
 
 @interface EHAddBabyInfoViewController ()<EHSelectRelationProtocol>
 {
     EHAddBabyInfoService* _addBabyService;
     EHAddBabyUserService* _addBabyUserService;
 }
-@property (weak, nonatomic) IBOutlet UILabel *selectBabySexPromptLabel;
-@property (weak, nonatomic) IBOutlet UIImageView *boyHeadImageView;
-@property (weak, nonatomic) IBOutlet UIImageView *girlHeadImageView;
-@property (weak, nonatomic) IBOutlet UIView *infoSettingBackground;
-@property (weak, nonatomic) IBOutlet UITextField *nameLabel;
-@property (weak, nonatomic) IBOutlet UILabel *relationLabel;
-@property (weak, nonatomic) IBOutlet UITextField *inputNameTextField;
-@property (weak, nonatomic) IBOutlet UILabel *selectRelationLabel;
-@property (weak, nonatomic) IBOutlet UIImageView *selectBoyImageview;
-@property (weak, nonatomic) IBOutlet UIImageView *selectGirlImageview;
+@property (strong, nonatomic) UILabel *selectBabySexPromptLabel;
+@property (strong, nonatomic) UIImageView *leftLineImageView;
+@property (strong, nonatomic) UIImageView *rightLineImageView;
+
+@property (strong, nonatomic) UIImageView *boyHeadImageView;
+@property (strong, nonatomic) UIImageView *girlHeadImageView;
+@property (strong, nonatomic) UITextField *nameLabel;
+@property (strong, nonatomic) UILabel *relationLabel;
+@property (strong, nonatomic) KSInsetsTextField *inputNameTextField;
+@property (strong, nonatomic) KSInsetsTextField *relationTextField;
+@property (strong, nonatomic) UILabel *selectRelationLabel;
+@property (strong, nonatomic) UIImageView *selectBoyImageview;
+@property (strong, nonatomic) UIImageView *selectGirlImageview;
 
 
 @end
 
 @implementation EHAddBabyInfoViewController
 
+
+
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     self.view.backgroundColor = EH_bgcor1;
+    self.title = @"完善宝贝信息";
+    [self setupSelectSexPrompt];
+    [self setupHeadImageView];
     
-    self.infoSettingBackground.backgroundColor = [UIColor whiteColor];
+    [self setupInputNameTextField];
     
-    self.selectBabySexPromptLabel.font = [UIFont systemFontOfSize:EH_siz6];
-    self.selectBabySexPromptLabel.textColor = EH_cor3;
-    self.selectBabySexPromptLabel.text = @"请点击下方头像选择宝贝性别";
+    [self setupRelationTextField];
+
+    UIBarButtonItem* commitBtn = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStylePlain target:self action:@selector(commitBabyInfo:)];
+    self.navigationItem.rightBarButtonItem = commitBtn;
+
+}
+
+- (void)setupSelectSexPrompt {
+    self.selectBabySexPromptLabel = [[UILabel alloc] init];
+    self.selectBabySexPromptLabel.font = [UIFont systemFontOfSize:EHSiz2];
+    self.selectBabySexPromptLabel.textColor = EHCor3;
+    self.selectBabySexPromptLabel.text = @"性别选择";
+    [self.view addSubview:self.selectBabySexPromptLabel];
+    [self.selectBabySexPromptLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.view.mas_centerX);
+        make.top.equalTo(self.view.mas_top).offset(20);
+        make.height.equalTo(@20);
+        make.width.equalTo(@60);
+    }];
+    self.leftLineImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"line_100"]];
+    [self.view addSubview:_leftLineImageView];
+    [self.leftLineImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.equalTo(self.selectBabySexPromptLabel.mas_centerY);
+        make.right.equalTo(self.selectBabySexPromptLabel.mas_left).offset(-8);
+        make.height.equalTo(@1);
+        make.width.equalTo(@100);
+    }];
     
+    self.rightLineImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"line_100"]];
+    [self.view addSubview:_rightLineImageView];
+    [self.rightLineImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.equalTo(self.selectBabySexPromptLabel.mas_centerY);
+        make.left.equalTo(self.selectBabySexPromptLabel.mas_right).offset(8);
+        make.height.equalTo(@1);
+        make.width.equalTo(@100);
+    }];
+}
+
+- (void)setupHeadImageView {
+    
+    self.boyHeadImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headportrait_boy_160"]];
+    self.boyHeadImageView.userInteractionEnabled = YES;
+    [self addSingleTapGestureToImageView:self.boyHeadImageView withTarget:self andAction:@selector(relationImageViewClick:)];
+    [self.view addSubview:self.boyHeadImageView];
+    [self.boyHeadImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.view.mas_top).offset(60);
+        make.left.equalTo(self.view.mas_left).offset(60);
+    }];
+    
+    self.selectBoyImageview = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ico_pitchon"]];
+    self.selectBoyImageview.hidden = NO;
+    [self.view addSubview:self.selectBoyImageview];
+    [self.selectBoyImageview mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.view.mas_top).offset(50);
+        make.left.equalTo(self.view.mas_left).offset(110);
+    }];
+    
+
+    
+    self.girlHeadImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"headportrait_girl_160"]];
+    self.girlHeadImageView.userInteractionEnabled = YES;
+    [self addSingleTapGestureToImageView:self.girlHeadImageView withTarget:self andAction:@selector(relationImageViewClick:)];
+    [self.view addSubview:self.girlHeadImageView];
+    [self.girlHeadImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.view.mas_top).offset(60);
+        make.right.equalTo(self.view.mas_right).offset(-60);
+    }];
+    
+    self.selectGirlImageview = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ico_pitchon"]];
+    self.selectGirlImageview.hidden = YES;
+    [self.view addSubview:self.selectGirlImageview];
+    [self.selectGirlImageview mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.view.mas_top).offset(50);
+        make.right.equalTo(self.view.mas_right).offset(-55);
+    }];
+}
+
+- (void)setupInputNameTextField {
+    self.nameLabel = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 80, 44)];
     self.nameLabel.font = [UIFont systemFontOfSize:EH_siz3];
     self.nameLabel.textColor = EH_cor3;
     self.nameLabel.text = @"宝贝姓名";
@@ -51,39 +137,82 @@
     self.nameLabel.rightViewMode = UITextFieldViewModeAlways;
     self.nameLabel.userInteractionEnabled = NO;
     
-    self.inputNameTextField.font = [UIFont systemFontOfSize:EH_siz3];
-    self.inputNameTextField.textColor = EH_cor6;
+    self.inputNameTextField = [[KSInsetsTextField alloc] init];
+    self.inputNameTextField.textEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 10);
+    self.inputNameTextField.rightViewEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 10);
+    self.inputNameTextField.borderStyle = UITextBorderStyleRoundedRect;
+    self.inputNameTextField.font = [UIFont systemFontOfSize:EHSiz2];
+    self.inputNameTextField.textColor = EHCor3;
+    self.inputNameTextField.textAlignment = NSTextAlignmentRight;
     self.inputNameTextField.placeholder = @"请输入";
+    self.inputNameTextField.leftView = self.nameLabel;
+    self.inputNameTextField.leftViewMode = UITextFieldViewModeAlways;
+    self.inputNameTextField.rightView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"public_arrow_list"]];
+    self.inputNameTextField.rightViewMode = UITextFieldViewModeAlways;
+
     
+    [self.view addSubview:self.inputNameTextField];
     
+    [self.inputNameTextField mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.view.mas_centerX);
+        make.top.equalTo(self.boyHeadImageView.mas_bottom).offset(25);
+        make.left.equalTo(self.view.mas_left).offset(12);
+        make.right.equalTo(self.view.mas_right).offset(-12);
+        make.height.equalTo(@44);
+    }];
+}
+
+- (void)setupRelationTextField
+{
+
+    self.relationLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 150, 44)];
     self.relationLabel.font = [UIFont systemFontOfSize:EH_siz3];
     self.relationLabel.textColor = EH_cor3;
     self.relationLabel.text = @"您与宝贝的关系";
-    
-    self.selectRelationLabel.font = [UIFont systemFontOfSize:EH_siz3];
-    self.selectRelationLabel.textColor = RGB(0xC9, 0xC9, 0xC9);
-    self.selectRelationLabel.text = @"家人";
 
+
+    
+    
+    self.relationTextField = [[KSInsetsTextField alloc] init];
+    self.relationTextField.textEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 10);
+    self.relationTextField.rightViewEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 10);
+    self.relationTextField.borderStyle = UITextBorderStyleRoundedRect;
+    self.relationTextField.font = [UIFont systemFontOfSize:EHSiz2];
+    self.relationTextField.textColor = EHCor3;
+    self.relationTextField.textAlignment = NSTextAlignmentRight;
+    self.relationTextField.placeholder = @"请选择";
+    self.relationTextField.leftView = self.relationLabel;
+    self.relationTextField.leftViewMode = UITextFieldViewModeAlways;
+    self.relationTextField.rightView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"public_arrow_list"]];
+    self.relationTextField.rightViewMode = UITextFieldViewModeAlways;
+    self.relationTextField.userInteractionEnabled = NO;
+    
+    [self.view addSubview:self.relationTextField];
+    
+    [self.relationTextField mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.view.mas_centerX);
+        make.top.equalTo(self.inputNameTextField.mas_bottom).offset(10);
+        make.left.equalTo(self.view.mas_left).offset(12);
+        make.right.equalTo(self.view.mas_right).offset(-12);
+        make.height.equalTo(@44);
+    }];
+    
+    self.selectRelationLabel = [[UILabel alloc] init];
+    self.selectRelationLabel.backgroundColor = [UIColor clearColor];
+    self.selectRelationLabel.text = @"";
+    [self.view addSubview:self.selectRelationLabel];
+    [self.selectRelationLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.relationTextField);
+    }];
+    
+
+    
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(selectRelationTapped:)];
     [self.selectRelationLabel addGestureRecognizer:tapGesture];
     self.selectRelationLabel.userInteractionEnabled = YES;
     
-
-    self.selectBoyImageview.hidden = NO;
-    self.boyHeadImageView.userInteractionEnabled = YES;
-    [self addSingleTapGestureToImageView:self.boyHeadImageView withTarget:self andAction:@selector(relationImageViewClick:)];
     
-    self.selectGirlImageview.hidden = YES;
-    self.girlHeadImageView.userInteractionEnabled = YES;
-    [self addSingleTapGestureToImageView:self.girlHeadImageView withTarget:self andAction:@selector(relationImageViewClick:)];
-    
-    UIBarButtonItem* commitBtn = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStylePlain target:self action:@selector(commitBabyInfo:)];
-    self.navigationItem.rightBarButtonItem = commitBtn;
-
 }
-
-
-
 
 - (IBAction)commitBabyInfo:(id)sender
 {
@@ -108,7 +237,7 @@
     
     EHSelectRelationToBabyViewController* selectRelationVC = [[EHSelectRelationToBabyViewController alloc] init];
     selectRelationVC.selectedRelationdelegate = self;
-    selectRelationVC.currentRelation = self.selectRelationLabel.text;
+    selectRelationVC.currentRelation = [EHUtils isEmptyString:self.relationTextField.text] ? @"家人" : self.relationTextField.text ;
     [self.navigationController pushViewController:selectRelationVC animated:YES];
 }
 
@@ -116,7 +245,7 @@
 #pragma mark - EHSelectRelationProtocol
 - (void)selectedRelation:(NSString*)selected
 {
-    self.selectRelationLabel.text = selected;
+    self.relationTextField.text = selected;
 }
 
 

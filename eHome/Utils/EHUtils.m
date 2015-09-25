@@ -196,7 +196,7 @@
     return currentPreviousCachedImage ? currentPreviousCachedImage : defaultHeadImage;
 }
 
-//根据2进制数据获取一星期中被选择了哪些天。e.g. - weekBinaryStr:@"1111001" return:"周一-周四 周日"
+//根据2进制数据获取一星期中被选择了哪些天。e.g. - weekBinaryStr:@"1111111" return:"周日至周周六"。注意：这里是从周日开始为第一天。
 + (NSString *)getWeekSelectedDaysStr:(NSString *)weekBinaryStr {
     
     NSMutableString *resultStr = [[NSMutableString alloc]init];
@@ -207,62 +207,19 @@
         NSLog(@"timeStr length error!");
         return weekBinaryStr;
     }
+    //这里先将第一天的周日移到最后方便处理
+    NSString *weekStr = [NSString stringWithFormat:@"%@%@",[weekBinaryStr substringFromIndex:1],[weekBinaryStr substringToIndex:1]];
     
     for (NSInteger i = 0; i < num; i++) {
         
         NSRange iRange = NSMakeRange(i, 1);
-        NSString *iStr = [weekBinaryStr substringWithRange:iRange];
+        NSString *iStr = [weekStr substringWithRange:iRange];
 
         //如果当天被选择，则加入当天，并往后遍历检测连续重复的个数再做处理
         if ([iStr isEqualToString:@"1"]) {
             
-            [resultStr appendString:[resultStr isEqualToString:@""]?@"":@"  "];
-            NSLog(@"11 resultStr.length=%ld",resultStr.length);
+            [resultStr appendString:[resultStr isEqualToString:@""]?@"":@" "];
             [resultStr appendString:weekStrArr[i]];
-
-            for (NSInteger j = (i + 1); j < num; j++) {
-                NSRange jRange = NSMakeRange(j, 1);
-                NSString *jStr = [weekBinaryStr substringWithRange:jRange];
-                
-                //工作日判断
-                if ((i == 0) && (j == (num - 2))) {
-                    resultStr = [NSMutableString stringWithString:@"工作日"];
-                    i = j-1;
-                    break;
-                }
-                
-                //直到遇到一个不为1的位置
-                if (![jStr isEqualToString:@"1"]) {
-                    //若只有连续2个为1，则往后加
-                    if ((j - i) == 2) {
-                        [resultStr appendString:@"  "];
-                        [resultStr appendString:weekStrArr[j-1]];
-                    }
-                    //若3个或3个以上为1，则进行缩略
-                    if ((j - i) > 2) {
-                        [resultStr appendString:@"-"];
-                        [resultStr appendString:weekStrArr[j-1]];
-                    }
-                    i = j;
-                    break;
-                }
-                //或者是最后一个位置为1
-                else if (j == (num - 1)) {
-                    //若只有连续2个为1，则往后加
-                    if ((j- i) == 1) {
-                        [resultStr appendString:@"  "];
-                        [resultStr appendString:weekStrArr[j]];
-                    }
-                    //若3个或3个以上为1，则进行缩略
-                    if ((j - i) > 1) {
-                        [resultStr appendString:@"-"];
-                        [resultStr appendString:weekStrArr[j]];
-                    }
-                    i = j;
-                    break;
-                    
-                }
-            }
         }
     }
     return (NSString *)resultStr;

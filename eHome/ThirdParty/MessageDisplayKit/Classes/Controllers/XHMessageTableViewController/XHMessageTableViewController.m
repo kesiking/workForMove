@@ -360,7 +360,7 @@ static CGPoint  delayOffset = {0.0};
 
 - (XHVoiceRecordHUD *)voiceRecordHUD {
     if (!_voiceRecordHUD) {
-        _voiceRecordHUD = [[XHVoiceRecordHUD alloc] initWithFrame:CGRectMake(0, 0, 140, 140)];
+        _voiceRecordHUD = [[XHVoiceRecordHUD alloc] initWithFrame:CGRectMake(0, 0, 140, 185)];
     }
     return _voiceRecordHUD;
 }
@@ -718,7 +718,7 @@ static CGPoint  delayOffset = {0.0};
 #pragma mark - RecorderPath Helper Method
 
 - (NSString *)getRecorderPath {
-    return [XHVoiceRecordHelper getRecorderPath];
+    return [XHVoiceRecordHelper getRecorderPathofType:@"wav"];
 }
 
 #pragma mark - UITextView Helper Method

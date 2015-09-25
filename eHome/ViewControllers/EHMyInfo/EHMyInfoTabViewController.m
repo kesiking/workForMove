@@ -31,6 +31,7 @@
 #import "EHBabyIdentityViewController.h"
 #import "EHBabyLocationModeViewController.h"
 #import "EHGeofenceListViewController.h"
+#import "EHBabyDetailTableViewCell.h"
 
 
 #define kTopViewHeight  250
@@ -207,6 +208,10 @@ typedef NS_ENUM(NSInteger, EHCollentionItemType) {
     }
 }
 
+
+static BOOL kEHBabyDetailTableViewCellRegistered = NO;
+static NSString * kEHBabyDetailTableViewCellId = @"kEHBabyDetailTableViewCellId";
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     static NSString *cellID = @"cellID";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
@@ -217,7 +222,7 @@ typedef NS_ENUM(NSInteger, EHCollentionItemType) {
     {
         if (indexPath.section == 0) {
             cell.textLabel.text = @"添加宝贝";
-            cell.imageView.image = [UIImage imageNamed:@"ico_add"];
+            cell.imageView.image = [UIImage imageNamed:@"icon_my_add01"];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
         else
@@ -231,6 +236,7 @@ typedef NS_ENUM(NSInteger, EHCollentionItemType) {
             else {
                 dic = _appSettingConfigList[2+indexPath.row];
             }
+            
             cell.textLabel.text = [dic objectForKey:@"name"];
             cell.imageView.image = [UIImage imageNamed:[dic objectForKey:@"image"]];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -239,16 +245,28 @@ typedef NS_ENUM(NSInteger, EHCollentionItemType) {
     else
     {
         if (indexPath.section == 0) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"babyDetailCellId"];
-            
-            cell.textLabel.text = _currentSelectBaby.babyNickName;
-            cell.detailTextLabel.text = @"宝贝详情";
             NSString* defaultImageStr = @"headportrait_boy_160";
             if ([EHUtils isGirl:_currentSelectBaby.babySex]) {
                 defaultImageStr = @"headportrait_girl_160";
             }
-            [cell.imageView sd_setImageWithURL:[NSURL URLWithString:_currentSelectBaby.babyHeadImage] placeholderImage:[EHUtils getBabyHeadPlaceHolderImage:_currentSelectBaby.babyId newPlaceHolderImagePath:_currentSelectBaby.babyHeadImage defaultHeadImage:[UIImage imageNamed:defaultImageStr]]];
+            
+            if(!kEHBabyDetailTableViewCellRegistered){
+                UINib *nib=[UINib nibWithNibName:@"EHBabyDetailTableViewCell" bundle:nil];
+                kEHBabyDetailTableViewCellRegistered=YES;
+                [tableView registerNib:nib forCellReuseIdentifier:kEHBabyDetailTableViewCellId];
+            }
+            
+            EHBabyDetailTableViewCell *cell =[tableView dequeueReusableCellWithIdentifier:kEHBabyDetailTableViewCellId ];
+            if (!cell) {
+                cell = [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass([EHBabyDetailTableViewCell class]) owner:self options:nil] firstObject];
+            }
+            
+            [cell.babyHeadImageView sd_setImageWithURL:[NSURL URLWithString:_currentSelectBaby.babyHeadImage] placeholderImage:[EHUtils getBabyHeadPlaceHolderImage:_currentSelectBaby.babyId newPlaceHolderImagePath:_currentSelectBaby.babyHeadImage defaultHeadImage:[UIImage imageNamed:defaultImageStr]]];
+            
+            cell.babyNameLabel.text = _currentSelectBaby.babyNickName;;
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            return cell;
+            
         }
         else if (indexPath.section == 1)
         {
@@ -279,6 +297,8 @@ typedef NS_ENUM(NSInteger, EHCollentionItemType) {
                 dic = _appSettingConfigList[2+indexPath.row];
             }
             cell.textLabel.text = [dic objectForKey:@"name"];
+            cell.textLabel.textColor = EHCor5;
+            cell.textLabel.font = EHFont2;
             cell.imageView.image = [UIImage imageNamed:[dic objectForKey:@"image"]];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
@@ -295,7 +315,7 @@ typedef NS_ENUM(NSInteger, EHCollentionItemType) {
     if (_currentSelectBaby)
     {
         if (indexPath.section == 0) {
-            EHBabyUserDetailViewController* babyUserDetailVC = [[EHBabyUserDetailViewController alloc] initWithNibName:NSStringFromClass([EHBabyUserDetailViewController class]) bundle:[NSBundle mainBundle]];
+            EHBabyUserDetailViewController* babyUserDetailVC = [[EHBabyUserDetailViewController alloc] init];
             babyUserDetailVC.babyUser = _currentSelectBaby;
             babyUserDetailVC.name=babyUserDetailVC.babyUser.babyName;
             [self.navigationController pushViewController:babyUserDetailVC animated:YES];
@@ -325,7 +345,7 @@ typedef NS_ENUM(NSInteger, EHCollentionItemType) {
     else
     {
         if (indexPath.section == 0) {
-            EHBindDeviceViewController * bindVC = [[EHBindDeviceViewController alloc] initWithNibName:NSStringFromClass([EHBindDeviceViewController class]) bundle:[NSBundle mainBundle]];
+            EHBindDeviceViewController * bindVC = [[EHBindDeviceViewController alloc] init];
             [self.navigationController pushViewController:bindVC animated:YES];
             
         }
@@ -360,7 +380,7 @@ typedef NS_ENUM(NSInteger, EHCollentionItemType) {
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == 0) {
-        return 90;
+        return 80;
     }
     
     if (_currentSelectBaby && indexPath.section == 1)

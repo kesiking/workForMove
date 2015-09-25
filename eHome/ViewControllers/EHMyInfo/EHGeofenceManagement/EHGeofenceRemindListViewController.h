@@ -12,9 +12,15 @@
 #import "EHGeofenceRemindAddViewController.h"
 #import "EHGeofenceRemindEditViewController.h"
 
+typedef NS_ENUM(NSInteger, EHRemindListStatusType) {
+    EHRemindListStatusTypeAdd = 0,
+    EHRemindListStatusTypeUpdate,
+    EHRemindListStatusTypeDelete,
+};
+
 @interface EHGeofenceRemindListViewController : KSViewController
 
-@property (nonatomic, assign)NSNumber            *geofence_id;
+@property (nonatomic, strong)NSNumber            *geofence_id;
 
 @property (nonatomic, strong)EHGetBabyListRsp    *babyUser;
 

@@ -24,7 +24,7 @@
 @property(strong,nonatomic)UIView* calendarView;
 @property(strong,nonatomic)UIView* bgView;
 @property(strong,nonatomic)CalendarViewController *calendarVC;
-
+@property(assign,nonatomic) BOOL show;
 
 
 @end
@@ -50,6 +50,7 @@
 }
 -(void)showDatePickerSelectViewWithDate:(NSDate*)date andTitle:(NSString *)selectTitle{
     
+    
     if (date == nil) {
         date = [NSDate date];
     }
@@ -73,47 +74,57 @@
         [format setDateFormat:@"yyyy-MM-dd"];
         NSDate *sdate=[format dateFromString:showSelectedDate];
         
+        strongSelf.calendarVC.selectedDate = sdate;
+        
         if (strongSelf.datePickerSelectControlBlock) {
             strongSelf.datePickerSelectControlBlock(strongSelf, sdate);
             [_bgView removeFromSuperview];
             [_calendarView removeFromSuperview];
         }
+        self.show = NO;
 
         
     }];
     
-    UIWindow* window = [[UIApplication sharedApplication] keyWindow];
-
-    if (!_bgView) {
-        _bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, window.bounds.size.width, window.bounds.size.height)];
-    }
-    
-    _bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0];
-    if (!_calendarView) {
-        _calendarView = [[UIView alloc] initWithFrame:CGRectMake(0,0,window.bounds.size.width, 374.5*SCREEN_SCALE+16.5*SCREEN_SCALE)];
-    }
-   
-    _calendarView.backgroundColor = [UIColor whiteColor];
-    [_calendarVC.view setFrame:CGRectMake(0, 0, popViewController.view.width, 374.5*SCREEN_SCALE)];
-    UIView *canldara = _calendarVC.view;
-  
-    [self.calendarView addSubview:canldara];
-    
-    
-    _calendarView.alpha = 0;
-    [popViewController.view addSubview:_bgView];
-    [popViewController.view addSubview:_calendarView];
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(atap)];
-    [_bgView addGestureRecognizer:tap];
-    
-    CGRect rect = self.calendarView.frame;
-    rect.origin.y = 0;
-    [UIView animateKeyframesWithDuration:0.3 delay:0 options:UIViewKeyframeAnimationOptionLayoutSubviews animations:^{
-        [self.calendarView setFrame:rect];
-        self.calendarView.alpha = (NSUInteger)(1);
-        _bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0.6];
+    if (!self.show) {
+        UIWindow* window = [[UIApplication sharedApplication] keyWindow];
         
-    } completion:nil];
+        if (!_bgView) {
+            _bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, window.bounds.size.width, window.bounds.size.height)];
+        }
+        
+        _bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0];
+        if (!_calendarView) {
+            _calendarView = [[UIView alloc] initWithFrame:CGRectMake(0,0,window.bounds.size.width, 374.5*SCREEN_SCALE+16.5*SCREEN_SCALE)];
+        }
+        
+        _calendarView.backgroundColor = [UIColor whiteColor];
+        [_calendarVC.view setFrame:CGRectMake(0, 0, popViewController.view.width, 374.5*SCREEN_SCALE)];
+        UIView *canldara = _calendarVC.view;
+        
+        [self.calendarView addSubview:canldara];
+        
+        
+        _calendarView.alpha = 0;
+        [popViewController.view addSubview:_bgView];
+        [popViewController.view addSubview:_calendarView];
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(atap)];
+        [_bgView addGestureRecognizer:tap];
+        
+        CGRect rect = self.calendarView.frame;
+        rect.origin.y = 0;
+        [UIView animateKeyframesWithDuration:0.3 delay:0 options:UIViewKeyframeAnimationOptionLayoutSubviews animations:^{
+            [self.calendarView setFrame:rect];
+            self.calendarView.alpha = (NSUInteger)(1);
+            _bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0.6];
+            
+        } completion:nil];
+        self.show = YES;
+    }else{
+        [self ahide];
+        
+    }
+  
     
 }
 
@@ -126,6 +137,7 @@
 }
 
 - (void)ahide{
+    self.show = NO;
     [UIView animateWithDuration:0.3 animations:^{
         _bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0];
         _calendarView.layer.transform = CATransform3DMakeTranslation(0, -CGRectGetHeight(_calendarView.frame), 0);

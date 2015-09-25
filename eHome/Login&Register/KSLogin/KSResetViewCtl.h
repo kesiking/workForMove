@@ -24,6 +24,7 @@ typedef void (^doResetPwdDoneBlock)     (KSResetViewCtl* resetViewCtl);
 
 @property (nonatomic, strong) WeAppBasicFieldView       *text_phoneNum;
 @property (nonatomic, strong) UIButton                  *btn_nextStep;
+@property (nonatomic, strong) UIButton                  *btn_finish;
 
 @property (nonatomic, copy) doNextStepBlock           nextStepBlock;
 @property (nonatomic, copy) doResetPwdDoneBlock       resetPwdDoneBlock;

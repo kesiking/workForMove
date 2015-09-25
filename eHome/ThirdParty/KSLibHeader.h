@@ -31,6 +31,7 @@
 #import "WeAppToast.h"
 #import "DateTools.h"
 #import "MPNotificationView.h"
+#import "VoiceConverter.h"
 
 #define WEAKSELF typeof(self) __weak __block weakSelf = self;
 #define STRONGSELF typeof(self) __strong strongSelf = weakSelf;

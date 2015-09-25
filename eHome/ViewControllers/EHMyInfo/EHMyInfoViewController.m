@@ -26,7 +26,7 @@
 
 @implementation EHMyInfoViewController
 {
-    UITableView *_tableView;
+    GroupedTableView *_tableView;
     UIImageView *_headImageView;
     EHUploadUserPicService *_uploadHeadImageService;
     EHModifyUserPicService *_modifyUserPicService;
@@ -37,7 +37,7 @@
     [super viewDidLoad];
     self.title = @"我的信息";
     
-    [self.view addSubview:[self tableView]];
+    [self initTableView];
     [self.view addSubview:[self logOutButton]];
     _headImageView = [self headImageView];
     _loadingHud = [[EHLoadingHud alloc]init];
@@ -71,7 +71,11 @@
         [KSAuthenticationCenter logoutWithCompleteBolck:^{
             NSMutableDictionary* params = [NSMutableDictionary dictionary];
             [params setObject:@YES forKey:kEHOMETabHomeNeedLogin];
-            TBOpenURLFromSourceAndParams(tabbarURL(kEHOMETabHome), strongSelf, params);
+            NSDictionary* queryParams = nil;
+            if (IOS_VERSION < 8.0) {
+                queryParams = @{ACTION_ANIMATION_KEY:@(false)};
+            }
+            TBOpenURLFromTargetWithNativeParams(tabbarURL(kEHOMETabHome), strongSelf,queryParams, params);
         }];
     }];
     
@@ -216,17 +220,25 @@
 }
 
 #pragma mark - Getters And Setters
-- (UITableView *)tableView{
-    _tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame)) style:UITableViewStyleGrouped];
+- (void)initTableView{
+    _tableView = [[GroupedTableView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame)) style:UITableViewStyleGrouped];
     _tableView.rowHeight = kCellHeight;
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    return _tableView;
+    self.view.backgroundColor = _tableView.backgroundColor;
+    [self.view addSubview:_tableView];
+    
+    [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.view).with.insets(UIEdgeInsetsMake(0, 10, 0, 10));
+    }];
+    
+    return;
 }
+
 
 - (UIImageView *)headImageView{
     if (!_headImageView) {
-        _headImageView = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetWidth(_tableView.frame)-65, 10, 30, 30)];
+        _headImageView = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetWidth(_tableView.frame)-75, 10, 30, 30)];
         _headImageView.layer.masksToBounds = YES;
         _headImageView.layer.cornerRadius = CGRectGetWidth(_headImageView.frame) / 2.0;
         NSURL *imageUrl = [NSURL URLWithString:[KSLoginComponentItem sharedInstance].user_head_img];

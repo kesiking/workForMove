@@ -27,7 +27,7 @@
     
     if ([EHUtils isAuthority:self.authory])
     {
-        self.title = @"修改名字";
+        self.title = @"修改宝贝名字";
     }
     else
     {
@@ -43,12 +43,13 @@
     self.babyNameTextField.background = [UIImage imageNamed:@"public_input_670_press"];
     self.babyNameTextField.text = self.babyName;
     self.babyNameTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
-    
+    self.babyNameTextField.borderStyle = UITextBorderStyleRoundedRect;
     
     [self.view addSubview:self.babyNameTextField];
  
     
     UIBarButtonItem* submitBtn = [[UIBarButtonItem alloc] initWithTitle:@"确认" style:UIBarButtonItemStylePlain target:self action:@selector(doSubmit:)];
+    submitBtn.tintColor = EHCor6;
     self.navigationItem.rightBarButtonItem = submitBtn;
     
 }

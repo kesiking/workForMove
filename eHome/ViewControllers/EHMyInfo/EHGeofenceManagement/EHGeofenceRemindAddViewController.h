@@ -10,9 +10,8 @@
 
 typedef void(^RemindNeedAdd)(EHGeofenceRemindModel *remindModel);
 
-
 @interface EHGeofenceRemindAddViewController : EHBaseGeofenceRemindViewController
 
-@property (nonatomic, strong)RemindNeedAdd remindNeedAdd;           //由围栏添加状态进来时需要保存每次新设置的围栏再统一添加
+@property (nonatomic, strong)RemindNeedAdd remindNeedAdd;
 
 @end

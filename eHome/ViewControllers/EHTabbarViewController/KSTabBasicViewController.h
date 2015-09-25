@@ -42,6 +42,8 @@
 
 -(void)setBabyHorizontalListViewShow:(BOOL)show;
 
+-(BOOL)needSetupBabyData;
+
 -(BOOL)checkLogin;
 
 -(void)alertCheckLoginWithCompleteBlock:(dispatch_block_t)completeBlock;

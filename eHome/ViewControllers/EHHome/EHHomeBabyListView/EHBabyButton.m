@@ -47,9 +47,10 @@
     if (imageUrl == nil) {
         return;
     }
-    if ([KSAuthenticationCenter isTestAccount]) {
+    /*if ([KSAuthenticationCenter isTestAccount]) {
         [_babyImageView setImage:[UIImage imageNamed:@"public_headportrait_map_dorpdown_boy_80"]];
-    }else{
+    }else*/
+    {
         if (isBoy == EHBabySexType_girl) {
             [_babyImageView sd_setImageWithURL:[NSURL URLWithString:imageUrl] placeholderImage:[EHUtils getBabyHeadPlaceHolderImage:[(EHGetBabyListRsp*)self.babyItem babyId] newPlaceHolderImagePath:imageUrl defaultHeadImage:[UIImage imageNamed:@"public_headportrait_map_dorpdown_girl_80"]]];
         }else{

@@ -9,6 +9,11 @@
 #import "WeAppComponentBaseItem.h"
 #import "XHBabyChatMessage.h"
 
+#define SEND_MESSAGE_FROM_APP_USER   @"0"
+#define SEND_MESSAGE_FROM_BABY_WATCH @"1"
+#define CONTEXT_TYPE_TEXT            @"0"
+#define CONTEXT_TYPE_VOICE           @"1"
+
 @class EHChatMessageBabyInfoModel;
 @class EHChatMessageUserPhoneInfoModel;
 
@@ -26,7 +31,7 @@
 @property(nonatomic,strong) NSString *user_nick_name;
 
 // for app native
-@property(nonatomic,assign) NSInteger  msgId;
+@property(nonatomic,assign) NSInteger msgId;
 
 @property(nonatomic,assign) NSUInteger msgTimestamp;
 
@@ -39,6 +44,8 @@
 + (EHChatMessageinfoModel *)makeMessage:(XHBabyChatMessage *)babyChatMessage;
 
 - (XHBabyChatMessage*)getBabyChatMessageWithMessageModel:(EHChatMessageinfoModel*)message;
+
+- (void)updateMessgeWithChatMessageinfoModel:(EHChatMessageinfoModel *)chatMessageinfoModel;
 
 @end
 

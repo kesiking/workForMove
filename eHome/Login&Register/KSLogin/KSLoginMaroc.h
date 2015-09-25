@@ -15,7 +15,7 @@
 #define kLoginSuccessBlock @"loginSuccessBlock"
 #define kLoginCancelBlock  @"loginCancelBlock"
 
-#define kSpaceX (15.0)
+#define kSpaceX (25.0)
 
 #define UserInfo @"userInfo"   //登录用户信息
 #define USERID   @"userId"   //登录用户id

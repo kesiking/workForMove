@@ -32,7 +32,8 @@
 #import "EHBabyAlarmViewController.h"
 
 
-@interface EHBabyUserDetailViewController ()<UITabBarControllerDelegate, UITableViewDataSource, UIPickerViewDataSource, UIPickerViewDelegate>
+
+@interface EHBabyUserDetailViewController ()<UITabBarControllerDelegate, UITableViewDataSource, UITableViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate>
 {
     EHLoadingHud *_loadingHud;
     EHUploadUserPicService *_uploadHeadImageService;
@@ -44,7 +45,7 @@
     
 }
 
-@property (weak, nonatomic) IBOutlet UITableView *babyDetailTableView;
+@property (strong, nonatomic) GroupedTableView *babyDetailTableView;
 @property (strong, nonatomic) UIView* imagePreview;
 
 @property (nonatomic, strong)NSArray* geofenceList;
@@ -57,6 +58,14 @@
 @end
 
 @implementation EHBabyUserDetailViewController
+
+-(id)initWithNavigatorURL:(NSURL *)URL query:(NSDictionary *)query nativeParams:(NSDictionary *)nativeParams{
+    self = [super initWithNavigatorURL:URL query:query nativeParams:nativeParams];
+    if (self) {
+        self.babyUser = [nativeParams objectForKey:@"babyUser"];
+    }
+    return self;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -74,9 +83,11 @@
 //    UIBarButtonItem* moreBtn = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"public_ico_tbar_more"] style:UIBarButtonItemStylePlain target:self action:@selector(moreBtnTapped:)];
 //    self.navigationItem.rightBarButtonItem = moreBtn;
     
+    [self initBabyDetailTableView];
+
     _loadingHud = [[EHLoadingHud alloc] init];
-    [self getGeofenceList];
-    [self getBabyAttentionUsers];
+//    [self getGeofenceList];
+//    [self getBabyAttentionUsers];
     //[self getBabyFamilyPhoneList];
 }
 
@@ -84,8 +95,33 @@
     [super viewWillAppear:animated];
 //    NSIndexPath* familyIndexPath = [NSIndexPath indexPathForRow:2 inSection:1];
 //    [self.babyDetailTableView reloadRowsAtIndexPaths:@[familyIndexPath] withRowAnimation:UITableViewRowAnimationNone];
-    [self getBabyFamilyPhoneList];
+//    [self getBabyFamilyPhoneList];
     
+}
+
+- (void)initBabyDetailTableView
+{
+    _babyDetailTableView = [[GroupedTableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+    _babyDetailTableView.delegate = self;
+    _babyDetailTableView.dataSource = self;
+    _babyDetailTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
+    self.view.backgroundColor = _babyDetailTableView.backgroundColor;
+    [self.view addSubview:_babyDetailTableView];
+    
+//    if ([_babyDetailTableView respondsToSelector:@selector(setSeparatorInset:)]) {
+//        
+//        [_babyDetailTableView setSeparatorInset:UIEdgeInsetsZero];
+//    }
+//    
+//    if ([_babyDetailTableView respondsToSelector:@selector(setLayoutMargins:)]) {
+//        
+//        [_babyDetailTableView setLayoutMargins:UIEdgeInsetsZero];
+//    }
+    
+    [_babyDetailTableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.view).with.insets(UIEdgeInsetsMake(0, 10, 0, 10));
+    }];
 }
 
 
@@ -110,23 +146,23 @@
     NSInteger rows = 0;
     switch (section) {
         case 0:
-            rows = 4;
+            rows = 3;
             break;
+//        case 1:
+//            if ([EHUtils isAuthority:self.babyUser.authority])
+//            {
+//                rows = 5;
+//            }
+//            else
+//            {
+//                rows = 1;
+//                
+//            }
+//            break;
         case 1:
-            if ([EHUtils isAuthority:self.babyUser.authority])
-            {
-                rows = 5;
-            }
-            else
-            {
-                rows = 1;
-                
-            }
+            rows = 4;
             break;
         case 2:
-            rows = 4;
-            break;
-        case 3:
             rows = 1;
             break;
         default:
@@ -158,7 +194,7 @@
                 }
                
                 
-                cell = [self createRightImageCellForTableview:tableView withText:@"头像" andImage:self.babyUser.babyHeadImage andDefaultHeadImage:[UIImage imageNamed:defaultHead]  andClickBlock:^(UIImageView* imageView){
+                cell = [self createRightImageCellForTableview:tableView withText:@"宝贝头像" andImage:self.babyUser.babyHeadImage andDefaultHeadImage:[UIImage imageNamed:defaultHead]  andClickBlock:^(UIImageView* imageView){
                     [self showImagePreview:imageView];
                     
                 }];
@@ -173,13 +209,13 @@
 
             case 1:
                 if ([EHUtils isAuthority:self.babyUser.authority]) {
-                    cell.textLabel.text = @"名字";
+                    cell.textLabel.text = @"宝贝名字";
                     
                     cell.detailTextLabel.text = self.babyUser.babyName;
                 }
                 else
                 {
-                    cell.textLabel.text = @"昵称";
+                    cell.textLabel.text = @"宝贝昵称";
                     
                     cell.detailTextLabel.text = self.babyUser.babyNickName ? self.babyUser.babyNickName : self.babyUser.babyName;
                 }
@@ -187,52 +223,52 @@
                 
                 break;
             case 2:
-                cell.textLabel.text = @"我和宝贝的关系";
+                cell.textLabel.text = @"我与宝贝的关系";
                 cell.detailTextLabel.text = self.babyUser.relationShip;
                 cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                 
                 break;
                 
-            case 3:
-            {
-                cell.textLabel.text = @"设备";
-                cell.detailTextLabel.text = @"";
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                break;
-            }
+//            case 3:
+//            {
+//                cell.textLabel.text = @"设备";
+//                cell.detailTextLabel.text = @"";
+//                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+//                break;
+//            }
             default:
                 break;
         }
     }
+//    else if (indexPath.section == 1){
+//        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+//        switch (indexPath.row) {
+//            case 0:
+//                cell.textLabel.text = @"围栏";
+//                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld个", self.geofenceList.count];
+//                break;
+//            case 1:
+//                cell.textLabel.text = @"定位模式";
+//                cell.detailTextLabel.text = [self getBabyLocationMode:self.babyUser.workMode];
+//                break;
+//            case 2:
+//                cell.textLabel.text = @"家庭";
+//                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld人", self.familyMemberList.count];
+//                break;
+//            case 3:
+//                cell.textLabel.text = @"电话";
+//                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld人", self.familyPhoneList.count];
+//                break;
+//            case 4:
+//                cell.textLabel.text = @"闹钟";
+//                cell.detailTextLabel.text = @"";
+//                
+//                break;
+//            default:
+//                break;
+//        }
+//    }
     else if (indexPath.section == 1){
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        switch (indexPath.row) {
-            case 0:
-                cell.textLabel.text = @"围栏";
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld个", self.geofenceList.count];
-                break;
-            case 1:
-                cell.textLabel.text = @"定位模式";
-                cell.detailTextLabel.text = [self getBabyLocationMode:self.babyUser.workMode];
-                break;
-            case 2:
-                cell.textLabel.text = @"家庭";
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld人", self.familyMemberList.count];
-                break;
-            case 3:
-                cell.textLabel.text = @"电话";
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld人", self.familyPhoneList.count];
-                break;
-            case 4:
-                cell.textLabel.text = @"闹钟";
-                cell.detailTextLabel.text = @"";
-                
-                break;
-            default:
-                break;
-        }
-    }
-    else if (indexPath.section == 2){
         if ([EHUtils isAuthority:self.babyUser.authority]) {
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
@@ -258,13 +294,13 @@
                 break;
         }
     }
-    else if (indexPath.section == 3)
+    else if (indexPath.section == 2)
     {
         UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"unbindBabyCellID"];
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.textLabel.text = @"移除宝贝";
-        cell.textLabel.textColor = EH_cor7;
-        cell.textLabel.font = EH_font2;
+        cell.textLabel.textColor = EHCor6;
+        cell.textLabel.font = EHFont2;
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
         return cell;
     }
@@ -273,51 +309,51 @@
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 4;
+    return 3;
 }
 
 
 
 #pragma mark - UITableViewDelegate
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    if (section == 2) {
-        return 30;
-    }
-    else if (section == 3)
-    {
-        return 50;
-    }
-    else return 0;
-}
+//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+//{
+//    if (section == 2) {
+//        return 30;
+//    }
+//    else if (section == 3)
+//    {
+//        return 50;
+//    }
+//    else return 0;
+//}
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return 49;
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    if (section == 2) {
-        UIView* customView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.frame), 30)];
-        
-        UILabel *headerLabel = [[UILabel alloc]initWithFrame:CGRectMake(20, 9, CGRectGetWidth(tableView.frame)-40, 12)];
-        headerLabel.textColor = EH_cor4;
-        headerLabel.font = EH_font7;
-        headerLabel.textAlignment = NSTextAlignmentLeft;
-        headerLabel.text = @"设置宝贝的成长信息有助于更加精确地检测宝贝的运动量";
-        
-        [customView addSubview:headerLabel];
-        return customView;
-    }
-    else if (section == 3)
-    {
-        return [[UILabel alloc] init];
-    }
-    else
-    {
-        return nil;
-    }
-}
+//- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+//    if (section == 2) {
+//        UIView* customView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.frame), 30)];
+//        
+//        UILabel *headerLabel = [[UILabel alloc]initWithFrame:CGRectMake(20, 9, CGRectGetWidth(tableView.frame)-40, 12)];
+//        headerLabel.textColor = EH_cor4;
+//        headerLabel.font = EH_font7;
+//        headerLabel.textAlignment = NSTextAlignmentLeft;
+//        headerLabel.text = @"设置宝贝的成长信息有助于更加精确地检测宝贝的运动量";
+//        
+//        [customView addSubview:headerLabel];
+//        return customView;
+//    }
+//    else if (section == 3)
+//    {
+//        return [[UILabel alloc] init];
+//    }
+//    else
+//    {
+//        return nil;
+//    }
+//}
 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -386,97 +422,97 @@
             }
 
                 break;
-            case 3:
-            {
-                EHBabyIdentityViewController* babyIdVC = [[EHBabyIdentityViewController alloc] initWithDeviceCode:self.babyUser.device_code];
-                
-                [self.navigationController pushViewController:babyIdVC animated:YES];
-            }
-                
-                break;
+//            case 3:
+//            {
+//                EHBabyIdentityViewController* babyIdVC = [[EHBabyIdentityViewController alloc] initWithDeviceCode:self.babyUser.device_code];
+//                
+//                [self.navigationController pushViewController:babyIdVC animated:YES];
+//            }
+//                
+//                break;
             default:
                 break;
         }
     }
     
-    else if (indexPath.section == 1){
-        switch (indexPath.row) {
-            case 0:
-            {
-                WEAKSELF
-                EHGeofenceListViewController *glvc = [[EHGeofenceListViewController alloc]init];
-                glvc.babyUser = self.babyUser;
-                glvc.geofenceListCountDidChanged = ^(NSArray *geofenceList){
-                    STRONGSELF
-                    strongSelf.geofenceList = geofenceList;
-                    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
-                    [strongSelf.babyDetailTableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-                };
-                EHLogInfo(@"self.babyUser.babyId = %@",self.babyUser.babyId);
-                [self.navigationController pushViewController:glvc animated:YES];
-            }
-                break;
-            case 1:
-            {
-                WEAKSELF
-                EHBabyLocationModeViewController *locationModeVC=[[EHBabyLocationModeViewController alloc] init];
-                locationModeVC.babyId=self.babyUser.babyId;
-                locationModeVC.locationMode=self.babyUser.workMode;
-                locationModeVC.modifyLocationModeSuccess = ^(NSString*locationMode){
-                    STRONGSELF
-                    self.babyUser.workMode=locationMode;
-                    [strongSelf.babyDetailTableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-                    
-                };
+//    else if (indexPath.section == 1){
+//        switch (indexPath.row) {
+//            case 0:
+//            {
+//                WEAKSELF
+//                EHGeofenceListViewController *glvc = [[EHGeofenceListViewController alloc]init];
+//                glvc.babyUser = self.babyUser;
+//                glvc.geofenceListCountDidChanged = ^(NSArray *geofenceList){
+//                    STRONGSELF
+//                    strongSelf.geofenceList = geofenceList;
+//                    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:1];
+//                    [strongSelf.babyDetailTableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+//                };
+//                EHLogInfo(@"self.babyUser.babyId = %@",self.babyUser.babyId);
+//                [self.navigationController pushViewController:glvc animated:YES];
+//            }
+//                break;
+//            case 1:
+//            {
+//                WEAKSELF
+//                EHBabyLocationModeViewController *locationModeVC=[[EHBabyLocationModeViewController alloc] init];
+//                locationModeVC.babyId=self.babyUser.babyId;
+//                locationModeVC.locationMode=self.babyUser.workMode;
+//                locationModeVC.modifyLocationModeSuccess = ^(NSString*locationMode){
+//                    STRONGSELF
+//                    self.babyUser.workMode=locationMode;
+//                    [strongSelf.babyDetailTableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+//                    
+//                };
+//
+//                [self.navigationController pushViewController:locationModeVC animated:YES];
+//
+//            }
+//                break;
+//            case 2:
+//            {
+//                EHFamilyMemberViewController *familyMemberVC=[[EHFamilyMemberViewController alloc] init];
+//                familyMemberVC.babyName = [EHUtils isEmptyString:self.babyUser.babyNickName] ? self.babyUser.babyName : self.babyUser.babyNickName;
+//                familyMemberVC.babyId = self.babyUser.babyId;
+//                familyMemberVC.authority = self.babyUser.authority;
+//                familyMemberVC.familyMemberDidChanged = ^(BOOL bChanged){
+//                    if (bChanged) {
+//                        [self getBabyAttentionUsers];
+//                    }
+//                };
+//                [self.navigationController pushViewController:familyMemberVC animated:YES];
+//
+//            }
+//                break;
+//            case 3:
+//            {
+//                EHFamilyNumbersViewController *familyNumVC=[[EHFamilyNumbersViewController alloc] init];
+//                familyNumVC.familyNumberList = [NSMutableArray arrayWithArray:self.familyPhoneList];
+//                familyNumVC.babyId = self.babyUser.babyId;
+//                [self.navigationController pushViewController:familyNumVC animated:YES];
+//                NSString* name = [EHUtils isEmptyString:self.babyUser.babyNickName] ? self.babyUser.babyName : self.babyUser.babyNickName;
+//                NSString *phoneListTitle = [NSString stringWithFormat:@"%@的亲情号码", name];
+//                
+//                familyNumVC.title=phoneListTitle;
+//                
+//            }
+//                break;
+//            case 4:
+//            {
+//                EHBabyAlarmViewController *alarmVC = [[EHBabyAlarmViewController alloc]init];
+//                //familyNumVC.familyNumberList = [NSMutableArray arrayWithArray:self.familyPhoneList];
+//                alarmVC.babyUser = self.babyUser;
+//                [self.navigationController pushViewController:alarmVC animated:YES];
+//                //NSString* name = [EHUtils isEmptyString:self.babyUser.babyNickName] ? self.babyUser.babyName : self.babyUser.babyNickName;
+//                
+//            }
+//                break;
+//            default:
+//                break;
+//        }
+//    }
 
-                [self.navigationController pushViewController:locationModeVC animated:YES];
-
-            }
-                break;
-            case 2:
-            {
-                EHFamilyMemberViewController *familyMemberVC=[[EHFamilyMemberViewController alloc] init];
-                familyMemberVC.babyName = [EHUtils isEmptyString:self.babyUser.babyNickName] ? self.babyUser.babyName : self.babyUser.babyNickName;
-                familyMemberVC.babyId = self.babyUser.babyId;
-                familyMemberVC.authority = self.babyUser.authority;
-                familyMemberVC.familyMemberDidChanged = ^(BOOL bChanged){
-                    if (bChanged) {
-                        [self getBabyAttentionUsers];
-                    }
-                };
-                [self.navigationController pushViewController:familyMemberVC animated:YES];
-
-            }
-                break;
-            case 3:
-            {
-                EHFamilyNumbersViewController *familyNumVC=[[EHFamilyNumbersViewController alloc] init];
-                familyNumVC.familyNumberList = [NSMutableArray arrayWithArray:self.familyPhoneList];
-                familyNumVC.babyId = self.babyUser.babyId;
-                [self.navigationController pushViewController:familyNumVC animated:YES];
-                NSString* name = [EHUtils isEmptyString:self.babyUser.babyNickName] ? self.babyUser.babyName : self.babyUser.babyNickName;
-                NSString *phoneListTitle = [NSString stringWithFormat:@"%@的亲情号码", name];
-                
-                familyNumVC.title=phoneListTitle;
-                
-            }
-                break;
-            case 4:
-            {
-                EHBabyAlarmViewController *alarmVC = [[EHBabyAlarmViewController alloc]init];
-                //familyNumVC.familyNumberList = [NSMutableArray arrayWithArray:self.familyPhoneList];
-                alarmVC.babyUser = self.babyUser;
-                [self.navigationController pushViewController:alarmVC animated:YES];
-                //NSString* name = [EHUtils isEmptyString:self.babyUser.babyNickName] ? self.babyUser.babyName : self.babyUser.babyNickName;
-                
-            }
-                break;
-            default:
-                break;
-        }
-    }
-
-    else if (indexPath.section == 2)
+    else if (indexPath.section == 1)
     {
         if ([EHUtils isAuthority:self.babyUser.authority] ) {
             switch (indexPath.row) {
@@ -499,13 +535,32 @@
         
     }
     
-    else if (indexPath.section == 3)
+    else if (indexPath.section == 2)
     {
         [self showUnBindBabyAlert];
     }
 
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
+
+//- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+//
+//{
+//    
+//    if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+//        
+//        [cell setSeparatorInset:UIEdgeInsetsZero];
+//        
+//    }
+//    
+//    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+//        
+//        [cell setLayoutMargins:UIEdgeInsetsZero];
+//        
+//    }
+//    
+//}
+
 
 #pragma mark - private Functions
 static BOOL kEHRightImageTableViewCellRegistered = NO;
@@ -898,7 +953,7 @@ static BOOL kEHRightImageTableViewCellRegistered = NO;
         strongSelf.babyUser.babyHeight = baby_height;
         strongSelf.babyUser.babyWeight = baby_weight;
         strongSelf.babyUser.babySex= babySex;
-        [strongSelf.babyDetailTableView reloadSections:[NSIndexSet indexSetWithIndex:2] withRowAnimation:UITableViewRowAnimationNone];
+        [strongSelf.babyDetailTableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationNone];
         
         
     };
@@ -965,8 +1020,8 @@ static BOOL kEHRightImageTableViewCellRegistered = NO;
         
     }];
     
-    unbindAction.titleColor = EH_cor7;
-    unbindAction.titleFont = EH_font2;
+    unbindAction.titleColor = EHCor6;
+    unbindAction.titleFont = EHFont2;
     
     
     RMAction *cancelAction = [RMAction actionWithTitle:@"取消" style:RMActionStyleCancel andHandler:^(RMActionController *controller) {

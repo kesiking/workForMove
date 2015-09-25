@@ -19,11 +19,12 @@
 {
     EHDeleteGeofenceRemindService *_deleteRemindService;
     EHUpdateGeofenceRemindService *_updateRemindService;
+    EHGeofenceRemindModel *_copyModel;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self.view addSubview:[self deleteRemindButton]];
+    _copyModel = [self.remindModel copy];
 }
 
 #pragma mark - Events Response
@@ -41,10 +42,6 @@
     [self configUpdateRemindService];
     [_updateRemindService UpdateGeofenceRemind:self.remindModel];
     [self showLoadingView];
-}
-
-- (void)deleteRemindButtonClick:(id)sender{
-    [self showdeleteRemindAlert];
 }
 
 - (void)showdeleteRemindAlert
@@ -93,18 +90,6 @@
     [self presentViewController:deleteRemindAlert animated:YES completion:nil];
 }
 
-- (UIButton *)deleteRemindButton{
-    UIButton *deleteRemindButton = [[UIButton alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(self.view.frame) - 50 - 20, CGRectGetWidth(self.view.frame), 50)];
-    deleteRemindButton.backgroundColor = [UIColor whiteColor];
-    [deleteRemindButton setTitle:@"删除该提醒" forState:UIControlStateNormal];
-    deleteRemindButton.titleLabel.font = EH_font2;
-    [deleteRemindButton setTitleColor:EH_cor7 forState:UIControlStateNormal];
-    [deleteRemindButton addTarget:self action:@selector(deleteRemindButtonClick:) forControlEvents:UIControlEventTouchUpInside];
-    deleteRemindButton.layer.borderWidth = 0.1;
-    deleteRemindButton.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    return deleteRemindButton;
-}
-
 - (void)configDeleteRemindService {
     if (!_deleteRemindService) {
         _deleteRemindService = [EHDeleteGeofenceRemindService new];
@@ -113,7 +98,12 @@
             STRONGSELF
             [strongSelf hideLoadingView];
             [WeAppToast toast:@"删除成功"];
+
             [strongSelf.navigationController popViewControllerAnimated:YES];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                !strongSelf.remindNeedDelete?:strongSelf.remindNeedDelete(strongSelf.remindModel);
+            });
+
         };
         _deleteRemindService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
             STRONGSELF
@@ -131,14 +121,27 @@
             STRONGSELF
             [strongSelf hideLoadingView];
             [WeAppToast toast:@"更新成功"];
+            !strongSelf.remindNeedUpdate?:strongSelf.remindNeedUpdate(strongSelf.remindModel);
+
             [strongSelf.navigationController popViewControllerAnimated:YES];
         };
         _updateRemindService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
             STRONGSELF
+            [strongSelf resetRemindModel];
             [strongSelf hideLoadingView];
             [WeAppToast toast:@"更新失败"];
         };
     }
+}
+
+- (void)resetRemindModel {
+    self.remindModel.geofence_id = _copyModel.geofence_id;
+    self.remindModel.geofence_baby_id = _copyModel.geofence_baby_id;
+    self.remindModel.time = _copyModel.time;
+    self.remindModel.work_date = _copyModel.work_date;
+    self.remindModel.is_active = _copyModel.is_active;
+    self.remindModel.is_repeat = _copyModel.is_repeat;
+    self.remindModel.uuid = _copyModel.uuid;
 }
 
 - (void)didReceiveMemoryWarning {

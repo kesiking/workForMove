@@ -7,22 +7,27 @@
 //
 
 #import "EHRemindDateTableViewCell.h"
+#import "NSString+StringSize.h"
 
-#define kBtnSpace 10
+#define kBtnSpace 11
+#define kSideSpace 12
+
 #define kSubViewTag   100
 
 @implementation EHRemindDateTableViewCell
 {
-    NSMutableString *_dateStr;
+    NSMutableString *_changedDateStr;
 }
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        _dateStr = [[NSMutableString alloc]initWithString:@"0000000"];
+        _changedDateStr = [[NSMutableString alloc]initWithString:@"0000000"];
         
         UILabel *dateLabel = [[UILabel alloc]initWithFrame:CGRectZero];
         dateLabel.tag = kSubViewTag;
+        dateLabel.font = EH_font2;
+        dateLabel.textColor = EHCor5;
         dateLabel.text = @"日期";
         dateLabel.textAlignment = NSTextAlignmentLeft;
         [self.contentView addSubview:dateLabel];
@@ -33,8 +38,12 @@
             UIButton *btn = [[UIButton alloc]initWithFrame:CGRectZero];
             btn.tag = kSubViewTag +i;
             [btn setTitle:dateArray[i - 1] forState:UIControlStateNormal];
+            btn.titleLabel.font = EH_font2;
             [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
             [btn setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
+            [btn setBackgroundImage:[UIImage imageNamed:@"bg_day_off"] forState:UIControlStateNormal];
+            [btn setBackgroundImage:[UIImage imageNamed:@"bg_day_on"] forState:UIControlStateSelected];
+
             [btn setBackgroundColor:[UIColor whiteColor]];
             btn.layer.borderWidth = 0.3;
             btn.layer.borderColor = [UIColor lightGrayColor].CGColor;
@@ -45,49 +54,43 @@
     return self;
 }
 
+//work_date格式为"1111111"，从周日开始到周六
 - (void)selectWorkDate:(NSString *)work_date {
-    _dateStr = [work_date mutableCopy];
+    //先将第一天的周日移到最后方便处理
+    NSString *changedWorkDate = [NSString stringWithFormat:@"%@%@",[work_date substringFromIndex:1],[work_date substringToIndex:1]];
+    _changedDateStr = [changedWorkDate mutableCopy];
+
     for (NSInteger i = 1; i < 8; i++) {
         NSRange range = NSMakeRange(i-1, 1);
-        BOOL selectedStatus = [[work_date substringWithRange:range] integerValue];
+        BOOL selectedStatus = [[changedWorkDate substringWithRange:range] integerValue];
         UIButton *btn = (UIButton *)[self.contentView viewWithTag:(kSubViewTag + i)];
         btn.selected = selectedStatus;
-        if (btn.selected) {
-            btn.backgroundColor = [UIColor blueColor];
-        }
-        else {
-            btn.backgroundColor = [UIColor whiteColor];
-        }
     }
 }
 
 - (void)btnClick:(id)sender {
     UIButton *btn = (UIButton *)sender;
     btn.selected = !btn.selected;
-    if (btn.selected) {
-        btn.backgroundColor = [UIColor blueColor];
-    }
-    else {
-        btn.backgroundColor = [UIColor whiteColor];
-    }
-    EHLogInfo(@"click - %ld",btn.tag - kSubViewTag);
+
     NSRange range = NSMakeRange(btn.tag - kSubViewTag - 1, 1);
-    [_dateStr replaceCharactersInRange:range withString:[@(btn.selected) stringValue]];
-    !self.dateBtnClickBlock?:self.dateBtnClickBlock((NSString *)_dateStr);
+    [_changedDateStr replaceCharactersInRange:range withString:[@(btn.selected) stringValue]];
+    NSString *dateStr = [NSString stringWithFormat:@"%@%@",[_changedDateStr substringFromIndex:6],[_changedDateStr substringToIndex:6]];
+    !self.dateBtnClickBlock?:self.dateBtnClickBlock((NSString *)dateStr);
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
     
+    CGFloat labelHeight = [@"text" sizeWithFontSize:EH_siz2 Width:CGRectGetWidth(self.frame)].height;
     UILabel *label = (UILabel *)[self.contentView viewWithTag:kSubViewTag];
-    label.frame = CGRectMake(kSpaceX, kSpaceX, 100, 20);
+    label.frame = CGRectMake(12, 15, CGRectGetWidth(self.frame), labelHeight);
     
     
-    CGFloat btnWidth = (CGRectGetWidth(self.frame) - kBtnSpace * 8) / 7;
-    CGFloat btnY = CGRectGetMaxY(label.frame) + (CGRectGetHeight(self.frame) - CGRectGetMaxY(label.frame) - btnWidth) / 2.0;
+    CGFloat btnWidth = (CGRectGetWidth(self.frame) - kBtnSpace * 6 - kSideSpace * 2) / 7;
+    CGFloat btnY = CGRectGetMaxY(label.frame) + 21;
     CGFloat btnX;
     for (NSInteger i = 1; i < 8; i++) {
-        btnX = kBtnSpace + (kBtnSpace + btnWidth) * (i - 1);
+        btnX = kSideSpace + (kBtnSpace + btnWidth) * (i - 1);
         UIButton *btn = (UIButton *)[self.contentView viewWithTag:(kSubViewTag + i)];
         btn.frame = CGRectMake(btnX, btnY, btnWidth, btnWidth);
         btn.layer.masksToBounds = YES;

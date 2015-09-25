@@ -62,6 +62,7 @@
     [self.view addSubview:self.healthScrollView];
     self.healthScrollView.delegate = self;
     self.healthScrollView.clipsToBounds = NO;
+    self.healthScrollView.bounces = NO;
     self.currentVC = self.dayVC;
 }
 
@@ -79,6 +80,7 @@
     CGRectMake(0.0, 0.0, CGRectGetWidth([UIScreen mainScreen].bounds),
                self.healthScrollView.frame.size.height);
     [self.healthScrollView addSubview:self.dayVC.view];
+
     
     self.weekVC.view.frame =
     CGRectMake(CGRectGetWidth([UIScreen mainScreen].bounds), 0.0,
@@ -304,16 +306,29 @@
         // sharedVC.sharedTargetSteps = self.targetSteps;
         //日期
         sharedVC.sharedDate = self.dayVC.dayVCmodel.date;
+        
+        NSString *yearString = [self.dayVC.dayVCmodel.date substringToIndex:4];
+        NSString *monthString = [self.dayVC.dayVCmodel.date substringWithRange:NSMakeRange(5, 2)];
+        NSString *dayString = [self.dayVC.dayVCmodel.date substringWithRange:NSMakeRange(8, 2)];
+        if ([monthString characterAtIndex:0]=='0') {
+            monthString =[monthString substringFromIndex:1];
+        }
+        if ([dayString characterAtIndex:0]=='0') {
+            dayString =[dayString substringFromIndex:1];
+        }
+        
+        sharedVC.sharedDate = [NSString stringWithFormat:@"%@年%@月%@日运动成绩",yearString,monthString,dayString];
+
         //大圆圈步数
         sharedVC.finishedSteps.text =
-        [NSString stringWithFormat:@"%ld步", (long)self.dayVC.dayVCmodel.steps];
+        [NSString stringWithFormat:@"%ld", (long)self.dayVC.dayVCmodel.steps];
         sharedVC.babyTargetSteps.text = [NSString stringWithFormat:@"目标：%ld步",self.dayVC.dayVCmodel.target_steps];
         //距离
         sharedVC.distanceDigitLabel.text =
         [NSString stringWithFormat:@"%.0f千米", self.dayVC.dayVCmodel.mileage];
         //热量
         sharedVC.energyDigitLabel.text = [NSString
-                                          stringWithFormat:@"%ld卡", (long)self.dayVC.dayVCmodel.calorie];
+                                          stringWithFormat:@"%ld千卡", (long)self.dayVC.dayVCmodel.calorie];
         //完成
         sharedVC.finishDigitRateLabel.text =
         [NSString stringWithFormat:@"%@%%", self.dayVC.dayVCmodel.percent];
@@ -322,11 +337,15 @@
         [NSString stringWithFormat:@"%@", self.dayVC.dayVCmodel.encourage];
         
     } else if (self.currentVC == _weekVC) {
+//        _weekVC.showSharePage = YES;
         //日期
-        sharedVC.sharedDate = self.weekVC.selectedWeek;
+//        sharedVC.sharedDate = self.weekVC.selectedWeek;
+        NSString *yearString =  _weekVC.healthyView.dateLabel.text;
+        sharedVC.sharedDate = [NSString stringWithFormat:@"%@%@运动成绩",yearString,self.weekVC.selectedWeek];
+       
         //大圆圈步数
         sharedVC.finishedSteps.text = [NSString
-                                       stringWithFormat:@"%ld步", (long)self.weekVC.weekVCmodel.steps];
+                                       stringWithFormat:@"%ld", (long)self.weekVC.weekVCmodel.steps];
         sharedVC.babyTargetSteps.text = [NSString stringWithFormat:@"目标：%ld步",self.weekVC.weekVCmodel.targetSteps];
         //距离
         sharedVC.distanceDigitLabel.text = [NSString
@@ -342,6 +361,7 @@
         [NSString stringWithFormat:@"%@", self.weekVC.weekVCmodel.encourage];
         
     }
+    sharedVC.modalPresentationStyle = UIModalPresentationOverFullScreen;
     [self presentViewController:sharedVC animated:YES completion:nil];
 }
 

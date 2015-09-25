@@ -19,6 +19,55 @@
     return self;
 }
 
+- (void)addObject:(id)anObject{
+    [super addObject:anObject];
+    self.insertDataList = @[anObject];
+    self.insertListType = KSInsertListTypeAfterPagelist;
+}
+
+- (void)addObjectsFromArray:(NSArray *)otherArray{
+    [super addObjectsFromArray:otherArray];
+    self.insertDataList = otherArray;
+    self.insertListType = KSInsertListTypeAfterPagelist;
+}
+
+- (void)removeAllObjects{
+    [super removeAllObjects];
+    self.deleteDataList = [self getItemList];
+}
+
+- (void)removeObject:(id)anObject{
+    [super removeObject:anObject];
+    self.deleteDataList = @[anObject];
+}
+
+- (void)insertObject:(id)anObject atIndex:(NSUInteger)index{
+    [super insertObject:anObject atIndex:index];
+    self.insertDataList = @[anObject];
+    if (index == 0) {
+        self.insertListType = KSInsertListTypeBeforPagelist;
+    }else if (index != [self count] - 1){
+        self.insertListType = KSInsertListTypeBetweenPagelist;
+    }else{
+        self.insertListType = KSInsertListTypeAfterPagelist;
+    }
+}
+
+- (void)insertObjects:(NSArray *)objects atIndexes:(NSIndexSet *)indexes{
+    [super insertObjects:objects atIndexes:indexes];
+    self.insertDataList = objects;
+    if (indexes == nil) {
+        return;
+    }
+    if ([indexes firstIndex] == 0) {
+        self.insertListType = KSInsertListTypeBeforPagelist;
+    }else if ([indexes lastIndex] != [self count] - 1){
+        self.insertListType = KSInsertListTypeBetweenPagelist;
+    }else{
+        self.insertListType = KSInsertListTypeAfterPagelist;
+    }
+}
+
 //根据object刷新pagelist数据
 -(void)refreshPageListWithObject:(id)object{
     if (object == nil || ![object isKindOfClass:[NSDictionary class]]) {
@@ -139,7 +188,7 @@
         //如果是刷新就将老数据清除掉
         if (self.isForceRecordAllObject && newDataList.count < self.pageSize) {
             self.isForceRecordAllObject = NO;
-            NSRange range =NSMakeRange(0, [newDataList count]);
+            NSRange range = NSMakeRange(0, [newDataList count]);
             [self insertObjects:newDataList atIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
             
         }else{

@@ -23,6 +23,7 @@
 -(void)initResetViewCtl{
     
     self.securityViewCtl.text_newPwd.hidden = NO;
+   
     self.securityViewCtl.text_newPwd.textView.placeholder = @"请输入您的登录密码";
     WEAKSELF
     self.securityViewCtl.text_newPwd.textValueDidChanged = ^(UITextField* textView){

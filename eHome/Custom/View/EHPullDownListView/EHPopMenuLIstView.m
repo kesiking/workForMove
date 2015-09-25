@@ -108,9 +108,18 @@
         configObject.autoAdjustFrameSize = YES;
         _tableViewCtl = [[KSTableViewController alloc] initWithFrame:frame withConfigObject:configObject];
         [_tableViewCtl.scrollView setBackgroundColor:[UIColor clearColor]];
+        _tableViewCtl.scrollView.scrollEnabled = NO;
         [_tableViewCtl registerClass:[EHPopMenuCell class]];
         [_tableViewCtl setDataSourceRead:self.dataSourceRead];
         [_tableViewCtl setDataSourceWrite:self.dataSourceWrite];
+        //添加分割线
+        _tableViewCtl.viewCellConfigBlock = ^(KSViewCell* viewCell, WeAppComponentBaseItem *componentItem, KSCellModelInfoItem* modelInfoItem, NSIndexPath* indexPath,KSDataSource* dataSource){
+            if (indexPath.row != 0) {
+                UIView *separateView = [[UIView alloc]initWithFrame:CGRectMake(5, 0, viewCell.width - 10, 0.2)];
+                separateView.backgroundColor = EHCor3;
+                [viewCell addSubview:separateView];
+            }
+        };
         WEAKSELF
         _tableViewCtl.tableViewDidSelectedBlock = ^(UITableView* tableView,NSIndexPath* indexPath,KSDataSource* dataSource,KSCollectionViewConfigObject* configObject){
             STRONGSELF
@@ -128,7 +137,7 @@
 -(UIImageView *)tableViewBgImageView{
     if (_tableViewBgImageView == nil) {
         _tableViewBgImageView = [[UIImageView alloc] init];
-        [_tableViewBgImageView setImage:[[UIImage imageNamed:@"public_bg_tbar_more"] resizableImageWithCapInsets:UIEdgeInsetsMake(10, 20, 10, 20) resizingMode:UIImageResizingModeStretch]];
+        [_tableViewBgImageView setImage:[[UIImage imageNamed:@"public_bg_dropdown_n01"] resizableImageWithCapInsets:UIEdgeInsetsMake(10, 20, 10, 20) resizingMode:UIImageResizingModeStretch]];
     }
     return _tableViewBgImageView;
 }

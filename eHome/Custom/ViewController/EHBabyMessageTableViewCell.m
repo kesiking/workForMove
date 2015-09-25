@@ -8,6 +8,8 @@
 
 #import "EHBabyMessageTableViewCell.h"
 #import "XHBabyChatMessage.h"
+#import "EHAudioPlayDownLoader.h"
+#import "EHAleatView.h"
 
 @interface EHBabyMessageTableViewCell()
 
@@ -27,7 +29,7 @@
             UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
             CGRect bubbleFrame = [self.messageBubbleView bubbleFrame];
             CGRect frame = CGRectMake(bubbleFrame.origin.x - activityIndicatorView.width,
-                                      self.avatarButton.origin.y + (self.avatarButton.height - activityIndicatorView.height)/2,
+                                      self.messageBubbleView.origin.y + (self.messageBubbleView.height - activityIndicatorView.height)/2,
                                       activityIndicatorView.width,
                                       activityIndicatorView.height);
             
@@ -41,32 +43,51 @@
             UIButton *faileSendButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 20, 20)];
             CGRect bubbleFrame = [self.messageBubbleView bubbleFrame];
             CGRect frame = CGRectMake(bubbleFrame.origin.x - faileSendButton.width,
-                                      self.avatarButton.origin.y + (self.avatarButton.height - faileSendButton.height)/2,
+                                      self.messageBubbleView.origin.y + (self.messageBubbleView.height - faileSendButton.height)/2,
                                       faileSendButton.width,
                                       faileSendButton.height);
             
             [faileSendButton setFrame:frame];
             faileSendButton.hidden = YES;
-            [faileSendButton setBackgroundImage:[UIImage imageNamed:@"question_mark.png"] forState:UIControlStateNormal];
+            [faileSendButton setImage:[UIImage imageNamed:@"ico_dropdown_cautionpoint"] forState:UIControlStateNormal];
+            [faileSendButton setImageEdgeInsets:UIEdgeInsetsMake((faileSendButton.height - 14)/2, (faileSendButton.width - 14)/2, (faileSendButton.height - 14)/2, (faileSendButton.width - 14)/2)];
+            [faileSendButton addTarget:self action:@selector(faileSendButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
             [self.contentView addSubview:faileSendButton];
             [self.contentView bringSubviewToFront:faileSendButton];
             _faileSendButton = faileSendButton;
         }
+        [self.messageBubbleView.bubbleImageView addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:nil];
+        [self.messageBubbleView.voiceDurationLabel addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:nil];
+        [self.userNameLabel setTextColor:RGB(0x99, 0x99, 0x99)];
     }
     return self;
 }
 
+-(void)dealloc{
+    [self.messageBubbleView.bubbleImageView removeObserver:self forKeyPath:@"frame"];
+    [self.messageBubbleView.voiceDurationLabel removeObserver:self forKeyPath:@"frame"];
+}
+
 -(void)layoutSubviews{
     [super layoutSubviews];
+    [self updateMessageFrame];
+}
+
+-(void)updateMessageFrame{
     CGRect bubbleFrame = [self.messageBubbleView bubbleFrame];
-    CGRect activityIndicatorViewFrame = CGRectMake(bubbleFrame.origin.x - self.activityIndicatorView.width,
-                                                   self.messageBubbleView.origin.y + (self.messageBubbleView.height - self.faileSendButton.height)/2,
+    CGRect bubbleImageViewFrame = [self.messageBubbleView.bubbleImageView convertRect:self.messageBubbleView.bubbleImageView.bounds toView:self.contentView];
+    if (CGRectEqualToRect(bubbleImageViewFrame, CGRectZero)) {
+        return;
+    }
+    CGFloat border = self.messageBubbleView.voiceDurationLabel.hidden ? 0 : self.messageBubbleView.voiceDurationLabel.width;
+    CGRect activityIndicatorViewFrame = CGRectMake(bubbleFrame.origin.x - self.activityIndicatorView.width - border,
+                                                   bubbleImageViewFrame.origin.y + (bubbleImageViewFrame.size.height - self.activityIndicatorView.height)/2,
                                                    self.activityIndicatorView.width,
                                                    self.activityIndicatorView.height);
     [self.activityIndicatorView setFrame:activityIndicatorViewFrame];
     
-    CGRect failSendButtonFrame = CGRectMake(bubbleFrame.origin.x - self.faileSendButton.width,
-                                            self.messageBubbleView.origin.y + (self.messageBubbleView.height - self.faileSendButton.height)/2,
+    CGRect failSendButtonFrame = CGRectMake(bubbleFrame.origin.x - self.faileSendButton.width - border,
+                                            bubbleImageViewFrame.origin.y + (bubbleImageViewFrame.size.height - self.faileSendButton.height)/2,
                                             self.faileSendButton.width,
                                             self.faileSendButton.height);
     [self.faileSendButton setFrame:failSendButtonFrame];
@@ -77,6 +98,17 @@
     // 1、是否显示Time Line的label
     [super configureCellWithMessage:message displaysTimestamp:displayTimestamp];
     [self configureActivityIndicatorView:message];
+    [self downLoadAudioPlayData:message];
+}
+
+- (void)configUserNameWithMessage:(id <XHMessageModel>)message {
+    if (![message isKindOfClass:[XHBabyChatMessage class]]) {
+        [super configUserNameWithMessage:message];
+        return;
+    }
+    XHBabyChatMessage* chatMessage = (XHBabyChatMessage*)message;
+    self.userNameLabel.text = [chatMessage user_nick_name];
+    self.userNameLabel.hidden = !chatMessage.shouldShowUserName;
 }
 
 -(void)configureActivityIndicatorView:(id <XHMessageModel>)message{
@@ -104,12 +136,55 @@
     }
 }
 
+-(void)downLoadAudioPlayData:(id <XHMessageModel>)message{
+    if (![message isKindOfClass:[XHBabyChatMessage class]]) {
+        return;
+    }
+    XHBabyChatMessage* chatMessage = (XHBabyChatMessage*)message;
+    if ([self needDownloadAudioPlayDataWithMessage:chatMessage]) {
+        [[EHAudioPlayDownLoader sharedManager] loadAudioPlayDataWithUrl:[NSURL URLWithString:chatMessage.voiceUrl] completeBlock:^(NSData *AudioData, EHAudioDataCacheType cacheType, BOOL finished, NSURL *url, NSError *error) {
+            if (error) {
+                EHLogError(@"-----> download url %@ audio data error",url);
+            }else{
+                EHLogInfo(@"-----> download url %@ audio data success",url);
+            }
+        }];
+    }
+}
+
+-(BOOL)needDownloadAudioPlayDataWithMessage:(XHBabyChatMessage*)chatMessage{
+    return chatMessage.messageMediaType == XHBubbleMessageMediaTypeVoice && chatMessage.voicePath == nil && chatMessage.voiceUrl;
+}
+
 -(void)startAnimating{
     [self.activityIndicatorView startAnimating];
 }
 
 - (void)stopAnimating{
     [self.activityIndicatorView stopAnimating];
+}
+
+-(void)faileSendButtonClicked:(id)sender{
+    WEAKSELF
+    EHAleatView* aleatView = [[EHAleatView alloc] initWithTitle:nil message:@"重发该消息？" clickedButtonAtIndexBlock:^(EHAleatView * alertView, NSUInteger index){
+        STRONGSELF
+        if (index == 1 && strongSelf.delegate && [strongSelf.delegate respondsToSelector:@selector(didSelectedReSendBtnOnChatMessage:atIndexPath:)]) {
+            id <EHMessageTableViewCellDelegate> delegate = (id <EHMessageTableViewCellDelegate>)strongSelf.delegate;
+            [delegate didSelectedReSendBtnOnChatMessage:self.messageBubbleView.message atIndexPath:self.indexPath];
+        }
+    } cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];
+    [aleatView show];
+}
+
+#pragma mark -
+#pragma mark - KVO
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if (object == self.messageBubbleView.bubbleImageView && [keyPath isEqualToString:@"frame"]) {
+        [self updateMessageFrame];
+    }else if (self.messageBubbleView.voiceDurationLabel && !self.messageBubbleView.voiceDurationLabel.hidden && [keyPath isEqualToString:@"frame"]){
+        [self updateMessageFrame];
+    }
 }
 
 @end

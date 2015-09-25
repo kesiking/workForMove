@@ -60,7 +60,7 @@
 -(WeAppBasicFieldView *)text_smsCode{
     if (!_text_smsCode) {
         _text_smsCode = [WeAppBasicFieldView getCommonFieldView];
-        _text_smsCode.textView.borderStyle = UITextBorderStyleNone;
+        _text_smsCode.textView.borderStyle = UITextBorderStyleRoundedRect;
         _text_smsCode.frame = CGRectMake(_smsCodeLabel.frame.origin.x, CGRectGetMaxY(_smsCodeLabel.frame) + text_border, text_smsCode_width, text_height);
         _text_smsCode.textView.placeholder = @"请输入验证码";
         [_text_smsCode setBackgroundColor:[UIColor clearColor]];
@@ -71,12 +71,16 @@
 
 -(UIButton *)btn_smsCode{
     if (!_btn_smsCode) {
-        _btn_smsCode = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.frame) - 20 - btn_smsCode_width, CGRectGetMinY(_text_smsCode.frame), btn_smsCode_width, _text_smsCode.frame.size.height)];
+     _btn_smsCode = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetMaxX(self.frame) - 20 - btn_smsCode_width, CGRectGetMinY(_text_smsCode.frame), btn_smsCode_width, _text_smsCode.frame.size.height)];
+        
+        
         _btn_smsCode.layer.cornerRadius = 3;
         _btn_smsCode.layer.masksToBounds = YES;
         [_btn_smsCode.titleLabel setFont:[UIFont boldSystemFontOfSize:14]];
-        [_btn_smsCode setTitle:@"获取验证码" forState:UIControlStateNormal];
-        [_btn_smsCode setBackgroundColor:self.defaultSmsCodeBtnColor];
+        [_btn_smsCode setTitle:@"验证" forState:UIControlStateNormal];
+//        [_btn_smsCode setBackgroundColor:self.defaultSmsCodeBtnColor];
+        [_btn_smsCode setBackgroundColor:EHCor19];
+
         [_btn_smsCode addTarget:self action:@selector(getValidateCode) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:_btn_smsCode];
     }
@@ -124,7 +128,7 @@
     {
         _btn_smsCode.enabled = YES;
         //设置界面的按钮显示
-        [_btn_smsCode setBackgroundColor:self.defaultSmsCodeBtnColor];
+        [_btn_smsCode setBackgroundColor:EHCor20];
         [_btn_smsCode setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_btn_smsCode setTitle:@"重新获取" forState:UIControlStateNormal];
     }
@@ -135,8 +139,11 @@
         
         _btn_smsCode.enabled = NO;
         //设置界面的按钮显示
-        [_btn_smsCode setBackgroundColor:self.selectSmsCodeBtnColor];
-        [_btn_smsCode setTitleColor:[UIColor colorWithWhite:0x99/255.0 alpha:1] forState:UIControlStateNormal];
+//        [_btn_smsCode setBackgroundColor:self.selectSmsCodeBtnColor];
+//        [_btn_smsCode setTitleColor:[UIColor colorWithWhite:0x99/255.0 alpha:1] forState:UIControlStateNormal];
+        [_btn_smsCode setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+
+        [_btn_smsCode setBackgroundColor:EHCor20];
         [_btn_smsCode setTitle:strTime forState:UIControlStateDisabled];
     }
 }

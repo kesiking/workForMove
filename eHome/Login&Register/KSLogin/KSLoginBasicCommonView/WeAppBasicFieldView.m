@@ -20,12 +20,20 @@
 
 +(WeAppBasicFieldView*)getSecurityFieldView{
     WeAppBasicFieldView* securityFieldView = [[WeAppBasicFieldView alloc] init];
-    securityFieldView.textView.placeholder = @"密码";
-    [securityFieldView.textView setFont:[UIFont boldSystemFontOfSize:16]];
+//    securityFieldView.textView.placeholder = @"密码";
+//    UIColor *color = [UIColor redColor];
+//    securityFieldView.textView.attributedPlaceholder =  [[NSAttributedString alloc] initWithString:@"密码" attributes:@{NSForegroundColorAttributeName: color}];
+    
+    securityFieldView.textView.textEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 0);
+    [securityFieldView.textView setFont:[UIFont boldSystemFontOfSize:EHSiz2]];
     [securityFieldView.textView setTextColor:[UIColor colorWithWhite:0x33/255.0 alpha:1]];
     [securityFieldView.textView setValue:[UIColor colorWithWhite:0xdc/255.0 alpha:1] forKeyPath:@"_placeholderLabel.textColor"];
-    securityFieldView.textView.colorWhileEditing = UILOGINNAVIGATIONBAR_COLOR;
-    securityFieldView.textView.borderStyle = UITextBorderStyleNone;
+    securityFieldView.textView.colorWhileEditing = [UIColor clearColor];
+    securityFieldView.textView.colorNotEditing = [UIColor clearColor];
+
+    securityFieldView.textView.borderStyle = UITextBorderStyleRoundedRect;
+//    securityFieldView.textView.borderStyle = UITextBorderStyleNone;
+//    securityFieldView.textView.background = [UIImage imageNamed:@"bg_input_03"];
     securityFieldView.textView.keyboardType = UIKeyboardTypeNamePhonePad;
     securityFieldView.textView.clearButtonMode = UITextFieldViewModeWhileEditing;
     securityFieldView.textView.secureTextEntry = YES;
@@ -36,11 +44,14 @@
 
 +(WeAppBasicFieldView*)getCommonFieldView{
     WeAppBasicFieldView* commonFieldView = [[WeAppBasicFieldView alloc] init];
-    commonFieldView.textView.borderStyle = UITextBorderStyleNone;
+    commonFieldView.textView.borderStyle = UITextBorderStyleRoundedRect;
+    commonFieldView.textView.textEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 0);
     [commonFieldView.textView setFont:[UIFont boldSystemFontOfSize:16]];
     [commonFieldView.textView setTextColor:[UIColor colorWithWhite:0x33/255.0 alpha:1]];
     [commonFieldView.textView setValue:[UIColor colorWithWhite:0xdc/255.0 alpha:1] forKeyPath:@"_placeholderLabel.textColor"];
-    commonFieldView.textView.colorWhileEditing = UILOGINNAVIGATIONBAR_COLOR;
+    commonFieldView.textView.colorWhileEditing = [UIColor clearColor];
+    commonFieldView.textView.colorNotEditing = [UIColor clearColor];
+
     commonFieldView.textView.clearButtonEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 7);
     commonFieldView.textView.keyboardType = UIKeyboardTypeNamePhonePad;
     commonFieldView.textView.clearButtonMode = UITextFieldViewModeAlways;

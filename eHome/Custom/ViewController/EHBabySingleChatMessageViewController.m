@@ -14,25 +14,26 @@
 #import "EHSingleChatCacheManager.h"
 #import "XHAudioPlayerHelper.h"
 #import "XHBabyChatMessage.h"
+#import "XHAudioPlayerHelper+EHAudioPlayerDownload.h"
 #import "EHBabyMessageTableViewCell.h"
+#import "EHChatMessageTimestampCaculater.h"
 
-@interface EHBabySingleChatMessageViewController () <XHAudioPlayerHelperDelegate>
-
-@property (nonatomic, strong) NSArray *emotionManagers;
+@interface EHBabySingleChatMessageViewController () <XHAudioPlayerHelperDelegate>{
+    XHVoiceRecordHelper         *_voiceRecordHelper;
+}
 
 @property (nonatomic, strong) XHMessageTableViewCell   * currentSelectedCell;
 
 @property (nonatomic, strong) EHChatMessageLIstService * chatMessageListService;
 
 @property (nonatomic, strong) UILabel                  * headerHasNoDatalabel;
+
+@property (nonatomic, strong) EHChatMessageTimestampCaculater                  * chatMessageTimestampCaculater;
+
+
 @end
 
 @implementation EHBabySingleChatMessageViewController
-
-- (NSMutableArray *)getTestMessages {
-    NSMutableArray *messages = [[NSMutableArray alloc] init];
-    return messages;
-}
 
 - (void)loadSingleChatMessageListDataSource {
     NSNumber* babyId = self.babyUserInfo.babyId;
@@ -70,9 +71,13 @@
     if (_headerHasNoDatalabel == nil) {
         UIView* headerContainerView = [self valueForKey:@"_headerContainerView"];
         _headerHasNoDatalabel = [[UILabel alloc] initWithFrame:headerContainerView.bounds];
+        [_headerHasNoDatalabel setTextColor:EH_cor5];
+        [_headerHasNoDatalabel setFont:[UIFont boldSystemFontOfSize:12]];
+        [_headerHasNoDatalabel setBackgroundColor:[UIColor clearColor]];
+        [_headerHasNoDatalabel setNumberOfLines:1];
         [_headerHasNoDatalabel setTextAlignment:NSTextAlignmentCenter];
         _headerHasNoDatalabel.hidden = YES;
-        [_headerHasNoDatalabel setText:@"没有更多数据了"];
+        [_headerHasNoDatalabel setText:@"没有更多的内容了哦"];
         [headerContainerView addSubview:_headerHasNoDatalabel];
     }
     return _headerHasNoDatalabel;
@@ -90,9 +95,11 @@
     [self configChatMessageView];
     // Custom UI
     [self setBackgroundColor:[UIColor whiteColor]];
-    
+    // init Notification
     [self initNotification];
-    
+    // init ChatMessageTimestampCaculater
+    [self initChatMessageTimestampCaculater];
+
     // 设置自身用户名
     self.messageSender = [KSAuthenticationCenter userPhone];
     
@@ -101,10 +108,26 @@
 
 - (void)configChatMessageView{
     [[XHConfigurationHelper appearance] setupPopMenuTitles:@[NSLocalizedStringFromTable(@"copy", @"MessageDisplayKitString", @"复制文本消息")]] ;
+    _voiceRecordHelper = [self valueForKey:@"voiceRecordHelper"];
+    _voiceRecordHelper.maxRecordTime = 10;
+    _voiceRecordHelper.recordProgress = ^(float progress){
+        
+    };
+    XHStopRecorderCompletion maxTimeStopRecorderCompletion = _voiceRecordHelper.maxTimeStopRecorderCompletion;
+    _voiceRecordHelper.maxTimeStopRecorderCompletion = ^{
+        if (maxTimeStopRecorderCompletion) {
+            maxTimeStopRecorderCompletion();
+        }
+        [WeAppToast toast:@"录音时间到"];
+    };
 }
 
 -(void)initNotification{
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(recieveBabyChatMessage:) name:EHRecieveBabyChatMessageNotification object:nil];
+}
+
+-(void)initChatMessageTimestampCaculater{
+    _chatMessageTimestampCaculater = [EHChatMessageTimestampCaculater new];
 }
 
 - (void)didReceiveMemoryWarning
@@ -127,14 +150,14 @@
             if (service.pagedList) {
                 [strongSelf.messages removeAllObjects];
                 [strongSelf.messages addObjectsFromArray:[service.pagedList getItemList]];
+                [strongSelf configChatMessageTimestampWithPagelist:service.pagedList];
             }
             [strongSelf.messageTableView reloadData];
-            if (service.pagedList.isRefresh) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [strongSelf scrollToBottomAnimated:NO];
-                });
-            }else{
+            if ([strongSelf isMessageDataListHistoryWithPagelist:service.pagedList]) {
+                [strongSelf showMessageTableViewHistoryDataListSmoothlyWithPagelist:service.pagedList];
                 strongSelf.loadingMoreMessage = NO;
+            }else{
+                [strongSelf showMessageTableViewNewDataListSmoothlyWithPagelist:service.pagedList];
             }
         };
         _chatMessageListService.serviceDidFailLoadBlock = ^(WeAppBasicService* service, NSError* error){
@@ -143,6 +166,65 @@
         };
     }
     return _chatMessageListService;
+}
+
+-(void)showMessageTableViewHistoryDataListSmoothlyWithPagelist:(WeAppBasicPagedList*)pagelist{
+    if (pagelist == nil || ![pagelist isKindOfClass:[EHChatMessagePageList class]]) {
+        return;
+    }
+    EHChatMessagePageList* chatMessagePageList = (EHChatMessagePageList*)pagelist;
+    if (chatMessagePageList.insertListType != KSInsertListTypeBeforPagelist) {
+        return;
+    }
+    NSInteger index = [chatMessagePageList.insertDataList count];
+    if (index > 0 && index < [chatMessagePageList count]) {
+        [self scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+        UIView* headerContainerView = [self valueForKey:@"_headerContainerView"];
+        [self.messageTableView setContentOffset:CGPointMake(self.messageTableView.contentOffset.x, self.messageTableView.contentOffset.y - headerContainerView.height) animated:NO];
+    }
+}
+
+-(void)showMessageTableViewNewDataListSmoothlyWithPagelist:(WeAppBasicPagedList*)pagelist{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self scrollToBottomAnimated:NO];
+    });
+}
+
+-(BOOL)isMessageDataListHistoryWithPagelist:(WeAppBasicPagedList*)pagelist{
+    if (pagelist == nil || ![pagelist isKindOfClass:[EHChatMessagePageList class]]) {
+        return NO;
+    }
+    EHChatMessagePageList* chatMessagePageList = (EHChatMessagePageList*)pagelist;
+    if (chatMessagePageList.insertListType == KSInsertListTypeBeforPagelist) {
+        return YES;
+    }
+    if (chatMessagePageList.isRefresh) {
+        return NO;
+    }
+    return NO;
+}
+
+-(void)configChatMessageTimestampWithPagelist:(WeAppBasicPagedList*)pagelist{
+    if (pagelist == nil || ![pagelist isKindOfClass:[EHChatMessagePageList class]]) {
+        return;
+    }
+    EHChatMessagePageList* chatMessagePageList = (EHChatMessagePageList*)pagelist;
+    if (chatMessagePageList.insertDataList == nil) {
+        return;
+    }
+    if (chatMessagePageList.insertListType == KSInsertListTypeBeforPagelist) {
+        [self.chatMessageTimestampCaculater configChatMessageTimestampBeforChatlist:chatMessagePageList.insertDataList];
+    }else if (chatMessagePageList.insertListType == KSInsertListTypeAfterPagelist){
+        [self.chatMessageTimestampCaculater configChatMessageTimestampAfterChatlist:chatMessagePageList.insertDataList];
+    }
+    [self configChatMessageEarliestTimestampWithMessageIfNeed];
+}
+
+-(void)configChatMessageEarliestTimestampWithMessageIfNeed{
+    if (![self.chatMessageListService hasMoreData]) {
+        XHBabyChatMessage* chatMessage = [self safeGetChatMessageWithMessageInfoObj:[[self.chatMessageListService.pagedList getItemList] firstObject]];
+        [self.chatMessageTimestampCaculater configChatMessageEarliestTimestampWithMessage:chatMessage];
+    }
 }
 
 #pragma mark - XHMessageTableViewCell delegate
@@ -168,7 +250,11 @@
             } else {
                 self.currentSelectedCell = messageTableViewCell;
                 [messageTableViewCell.messageBubbleView.animationVoiceImageView startAnimating];
-                [[XHAudioPlayerHelper shareInstance] managerAudioWithFileName:message.voicePath toPlay:YES];
+                if (message.voicePath) {
+                    [[XHAudioPlayerHelper shareInstance] managerAudioWithFileName:message.voicePath toPlay:YES];
+                }else if (message.voiceUrl){
+                    [[XHAudioPlayerHelper shareInstance] managerAudioWithUrl:message.voiceUrl toPlay:YES];
+                }
             }
             break;
         }
@@ -188,7 +274,15 @@
 }
 
 - (void)didSelectedAvatarOnMessage:(id<XHMessageModel>)message atIndexPath:(NSIndexPath *)indexPath {
-    DLog(@"indexPath : %@", indexPath);
+    EHLogInfo(@"indexPath : %@", message);
+    if (![message isKindOfClass:[XHBabyChatMessage class]]) {
+        return;
+    }
+    XHBabyChatMessage* chatMessage = (XHBabyChatMessage*)message;
+    // 如果是宝贝发送的，则跳转到宝贝详情
+    if (chatMessage.messageIsFromBaby && chatMessage.bubbleMessageType == XHBubbleMessageTypeReceiving && self.babyUserInfo) {
+        TBOpenURLFromSourceAndParams(internalURL(@"EHBabyUserDetailViewController"), self, @{@"babyUser":self.babyUserInfo});
+    }
 }
 
 - (void)menuDidSelectedAtBubbleMessageMenuSelecteType:(XHBubbleMessageMenuSelecteType)bubbleMessageMenuSelecteType {
@@ -212,13 +306,21 @@
 }
 
 - (void)loadMoreMessagesScrollTotop {
-    if (!self.loadingMoreMessage && [self.chatMessageListService hasMoreData]) {
-        self.loadingMoreMessage = YES;
+    BOOL hasMoreData = [self.chatMessageListService hasMoreData];
+    
+    if (hasMoreData) {
         self.headerHasNoDatalabel.hidden = YES;
-        [self.chatMessageListService nextPage];
+    }else{
+        self.headerHasNoDatalabel.hidden = NO;
+    }
+    
+    if (!self.loadingMoreMessage && hasMoreData) {
+        self.loadingMoreMessage = YES;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self.chatMessageListService nextPage];
+        });
     }else{
         self.loadingMoreMessage = NO;
-        self.headerHasNoDatalabel.hidden = NO;
     }
 }
 
@@ -275,8 +377,8 @@
     message.avatarUrl = self.userInfoComponentItem.user_head_img;
     message.recieverBabyID = self.babyUserInfo.babyId;
     message.msgStatus = EHBabyChatMessageStatusSending;
-    [message configMessageID];
     message.user_nick_name = [KSAuthenticationCenter userComponent].nick_name;
+    [message configMessageID];
     [self addMessage:message];
     [self finishSendMessageWithBubbleMessageType:message.messageMediaType];
 }
@@ -284,6 +386,7 @@
 -(void)addMessage:(XHMessage *)addedMessage{
     [super addMessage:addedMessage];
     [self.chatMessageListService.pagedList addObject:addedMessage];
+    [self configChatMessageTimestampWithPagelist:self.chatMessageListService.pagedList];
 }
 
 -(BOOL)checkTextValid:(NSString*)text{
@@ -306,11 +409,11 @@
  *  @return 根据indexPath获取消息的Model的对象，从而判断返回YES or NO来控制是否显示时间轴Label
  */
 - (BOOL)shouldDisplayTimestampForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row % 2) {
-        return YES;
-    } else {
+    id <XHMessageModel> messageModel = [self messageForRowAtIndexPath:indexPath];
+    if (![messageModel isKindOfClass:[XHBabyChatMessage class]]) {
         return NO;
     }
+    return ((XHBabyChatMessage*)messageModel).needShowTimestamp;
 }
 
 #pragma mark - XHMessageTableViewController DataSource
@@ -320,11 +423,19 @@
         return [[XHBabyChatMessage alloc] init];
     }
     id messageInfoObj = self.messages[indexPath.row];
+    XHBabyChatMessage* chatMessage = [self safeGetChatMessageWithMessageInfoObj:messageInfoObj];
+    return chatMessage;
+}
+
+-(XHBabyChatMessage*)safeGetChatMessageWithMessageInfoObj:(id)messageInfoObj{
+    if (messageInfoObj == nil) {
+        return [[XHBabyChatMessage alloc] init];
+    }
     if ([messageInfoObj isKindOfClass:[EHChatMessageinfoModel class]]) {
         EHChatMessageinfoModel* messageInfoModel = messageInfoObj;
         return messageInfoModel.babyChatMessage;
     }else if([messageInfoObj isKindOfClass:[XHBabyChatMessage class]]){
-        return (XHBabyChatMessage*)messageInfoObj;
+        return ((XHBabyChatMessage*)messageInfoObj);
     }
     return [[XHBabyChatMessage alloc] init];
 }
@@ -374,6 +485,11 @@
  */
 - (BOOL)shouldPreventScrollToBottomWhileUserScrolling {
     return YES;
+}
+
+- (void)didSelectedReSendBtnOnChatMessage:(id <XHMessageModel>)message atIndexPath:(NSIndexPath *)indexPath{
+    XHBabyChatMessage* chatMessage =  [self safeGetChatMessageWithMessageInfoObj:message];
+    [self sendMessage:chatMessage];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

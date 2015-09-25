@@ -28,6 +28,7 @@
     self.resetViewCtl.text_phoneNum.hidden = NO;
     self.resetViewCtl.text_smsCode.hidden = NO;
     self.resetViewCtl.btn_smsCode.hidden = NO;
+    self.resetViewCtl.btn_finish.hidden = NO;
     
     WEAKSELF
     self.resetViewCtl.text_phoneNum.textValueDidChanged = ^(UITextField* textView){

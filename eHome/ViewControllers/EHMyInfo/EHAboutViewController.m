@@ -21,7 +21,7 @@
 
 @implementation EHAboutViewController
 {
-    UITableView *_tableView;
+    GroupedTableView *_tableView;
     UIView *_headView;
 }
 
@@ -31,7 +31,7 @@
     self.title = @"关于";
     self.view.backgroundColor = [UIColor colorWithRed:236/255.0 green:236/255.0 blue:236/255.0 alpha:1];
     [self.view addSubview:[self headView]];
-    [self.view addSubview:[self tableView]];
+    [self initTableView];
 }
 
 #pragma mark - UITableViewDataSource
@@ -69,9 +69,11 @@
 }
 
 #pragma mark - Getters And Setters
-- (UITableView *)tableView{
+
+
+- (void)initTableView{
     if (!_tableView) {
-        _tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, kHeaderViewHeight, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame) - kHeaderViewHeight) style:UITableViewStylePlain];
+        _tableView = [[GroupedTableView alloc]initWithFrame:CGRectMake(10, kHeaderViewHeight, CGRectGetWidth(self.view.frame)-20, CGRectGetHeight(self.view.frame) - kHeaderViewHeight) style:UITableViewStylePlain];
         EHLogInfo(@"table height = %f",_tableView.frame.size.height);
         _tableView.backgroundColor = [UIColor colorWithRed:236/255.0 green:236/255.0 blue:236/255.0 alpha:1];
         _tableView.dataSource = self;
@@ -81,8 +83,10 @@
         _tableView.sectionHeaderHeight = 100;
         _tableView.scrollEnabled = NO;
         _tableView.tableFooterView = [[UIView alloc] init];
+        
+        [self.view addSubview:_tableView];
     }
-    return _tableView;
+    return;
 }
 
 - (UIView *)headView{

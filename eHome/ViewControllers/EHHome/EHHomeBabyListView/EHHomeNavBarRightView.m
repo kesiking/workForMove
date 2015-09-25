@@ -42,7 +42,7 @@
 
 -(void)initTitleButton{
     _btn = [[UIButton alloc] initWithFrame:self.bounds];
-    [_btn setImage:[UIImage imageNamed:@"public_ico_tbar_message"] forState:UIControlStateNormal];
+    [_btn setImage:[UIImage imageNamed:@"public_icon_messages"] forState:UIControlStateNormal];
     [_btn setImageEdgeInsets:UIEdgeInsetsMake((_btn.height - BTN_IMAGE_WIDTH_HEIGHT)/2, (_btn.width - BTN_IMAGE_WIDTH_HEIGHT) - 5, (_btn.height - BTN_IMAGE_WIDTH_HEIGHT)/2, 5)];
     
     [_btn addTarget:self action:@selector(buttonClicked:) forControlEvents:UIControlEventTouchUpInside];
@@ -51,7 +51,7 @@
 
 -(void)initPointImage{
     _pointImage = [[UIImageView alloc] initWithFrame:CGRectMake(_btn.width - POINT_IMAGE_WIDTH_HEIGHT/2 - 2 - 5, (self.height - BTN_IMAGE_WIDTH_HEIGHT)/2 - POINT_IMAGE_WIDTH_HEIGHT/2 + 2 , POINT_IMAGE_WIDTH_HEIGHT, POINT_IMAGE_WIDTH_HEIGHT)];
-    [_pointImage setImage:[UIImage imageNamed:@"public_ico_tbar_message_propmpt"]];
+    [_pointImage setImage:[UIImage imageNamed:@"public_icon_message_propmpt"]];
     _pointImage.hidden = YES;
     [self addSubview:_pointImage];
 }

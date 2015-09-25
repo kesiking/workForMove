@@ -133,9 +133,10 @@
         UIColor *girlLineColor = RGB_A(0x23, 0x74, 0xfa, 1.0);
 
         polylineView.lineWidth = 3.0f;
-        if ([KSAuthenticationCenter isTestAccount]) {
+        /*if ([KSAuthenticationCenter isTestAccount]) {
             polylineView.strokeColor = boyLineColor;
-        }else{
+        }else*/
+        {
             polylineView.strokeColor = [self.babyUserInfo.babySex integerValue] == EHBabySexType_girl ? girlLineColor : boyLineColor;
         }
         

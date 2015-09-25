@@ -40,4 +40,6 @@
 #import "NSString+TrimmingAdditions.h"
 #import "View+MASAdditions.h"
 
+#import "GroupedTableView.h"
+
 #endif

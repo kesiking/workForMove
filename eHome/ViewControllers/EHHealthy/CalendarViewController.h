@@ -26,6 +26,8 @@ typedef void (^ReturnSelectedDateBlock)(NSString *showSelectedDate);
 
 @property(strong,nonatomic)NSDate* babyStartDate;
 
+@property(strong,nonatomic)NSDate*  selectedDate;
+
 - (void)returnDateText:(ReturnSelectedDateBlock)block;
 
 @end

@@ -12,6 +12,7 @@
 @interface KSModifyPasswordView()
 
 @property (nonatomic,strong) UILabel*           resetDescriptionLabel;
+@property (nonatomic,strong) UIButton* finishButton;
 
 @end
 
@@ -27,7 +28,8 @@
     self.resetViewCtl.text_oldPwd.hidden = NO;
 //    self.resetViewCtl.text_renewPwd.hidden = NO;
     self.resetViewCtl.text_newPwd.hidden = NO;
-//    self.resetViewCtl.btn_done.hidden = NO;
+//    self.resetViewCtl.btn_done.hidden = YES;
+    self.resetViewCtl.btn_finish.hidden = NO;
     WEAKSELF
     self.resetViewCtl.text_oldPwd.textValueDidChanged = ^(UITextField* textView){
         STRONGSELF
@@ -41,12 +43,29 @@
     [self addSubview:self.resetViewCtl];
     
     _resetDescriptionLabel = [UILabel new];
-    _resetDescriptionLabel.font = [UIFont systemFontOfSize:11];
-    _resetDescriptionLabel.textColor = RGB(0xdc, 0xdc, 0xdc);
-    _resetDescriptionLabel.textAlignment = NSTextAlignmentRight;
-    _resetDescriptionLabel.text = @"请输入6-20位数字或字母";
-    _resetDescriptionLabel.frame = CGRectMake(self.width - 200 - kSpaceX, self.resetViewCtl.text_newPwd.bottom + 6, 200, 20);
+    _resetDescriptionLabel.font = [UIFont systemFontOfSize:EHSiz5];
+    _resetDescriptionLabel.textColor = EHCor3;
+    _resetDescriptionLabel.textAlignment = NSTextAlignmentLeft;
+    _resetDescriptionLabel.text = @"请确保输入的密码为6-20位的数字或字母组合";
+    _resetDescriptionLabel.frame = CGRectMake(37, self.resetViewCtl.text_newPwd.bottom + 6, 290, 20);
     [self addSubview:_resetDescriptionLabel];
+    
+//    _finishButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//    
+//    
+//    [_finishButton.layer setMasksToBounds:YES];
+//    [_finishButton.layer setCornerRadius:7.0]; //设置矩形四个圆角半径
+//    
+//   
+//    [_finishButton setTitle:@"完成" forState:UIControlStateNormal];
+//    _finishButton.titleLabel.font = [UIFont systemFontOfSize:15];
+//    _finishButton.titleLabel.textColor = [UIColor whiteColor];
+//    _finishButton.backgroundColor = EHCor6;
+//    _finishButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+//    _finishButton.frame = CGRectMake(25, CGRectGetMaxY(_resetDescriptionLabel.frame) + 40,  (self.frame.size.width - 50), text_height);
+//    [self addSubview:_finishButton];
+//    [_finishButton addTarget:self action:@selector(doNextStep) forControlEvents:UIControlEventTouchUpInside];
+  
 }
 
 -(void)reloadData{
@@ -55,7 +74,8 @@
 
 -(void)layoutSubviews{
     [super layoutSubviews];
-    _resetDescriptionLabel.frame = CGRectMake(self.width - 200 - kSpaceX, self.resetViewCtl.text_newPwd.bottom + 6, 200, 20);
+    _resetDescriptionLabel.frame = CGRectMake(37, self.resetViewCtl.text_newPwd.bottom + 6, 290, 20);
+    _finishButton.frame = CGRectMake(25, CGRectGetMaxY(_resetDescriptionLabel.frame) + 40,  (self.frame.size.width - 50), text_height);
 }
 
 -(void)setService:(KSLoginService *)service{

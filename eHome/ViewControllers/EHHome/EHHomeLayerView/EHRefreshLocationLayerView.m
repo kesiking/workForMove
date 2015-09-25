@@ -27,8 +27,8 @@
 
 -(void)initLayerButton{
     _refreshBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, self.width, self.width)];
-    [_refreshBtn setBackgroundImage:[UIImage imageNamed:@"ico_location_normal"] forState:UIControlStateNormal];
-    [_refreshBtn setBackgroundImage:[UIImage imageNamed:@"ico_location_normal"] forState:UIControlStateHighlighted];
+    [_refreshBtn setBackgroundImage:[UIImage imageNamed:@"public_icon_location_n"] forState:UIControlStateNormal];
+    [_refreshBtn setBackgroundImage:[UIImage imageNamed:@"public_icon_location_p"] forState:UIControlStateHighlighted];
     [_refreshBtn addTarget:self action:@selector(refreshButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:_refreshBtn];
     

@@ -102,6 +102,10 @@ typedef void(^serviceDidFailLoadBlock) (WeAppBasicService* service,NSError* erro
 #pragma mark -
 #pragma mark service block  delegate与block任选其一即可
 
+@property (nonatomic, assign) BOOL                   executing;
+@property (nonatomic, assign) BOOL                   canceled;
+@property (nonatomic, assign) BOOL                   finished;
+
 // arc下block用strong与copy都可以，arc自动做了从栈上拷贝到堆上的操作，非arc下必须用copy属性
 @property (nonatomic,copy) serviceDidStartLoadBlock  serviceDidStartLoadBlock;
 

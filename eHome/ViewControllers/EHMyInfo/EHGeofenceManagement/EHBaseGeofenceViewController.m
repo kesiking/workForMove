@@ -17,7 +17,7 @@
 @implementation EHBaseGeofenceViewController
 {
     AMapSearchAPI *_search;         //地图搜索服务
-
+    
     CAShapeLayer *_overlayLayer;    //地图中间覆盖物图层
     
     BOOL _scaleTag;                 //缩放标记（防地图死循环回调）
@@ -60,6 +60,11 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
+    // 禁用返回手势
+    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+        self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    }
+    
     MACoordinateRegion region = MACoordinateRegionMakeWithDistance(self.geofenceCoordinate, self.radius * 2, self.radius * 2);
     region = [self.mapView regionThatFits:region];
     [self.mapView setRegion:region animated:YES];
@@ -70,6 +75,11 @@
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     self.mapView.delegate = nil;
+    
+    // 开启返回手势
+    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+        self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    }
 }
 
 #pragma mark - Events Response
@@ -113,7 +123,7 @@
     regeoRequest.searchType = AMapSearchType_ReGeocode;
     regeoRequest.location = [AMapGeoPoint locationWithLatitude:coordinate.latitude longitude:coordinate.longitude];
     //    regeoRequest.radius = 10000;
-//        regeoRequest.requireExtension = YES;
+    //        regeoRequest.requireExtension = YES;
     
     //发起逆地理编码
     [_search AMapReGoecodeSearch: regeoRequest];
@@ -128,7 +138,7 @@
     
     CGFloat r = [mapView metersPerPointForCurrentZoomLevel] * CGRectGetWidth(self.view.frame) / 2.0;
     EHLogInfo(@"r = %f",r);
-
+    
     //通过滑动条更改了半径，重设需要的zoomLevel
     if (_radiusUpdated) {
         self.neededZoomLevel = mapView.zoomLevel;
@@ -216,13 +226,13 @@
     if(response.regeocode != nil)
     {
         //通过AMapReGeocodeSearchResponse对象处理搜索结果
-//        NSString *result = [NSString stringWithFormat:@"\n %@\n%@", response.regeocode.formattedAddress,response.regeocode.addressComponent];
-//        NSLog(@"ReGeo: %@", result);
+        //        NSString *result = [NSString stringWithFormat:@"\n %@\n%@", response.regeocode.formattedAddress,response.regeocode.addressComponent];
+        //        NSLog(@"ReGeo: %@", result);
         AMapAddressComponent *addressComponent = response.regeocode.addressComponent;
         NSMutableString *address = [NSMutableString stringWithFormat:@"%@%@%@%@",addressComponent.city,addressComponent.district,addressComponent.streetNumber.street,addressComponent.streetNumber.number];
-//        if (![addressComponent.streetNumber.number isEqualToString:@""] && ![addressComponent.streetNumber.number containsString:@"号"]) {
-//            [address appendString:@"号"];
-//        }
+        //        if (![addressComponent.streetNumber.number isEqualToString:@""] && ![addressComponent.streetNumber.number containsString:@"号"]) {
+        //            [address appendString:@"号"];
+        //        }
         self.topView.address = address;
     }
 }
@@ -242,7 +252,7 @@
     [self.view addSubview:self.mapView];
     
     _search = [[AMapSearchAPI alloc] initWithSearchKey:kMAMapAPIKey Delegate:self];
-
+    
 }
 
 /**
@@ -279,7 +289,7 @@
 - (UIView *)topView{
     if (!_topView) {
         CGFloat topViewHeight = 85;
-
+        
         WEAKSELF
         _topView = [[EHGeofenceTopView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), topViewHeight)];
         

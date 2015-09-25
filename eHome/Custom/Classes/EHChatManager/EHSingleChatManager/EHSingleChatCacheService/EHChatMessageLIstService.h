@@ -7,6 +7,7 @@
 //
 
 #import "KSAdapterService.h"
+#import "EHChatMessagePageList.h"
 
 @interface EHChatMessageLIstService : KSAdapterService
 

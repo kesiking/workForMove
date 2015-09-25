@@ -21,4 +21,14 @@
 
 }
 
+-(void)modelDidFinishLoad:(WeAppBasicRequestModel *)model{
+    NSNumber* babyId = [model.params objectForKey:@"baby_id"];
+    NSMutableDictionary* userInfo = [NSMutableDictionary dictionary];
+    if ([babyId integerValue] == [[[EHBabyListDataCenter sharedCenter] currentBabyId] integerValue]) {
+        [userInfo setObject:@YES forKey:EHFORCE_REFRESH_DATA];
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:EHBabyInfoChangedNotification object:nil userInfo:userInfo];
+    [super modelDidFinishLoad:model];
+}
+
 @end

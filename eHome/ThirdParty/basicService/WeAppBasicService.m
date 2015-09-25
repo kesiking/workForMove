@@ -15,7 +15,7 @@
 // 返回值的时候根据该变量进行判断，默认为TBSNSGetDataTypeMethodMTOP
 @property (nonatomic) enum    WeAppGetDataMethodType getDataMethodType;
 
-@property (nonatomic, strong) BasicNetWorkAdapter* network;
+@property (nonatomic, strong) BasicNetWorkAdapter*   network;
 
 @end
 
@@ -408,6 +408,10 @@
     if (self.serviceDidCancelLoadBlock) {
         self.serviceDidCancelLoadBlock(self);
     }
+    
+    self.canceled = YES;
+    if (self.executing) self.executing = NO;
+    if (!self.finished) self.finished = YES;
 }
 
 -(void)modelDidFinishLoad:(WeAppBasicRequestModel *)model {
@@ -426,7 +430,8 @@
     @catch (NSException *exception) {
         self.delegate = nil;
     }
-    
+    if (self.executing) self.executing = NO;
+    if (!self.finished) self.finished = YES;
 }
 
 - (void)modelDidUserCache:(WeAppBasicRequestModel*)model{
@@ -446,6 +451,7 @@
     @catch (NSException *exception) {
         self.delegate = nil;
     }
+    self.executing = YES;
 }
 
 - (BOOL)modelShouldLoad:(WeAppBasicRequestModel*)model{
@@ -469,6 +475,8 @@
     @catch (NSException *exception) {
         self.delegate = nil;
     }
+    if (self.executing) self.executing = NO;
+    if (!self.finished) self.finished = YES;
 }
 
 -(void)dealloc{

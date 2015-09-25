@@ -9,6 +9,9 @@
 #import "EHSingleChatCacheManager.h"
 #import "EHChatMessageLIstService.h"
 #import "EHSingleChatCacheService.h"
+#import "EHChatMessageSendService.h"
+#import "EHChatMessageSendServiceQueue.h"
+#import "XHVoiceRecordHelper.h"
 #import "NSData+EHVoiceDataTransform.h"
 #import "LKDBHelper.h"
 #import "EHUtils.h"
@@ -53,12 +56,6 @@
 #pragma mark -
 #pragma mark send message to network Method
 
-- (void)loadChatMessageListWithBabyId:(NSNumber*)babyId
-                         successBlock:(void(^)(NSArray* chatMessageList))successBlock
-                         failedBlock:(void(^)(NSError* error))failedBlock{
-    
-}
-
 - (void)sendBabyChatMessage:(XHBabyChatMessage *)message
                writeSuccess:(CacheWriteSuccessCacheBlock)writeSuccessBlock
                 sendSuccess:(ServiceWriteSuccessCacheBlock)sendSuccessBlock{
@@ -99,6 +96,7 @@
 -(void)sendBabyChatMessageWithNetwork:(XHBabyChatMessage *)message
                           sendSuccess:(ServiceWriteSuccessCacheBlock)sendSuccessBlock{
     NSString *context = nil;
+    NSData *messageData = nil;
     EHMessageContextType context_type = EHMessageContextType_Text;
     switch (message.messageMediaType) {
         case XHBubbleMessageMediaTypeText: {
@@ -109,7 +107,13 @@
         case XHBubbleMessageMediaTypeVoice: {
             context_type = EHMessageContextType_Voice;
             if (message.voicePath) {
-                context = [NSData stringFromVoicePath:message.voicePath];
+                // wav转amr 而后发送给服务器
+                NSString *amrPath = [XHVoiceRecordHelper getRecorderPathofType:@"amr"];
+                if ([VoiceConverter ConvertWavToAmr:message.voicePath amrSavePath:amrPath]){
+                    messageData = [NSData dataWithContentsOfFile:amrPath];
+                }else{
+                    EHLogInfo(@"wav转amr失败");
+                }
             }
             break;
         }
@@ -117,24 +121,50 @@
             break;
     }
     
-    EHChatMessageLIstService* chatMessageService = [EHChatMessageLIstService new];
-    chatMessageService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
+    void(^updateCatchCompleteBlock)(EHChatMessageinfoModel* nativeChatMessage) = ^(EHChatMessageinfoModel* nativeChatMessage){
+        [self insertCacheWithBabyID:[NSString stringWithFormat:@"%@",nativeChatMessage.babyChatMessage.recieverBabyID] componentItem:nativeChatMessage writeSuccess:^(BOOL success) {
+            if (success) {
+                EHLogInfo(@"-----> EHSingleChatCacheManager sendBabyChatMessageWithNetwork update Cache success");
+            }else{
+                EHLogInfo(@"-----> EHSingleChatCacheManager sendBabyChatMessageWithNetwork update Cache failed: %@", nativeChatMessage.babyChatMessage.recieverBabyID);
+            }
+        }];
+    };
+    
+    EHChatMessageSendService* chatMessageSendService = [EHChatMessageSendService new];
+    
+    chatMessageSendService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
+        message.msgStatus = EHBabyChatMessageStatusSent;
+        EHChatMessageinfoModel* nativeChatMessage = [EHChatMessageinfoModel makeMessage:message];
         if (service.item && [service.item isKindOfClass:[EHChatMessageinfoModel class]]) {
             EHChatMessageinfoModel* chatMessage = (EHChatMessageinfoModel*)service.item;
+            [nativeChatMessage updateMessgeWithChatMessageinfoModel:chatMessage];
             if (sendSuccessBlock) {
                 sendSuccessBlock(YES, chatMessage.babyChatMessage);
             }
         }else if (sendSuccessBlock) {
             sendSuccessBlock(NO, nil);
         }
-    };
-    chatMessageService.serviceDidFailLoadBlock = ^(WeAppBasicService* service, NSError* error){
-        if (sendSuccessBlock) {
-            sendSuccessBlock(NO, nil);
+        if (updateCatchCompleteBlock) {
+            updateCatchCompleteBlock(nativeChatMessage);
         }
     };
     
-//    [chatMessageService loadChatMessageListWithBabyId:message.recieverBabyID userPhone:[KSAuthenticationCenter userPhone] context:context contextType:[NSString stringWithFormat:@"%@",@(context_type)]];
+    chatMessageSendService.serviceDidFailLoadBlock = ^(WeAppBasicService* service, NSError* error){
+        message.msgStatus = EHBabyChatMessageStatusFailed;
+        EHChatMessageinfoModel* nativeChatMessage = [EHChatMessageinfoModel makeMessage:message];
+        if (sendSuccessBlock) {
+            sendSuccessBlock(NO, nil);
+        }
+        if (updateCatchCompleteBlock) {
+            updateCatchCompleteBlock(nativeChatMessage);
+        }
+    };
+    
+    [chatMessageSendService sendChatMessageListWithBabyId:message.recieverBabyID userPhone:[KSAuthenticationCenter userPhone] context:context messageData:messageData contextType:[NSString stringWithFormat:@"%@",@(context_type)]];
+    
+    // add into queue
+    [[EHChatMessageSendServiceQueue shareInstance] addSendMessageService:chatMessageSendService];
     
 }
 

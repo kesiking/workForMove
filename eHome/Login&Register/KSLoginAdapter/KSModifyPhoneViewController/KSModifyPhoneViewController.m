@@ -32,10 +32,10 @@
     // Do any additional setup after loading the view.
     self.title = @"账号更改";
     
-    [self.modifyPhoneView.resetViewCtl.btn_nextStep setTitle:@"完成" forState:UIControlStateNormal];
-    UIBarButtonItem *rightButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.modifyPhoneView.resetViewCtl.btn_nextStep];
-    self.modifyPhoneView.resetViewCtl.btn_nextStep.enabled = NO;
-    self.navigationItem.rightBarButtonItem = rightButtonItem;
+//    [self.modifyPhoneView.resetViewCtl.btn_nextStep setTitle:@"完成" forState:UIControlStateNormal];
+//    UIBarButtonItem *rightButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.modifyPhoneView.resetViewCtl.btn_nextStep];
+//    self.modifyPhoneView.resetViewCtl.btn_nextStep.enabled = NO;
+//    self.navigationItem.rightBarButtonItem = rightButtonItem;
     
     [self.view addSubview:self.modifyPhoneView];
 }

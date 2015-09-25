@@ -23,13 +23,13 @@
 -(void)initLayerButton{
     _historyListBtn =[[UIButton alloc] initWithFrame:CGRectMake(0, 0, self.width, self.width)];
     [_historyListBtn setBackgroundImage:[UIImage imageNamed:@"ico_footpoint_normal"] forState:UIControlStateNormal];
-    [_historyListBtn setBackgroundImage:[UIImage imageNamed:@"ico_footpoint_normal"] forState:UIControlStateHighlighted];
+    [_historyListBtn setBackgroundImage:[UIImage imageNamed:@"public_icon_footprint_p"] forState:UIControlStateHighlighted];
     [_historyListBtn addTarget:self action:@selector(historyListButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:_historyListBtn];
     
     _fencingBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, _historyListBtn.bottom + button_border, self.width, self.width)];
     [_fencingBtn setBackgroundImage:[UIImage imageNamed:@"ico_crawl_normal"] forState:UIControlStateNormal];
-    [_fencingBtn setBackgroundImage:[UIImage imageNamed:@"ico_crawl_normal"] forState:UIControlStateHighlighted];
+    [_fencingBtn setBackgroundImage:[UIImage imageNamed:@"public_icon_crawl_p"] forState:UIControlStateHighlighted];
     [_fencingBtn addTarget:self action:@selector(fencingButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:_fencingBtn];
     
@@ -38,7 +38,7 @@
     
     _phoneBtn = [[UIButton alloc] initWithFrame:rect];
     [_phoneBtn setBackgroundImage:[UIImage imageNamed:@"ico_phone_normal"] forState:UIControlStateNormal];
-    [_phoneBtn setBackgroundImage:[UIImage imageNamed:@"ico_phone_normal"] forState:UIControlStateHighlighted];
+    [_phoneBtn setBackgroundImage:[UIImage imageNamed:@"public_icon_phone_p"] forState:UIControlStateHighlighted];
     [_phoneBtn addTarget:self action:@selector(phoneButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:_phoneBtn];
 }

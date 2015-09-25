@@ -13,7 +13,7 @@
 #import "EHAddBabyFamilyPhoneService.h"
 #import "EHDelBabyFamilyPhoneService.h"
 #import "EHGetBabyFamilyPhoneListService.h"
-
+#import "GroupedTableView.h"
 #define kLines 5
 
 
@@ -56,12 +56,13 @@ typedef enum : NSUInteger {
 //    }
 //    [NSNumber numberWithInteger:[self.phoneModel.phone_type integerValue]]
     
-    self.tableView=[[UITableView alloc]initWithFrame:self.view.frame style:UITableViewStyleGrouped];
+    self.tableView=[[GroupedTableView alloc]initWithFrame:CGRectMake(8, 0, CGRectGetWidth(self.view.frame)-16, CGRectGetHeight( self.view.frame)) style:UITableViewStyleGrouped];
     self.tableView.delegate=self;
     self.tableView.dataSource=self;
     UINib *nib = [UINib nibWithNibName:@"EHFamilyNumbersTableViewCell" bundle:nil];
     [self.tableView registerNib:nib forCellReuseIdentifier:@"EHFamilyNumberTableViewCell"];
     [self.view addSubview:self.tableView];
+    self.view.backgroundColor=self.tableView.backgroundColor;
     //[self setRightBarItem:EHRightItemMore];
 }
 
@@ -270,12 +271,12 @@ typedef enum : NSUInteger {
 
         
         if ([self.selectedArray[indexPath.row] boolValue]) {
-            cell.selectImage.image = [UIImage imageNamed:@"btn_checkbox_press"];
+            cell.selectImage.image = [UIImage imageNamed:@"public_radiobox_set_on"];
             [self.markArray addObject:data];
             
         }
         else{
-            cell.selectImage.image = [UIImage imageNamed:@"btn_checkbox_normal"];
+            cell.selectImage.image = [UIImage imageNamed:@"public_radiobox_set_off"];
             [self.markArray removeObject:data];
             
         }
@@ -292,12 +293,12 @@ typedef enum : NSUInteger {
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return 49.0f;
+    return 61.0f;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 30;
+    return 12;
 }
 
 //- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section

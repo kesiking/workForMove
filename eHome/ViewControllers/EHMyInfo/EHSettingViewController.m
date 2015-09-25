@@ -9,6 +9,7 @@
 #import "EHSettingViewController.h"
 #import "EHMyInfoViewController.h"
 #import "SevenSwitch.h"
+#import "EHSwitch.h"
 
 #define kEHShakeNoticeKey @"shakeNoticeKey"     //震动
 #define kEHVoiceNoticeKey @"voiceNoticeKey"     //声音
@@ -18,12 +19,11 @@
 #define kSwitchTag 100
 
 @interface EHSettingViewController ()<UITableViewDataSource,UITableViewDelegate>
-
 @end
 
 @implementation EHSettingViewController
 {
-    UITableView *_tableView;
+    GroupedTableView *_tableView;
     NSMutableArray *_titleArray;
     NSMutableArray *_sliderStatueArray;
 }
@@ -40,7 +40,7 @@
         [_titleArray removeLastObject];
     }
     
-    [self.view addSubview:[self tableView]];
+    [self initTableView];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -78,9 +78,16 @@
         }
     }
     cell.textLabel.text = _titleArray[indexPath.section + indexPath.row];
-    [cell.contentView addSubview:[self switchWithTag:indexPath.section + indexPath.row]];
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.textLabel.font = EHFont2;
+    cell.textLabel.textColor = EHCor5;
     
+    if ((indexPath.section == 0)&&(indexPath.row == 0)) {
+        [cell.contentView addSubview:[self switchWithTag:indexPath.section + indexPath.row]];
+    }else
+    {
+        [cell.contentView addSubview:[self buttonWithTag:indexPath.section + indexPath.row]];
+    }
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
 
@@ -101,8 +108,8 @@
         
         UILabel *warnLabel = [[UILabel alloc]initWithFrame:CGRectMake(spaceX, 10, CGRectGetWidth(_tableView.frame) - spaceX * 2, 25)];
         warnLabel.text = text;
-        warnLabel.textColor = EH_cor4;
-        warnLabel.font = EH_font6;
+        warnLabel.textColor = EHCor3;
+        warnLabel.font = EHFont5;
         warnLabel.textAlignment = NSTextAlignmentLeft;
         warnLabel.lineBreakMode = NSLineBreakByWordWrapping;
         warnLabel.numberOfLines = 0;
@@ -123,51 +130,79 @@
 }
 
 #pragma mark - Events Response
-- (void)switchChanged:(id)sender{
-    SevenSwitch *swit = (SevenSwitch *)sender;
-    _sliderStatueArray[swit.tag - kSwitchTag] = [NSNumber numberWithBool:swit.on];
-
-    if (swit.on == YES) {
-        swit.knobColor = [UIColor colorWithRed:92/255.0 green:176/255.0 blue:65/255.0 alpha:1];
-    }
-    else {
-        swit.knobColor = [UIColor colorWithRed:176/255.0 green:176/255.0 blue:180/255.0 alpha:1];
-    }
-    
+- (void)switchChanged:(BOOL)switchON
+{
+    _sliderStatueArray[0] = [NSNumber numberWithBool:switchON];
     NSMutableArray *array = [[NSMutableArray alloc] init];
-    if (swit.tag == kSwitchTag) {
-        //提醒开关
-        for (int i = 0; i <= 1; i++) {
-            NSIndexPath *indexpath = [NSIndexPath indexPathForRow:i inSection:1];
-            [array addObject:indexpath];
-        }
-        if (swit.on) {
-            
-            [_titleArray addObject:@"震动"];
-            [_titleArray addObject:@"声音"];
-            
-            [_tableView insertRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationFade];
-        }
-        else  {
-            [_titleArray removeObject:@"震动"];
-            [_titleArray removeObject:@"声音"];
-            
-            [_tableView deleteRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationFade];
-        }
+    for (int i = 0; i <= 1; i++) {
+        NSIndexPath *indexpath = [NSIndexPath indexPathForRow:i inSection:1];
+        [array addObject:indexpath];
+    }
+    if (switchON) {
+        [_titleArray addObject:@"震动"];
+        [_titleArray addObject:@"声音"];
         
-        //更新震动和声音处理
-        [self updateNotice:swit.on];
+        [_tableView insertRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationFade];
+    }else  {
+        [_titleArray removeObject:@"震动"];
+        [_titleArray removeObject:@"声音"];
+        
+        [_tableView deleteRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationFade];
     }
-    else if (swit.tag == kSwitchTag + 1){
-        //震动
-        [self updateShakeNotice:swit.on];
+    [self updateNotice:switchON];
+}
+//- (void)switchChanged:(id)sender{
+//    EHSwitch *swit = (EHSwitch *)sender;
+//    _sliderStatueArray[swit.tag - kSwitchTag] = [NSNumber numberWithBool:swit.on];
+//    
+//    NSMutableArray *array = [[NSMutableArray alloc] init];
+//    if (swit.tag == kSwitchTag) {
+//        //提醒开关
+//        for (int i = 0; i <= 1; i++) {
+//            NSIndexPath *indexpath = [NSIndexPath indexPathForRow:i inSection:1];
+//            [array addObject:indexpath];
+//        }
+//        if (swit.on) {
+//            
+//            [_titleArray addObject:@"震动"];
+//            [_titleArray addObject:@"声音"];
+//            
+//            [_tableView insertRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationFade];
+//        }
+//        else  {
+//            [_titleArray removeObject:@"震动"];
+//            [_titleArray removeObject:@"声音"];
+//            
+//            [_tableView deleteRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationFade];
+//        }
+//        
+//        //更新震动和声音处理
+//        [self updateNotice:swit.on];
+//    }
+//    else if (swit.tag == kSwitchTag + 1){
+//        //震动
+//        [self updateShakeNotice:swit.on];
+//    }
+//    else if (swit.tag == kSwitchTag + 2){
+//        //声音
+//        [self updateVoiceNotice:swit.on];
+//    }
+//}
+- (void)ButtonClicked:(UIButton *)sender
+{
+    BOOL btnON = ![_sliderStatueArray[sender.tag - kSwitchTag] boolValue];
+    _sliderStatueArray[sender.tag - kSwitchTag] = [NSNumber numberWithBool:btnON];
+    if(btnON){
+        [sender setImage:[UIImage imageNamed:@"public_radiobox_set_on"] forState:UIControlStateNormal];
+    }else{
+        [sender setImage:[UIImage imageNamed:@"public_radiobox_set_off"] forState:UIControlStateNormal];
     }
-    else if (swit.tag == kSwitchTag + 2){
-        //声音
-        [self updateVoiceNotice:swit.on];
+    if (sender.tag == kSwitchTag +1) {
+        [self updateShakeNotice:btnON];
+    }else if (sender.tag == kSwitchTag +2){
+        [self updateVoiceNotice:btnON];
     }
 }
-
 #pragma mark - Common Methods
 - (NSMutableArray *)arrayOfNotice{
     NSNumber *shakeNumber,*voiceNumber,*noticeNumber;
@@ -236,33 +271,44 @@
 }
 
 #pragma mark - Getters And Setters
-- (UITableView *)tableView{
-    _tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame)) style:UITableViewStyleGrouped];
+- (void)initTableView{
+    _tableView = [[GroupedTableView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame)) style:UITableViewStyleGrouped];
     _tableView.rowHeight = kCellHeight;
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    return _tableView;
+    self.view.backgroundColor = _tableView.backgroundColor;
+    [self.view addSubview:_tableView];
+    
+    [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.view).with.insets(UIEdgeInsetsMake(0, 10, 0, 10));
+    }];
+    
+    return;
 }
-
-- (SevenSwitch *)switchWithTag:(NSInteger)tag{
-    SevenSwitch *swit = [[SevenSwitch alloc]initWithFrame:CGRectMake(CGRectGetWidth(_tableView.frame) - 20 - 50, 12.5, 50, 25)];
-    swit.onColor = [UIColor colorWithRed:168/255.0 green:216/255.0 blue:152/255.0 alpha:1];
-    swit.knobColor = [UIColor colorWithRed:92/255.0 green:176/255.0 blue:65/255.0 alpha:1];
-    swit.inactiveColor = [UIColor colorWithRed:214/255.0 green:214/255.0 blue:217/255.0 alpha:1];
+- (EHSwitch *)switchWithTag:(NSInteger)tag{
+    EHSwitch *swit = [[EHSwitch alloc]initWithFrame:CGRectMake(CGRectGetWidth(_tableView.frame) - 12 - 50, 12.5, 50, 25)];
     EHLogInfo(@"_sliderStatueArray.tag = %@",_sliderStatueArray[tag]);
     swit.on = [_sliderStatueArray[tag] boolValue];
     swit.tag = kSwitchTag + tag;
-    if (swit.on == YES) {
-        swit.knobColor = [UIColor colorWithRed:92/255.0 green:176/255.0 blue:65/255.0 alpha:1];
-    }
-    else {
-        swit.knobColor = [UIColor colorWithRed:176/255.0 green:176/255.0 blue:180/255.0 alpha:1];
-    }
-    [swit addTarget:self action:@selector(switchChanged:) forControlEvents:UIControlEventValueChanged];
-    
+    WEAKSELF
+    swit.switchChangedBlock = ^(BOOL on){
+    STRONGSELF
+        [strongSelf switchChanged:on];
+    };
     return swit;
 }
-
+- (UIButton *)buttonWithTag:(NSInteger)tag{
+    UIButton *button = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetWidth(_tableView.frame) - 12- 44 + 11, 0, 44, 44)];
+    button.imageEdgeInsets = UIEdgeInsetsMake(11, 11, 11, 11);
+    button.tag = kSwitchTag + tag;
+    [button addTarget:self action:@selector(ButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+    if ([_sliderStatueArray[tag] boolValue]) {
+        [button setImage:[UIImage imageNamed:@"public_radiobox_set_on"] forState:UIControlStateNormal];
+    }else{
+        [button setImage:[UIImage imageNamed:@"public_radiobox_set_off"] forState:UIControlStateNormal];
+    }
+    return button;
+}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }

@@ -223,6 +223,7 @@ static const CGFloat kXHUserNameLabelHeight = 20;
 }
 
 - (void)configUserNameWithMessage:(id <XHMessageModel>)message {
+    self.userNameLabel.hidden = !message.shouldShowUserName;
     self.userNameLabel.text = [message sender];
 }
 
@@ -381,11 +382,11 @@ static const CGFloat kXHUserNameLabelHeight = 20;
     // 第一，是否有时间戳的显示
     CGFloat timestampHeight = displayTimestamp ? (kXHTimeStampLabelHeight + kXHLabelPadding * 2) : 0;
     
-    CGFloat userInfoNeedHeight = kXHAvatarPaddingY + kXHAvatarImageSize + (message.shouldShowUserName ? kXHUserNameLabelHeight : 0) + kXHAvatarPaddingY + timestampHeight;
+    CGFloat userInfoNeedHeight = (message.shouldShowUserName ? kXHUserNameLabelHeight : 0);
     
-    CGFloat bubbleMessageHeight = [XHMessageBubbleView calculateCellHeightWithMessage:message] + timestampHeight;
+    CGFloat bubbleMessageHeight = [XHMessageBubbleView calculateCellHeightWithMessage:message] + timestampHeight + userInfoNeedHeight;
     
-    return MAX(bubbleMessageHeight, userInfoNeedHeight);
+    return bubbleMessageHeight;
 }
 
 #pragma mark - Life cycle
@@ -458,16 +459,15 @@ static const CGFloat kXHUserNameLabelHeight = 20;
         [self.contentView addSubview:avatarButton];
         self.avatarButton = avatarButton;
         
-        if (message.shouldShowUserName) {
-            // 3、配置用户名
-            UILabel *userNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.avatarButton.bounds) + 20, kXHUserNameLabelHeight)];
-            userNameLabel.textAlignment = NSTextAlignmentCenter;
-            userNameLabel.backgroundColor = [UIColor clearColor];
-            userNameLabel.font = [UIFont systemFontOfSize:12];
-            userNameLabel.textColor = [UIColor colorWithRed:0.140 green:0.635 blue:0.969 alpha:1.000];
-            [self.contentView addSubview:userNameLabel];
-            self.userNameLabel = userNameLabel;
-        }
+        // 3、配置用户名
+        UILabel *userNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.avatarButton.bounds) + 20, kXHUserNameLabelHeight)];
+        userNameLabel.textAlignment = NSTextAlignmentCenter;
+        userNameLabel.backgroundColor = [UIColor clearColor];
+        userNameLabel.font = [UIFont systemFontOfSize:12];
+        userNameLabel.textColor = [UIColor colorWithRed:0.140 green:0.635 blue:0.969 alpha:1.000];
+        [self.contentView addSubview:userNameLabel];
+        self.userNameLabel = userNameLabel;
+        self.userNameLabel.hidden = !message.shouldShowUserName;
         
         // 4、配置需要显示什么消息内容，比如语音、文字、视频、图片
         if (!_messageBubbleView) {
@@ -505,10 +505,7 @@ static const CGFloat kXHUserNameLabelHeight = 20;
     avatarButtonFrame.origin.x = ([self bubbleMessageType] == XHBubbleMessageTypeReceiving) ? kXHAvatarPaddingX : ((CGRectGetWidth(self.bounds) - kXHAvatarPaddingX - kXHAvatarImageSize));
     self.avatarButton.frame = avatarButtonFrame;
     
-    if (self.messageBubbleView.message.shouldShowUserName) {
-        // 布局用户名
-        self.userNameLabel.center = CGPointMake(CGRectGetMidX(avatarButtonFrame), CGRectGetMaxY(avatarButtonFrame) + CGRectGetMidY(self.userNameLabel.bounds));
-    }
+    
     
     // 布局消息内容的View
     CGFloat bubbleX = 0.0f;
@@ -518,10 +515,23 @@ static const CGFloat kXHUserNameLabelHeight = 20;
     } else {
         offsetX = kXHAvatarImageSize + kXHAvatarPaddingX * 2;
     }
+    
     CGFloat timeStampLabelNeedHeight = (self.displayTimestamp ? (kXHTimeStampLabelHeight + kXHLabelPadding) : 0);
+    CGFloat bubbleMessageViewFrameOringe = timeStampLabelNeedHeight;
+    if (self.messageBubbleView.message.shouldShowUserName) {
+        // 布局用户名
+//        self.userNameLabel.center = CGPointMake(CGRectGetMidX(avatarButtonFrame), CGRectGetMaxY(avatarButtonFrame) + CGRectGetMidY(self.userNameLabel.bounds));
+        [self.userNameLabel sizeToFit];
+        if ([self bubbleMessageType] == XHBubbleMessageTypeReceiving) {
+            [self.userNameLabel setFrame:CGRectMake(CGRectGetMaxX(avatarButtonFrame) + kXHAvatarPaddingX, CGRectGetMinY(avatarButtonFrame) - 2, self.userNameLabel.width, self.userNameLabel.height)];
+        } else {
+            [self.userNameLabel setFrame:CGRectMake(CGRectGetMinX(avatarButtonFrame) - kXHAvatarPaddingX - self.userNameLabel.width, CGRectGetMinY(avatarButtonFrame), self.userNameLabel.width, self.userNameLabel.height)];
+        }
+        bubbleMessageViewFrameOringe = self.userNameLabel.bottom - 5;
+    }
     
     CGRect bubbleMessageViewFrame = CGRectMake(bubbleX,
-                              timeStampLabelNeedHeight,
+                              bubbleMessageViewFrameOringe,
                               CGRectGetWidth(self.contentView.bounds) - bubbleX - offsetX,
                               CGRectGetHeight(self.contentView.bounds) - timeStampLabelNeedHeight);
     self.messageBubbleView.frame = bubbleMessageViewFrame;

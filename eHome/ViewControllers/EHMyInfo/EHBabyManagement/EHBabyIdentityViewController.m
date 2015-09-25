@@ -13,6 +13,7 @@
 #import "UMSocial.h"
 #import "EHSocializedSharedMacro.h"
 #import "EHSocialShareHandle.h"
+#import "NSString+StringSize.h"
 
 #define TEXTFIELD_INSETS 20
 #define DEVICECODE_TEXTFIELD_Y_MARGIN 40
@@ -27,16 +28,16 @@
 #define QRIMAGE_Y_MARGIN 60
 
 #define kColumn 3           //列数
-#define kSideSpaceX 75 / 2.0
-#define kViewSpaceX 120 / 2.0
+#define kSideSpaceX 70 / 2.0
+#define kViewSpaceX 70 / 2.0
 #define kViewSpaceY 75 / 2.0
 
 @interface EHBabyIdentityViewController ()
 {
     KSInsetsTextField* _deviceCodeTextField;
-    UILabel* _copyPromptLabel;
+    UILabel* _babyEquipmentLabel;
     UIImageView* _deviceCodeQRImageView;
-    
+    UIImageView* _backgroundView;
     NSString* _deviceCode;
 }
 @end
@@ -66,92 +67,68 @@
 
 - (void)setupSubViews
 {
-   
-    
-    CGFloat imageViewWidth = CGRectGetWidth([UIScreen mainScreen].bounds) - QRIMAGE_X_MARGIN * 2;
-    
+    _backgroundView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_twodimensioncode_babyidentity"]];
+    [self.view addSubview:_backgroundView];
+    [_backgroundView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.view.mas_top).with.offset(27*SCREEN_SCALE);
+        make.left.equalTo(self.view.mas_left).with.offset(40*SCREEN_SCALE);
+        make.right.equalTo(self.view.mas_right).with.offset(-40*SCREEN_SCALE);
+        make.height.mas_equalTo((CGRectGetWidth(self.view.frame)-80)*CGRectGetHeight(_backgroundView.frame)/CGRectGetWidth(_backgroundView.frame));
+    }];
+
+    CGFloat imageViewWidth=CGRectGetWidth(_backgroundView.frame)-62;
     _deviceCodeQRImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, imageViewWidth , imageViewWidth)];
-    _deviceCodeQRImageView.center = CGPointMake(CGRectGetWidth([UIScreen mainScreen].bounds)/2, QRIMAGE_Y_MARGIN+imageViewWidth/2);
+    [_backgroundView addSubview:_deviceCodeQRImageView];
+    [_deviceCodeQRImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(_backgroundView.mas_top).with.offset(15*SCREEN_SCALE);
+        make.left.equalTo(_backgroundView.mas_left).with.offset(10*SCREEN_SCALE);
+        make.right.equalTo(_backgroundView.mas_right).with.offset(-10*SCREEN_SCALE);
+        make.height.equalTo(_backgroundView.mas_width).with.offset(-20*SCREEN_SCALE);
+    }];
+    
+ //   _deviceCodeQRImageView.center = CGPointMake(CGRectGetWidth([UIScreen mainScreen].bounds)/2, QRIMAGE_Y_MARGIN+imageViewWidth/2);
     
     _deviceCodeQRImageView.image = [MWQREncode qrImageForString:_deviceCode imageSize:imageViewWidth*2];
-    _deviceCodeQRImageView.backgroundColor = [UIColor whiteColor];
-    
-    [self.view addSubview:_deviceCodeQRImageView];
-    
-    _deviceCodeTextField = [[KSInsetsTextField alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(_deviceCodeQRImageView.frame)+DEVICECODE_TEXTFIELD_Y_MARGIN, CGRectGetWidth([UIScreen mainScreen].bounds), DEVICECODE_TEXTFIELD_HEIGHT)];
-    _deviceCodeTextField.backgroundColor = [UIColor whiteColor];
-    
-    UILabel* customPrompt = [[UILabel alloc] initWithFrame:CGRectMake(0,0, DEVICECODE_TEXTFIELD_LWFTVIEW_WIDTH, DEVICECODE_TEXTFIELD_HEIGHT)];
-    customPrompt.text = @"宝贝身份识别码";
-    customPrompt.font = [UIFont systemFontOfSize:EH_siz3];
-    customPrompt.textColor = EH_cor4;
-    
-    _deviceCodeTextField.leftView = customPrompt;
-    _deviceCodeTextField.leftViewMode = UITextFieldViewModeAlways;
-    
-    _deviceCodeTextField.textAlignment = NSTextAlignmentRight;
-    _deviceCodeTextField.text = _deviceCode;
-    
-    _deviceCodeTextField.textEdgeInsets = UIEdgeInsetsMake(0, 0, 0, TEXTFIELD_INSETS);
-    _deviceCodeTextField.leftViewEdgeInsets = UIEdgeInsetsMake(0, TEXTFIELD_INSETS, 0, 0);
-    
-    _deviceCodeTextField.font = [UIFont systemFontOfSize:EH_siz3];
-    _deviceCodeTextField.textColor = EH_cor5;
-    
-    [self.view addSubview:_deviceCodeTextField];
-    
-    _copyPromptLabel = [[UILabel alloc] initWithFrame:CGRectMake(TEXTFIELD_INSETS, CGRectGetMaxY(_deviceCodeTextField.frame)+COPYLABEL_Y_HEIGHT, CGRectGetWidth([UIScreen mainScreen].bounds), COPYLABEL_Y_HEIGHT)];
-    _copyPromptLabel.text = @"点击长按可以复制宝贝身份识别码";
-    _copyPromptLabel.textColor = EH_cor4;
-    _copyPromptLabel.font = EH_font6;
-    
-    [self.view addSubview:_copyPromptLabel];
     
     
-}
-
-
-
-- (void)setupSubViewsold
-{
-    _deviceCodeTextField = [[KSInsetsTextField alloc] initWithFrame:CGRectMake(0, DEVICECODE_TEXTFIELD_Y_MARGIN, CGRectGetWidth([UIScreen mainScreen].bounds), DEVICECODE_TEXTFIELD_HEIGHT)];
-    _deviceCodeTextField.backgroundColor = [UIColor whiteColor];
-    
-    UILabel* customPrompt = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, DEVICECODE_TEXTFIELD_LWFTVIEW_WIDTH, DEVICECODE_TEXTFIELD_HEIGHT)];
-    customPrompt.text = @"宝贝身份识别码";
-    customPrompt.font = [UIFont systemFontOfSize:EH_siz3];
-    customPrompt.textColor = EH_cor4;
-    
-    _deviceCodeTextField.leftView = customPrompt;
-    _deviceCodeTextField.leftViewMode = UITextFieldViewModeAlways;
-    
-    _deviceCodeTextField.textAlignment = NSTextAlignmentRight;
-    _deviceCodeTextField.text = _deviceCode;
-    
-    _deviceCodeTextField.textEdgeInsets = UIEdgeInsetsMake(0, 0, 0, TEXTFIELD_INSETS);
-    _deviceCodeTextField.leftViewEdgeInsets = UIEdgeInsetsMake(0, TEXTFIELD_INSETS, 0, 0);
-    
-    _deviceCodeTextField.font = [UIFont systemFontOfSize:EH_siz3];
-    _deviceCodeTextField.textColor = EH_cor5;
-    
-    [self.view addSubview:_deviceCodeTextField];
-    
-    _copyPromptLabel = [[UILabel alloc] initWithFrame:CGRectMake(TEXTFIELD_INSETS, CGRectGetMaxY(_deviceCodeTextField.frame)+COPYLABEL_Y_HEIGHT, CGRectGetWidth([UIScreen mainScreen].bounds), COPYLABEL_Y_HEIGHT)];
-    _copyPromptLabel.text = @"点击长按可以复制宝贝身份识别码";
-    _copyPromptLabel.textColor = EH_cor4;
-    _copyPromptLabel.font = EH_font6;
-    
-    [self.view addSubview:_copyPromptLabel];
-    
-    CGFloat imageViewWidth = CGRectGetWidth([UIScreen mainScreen].bounds) - QRIMAGE_X_MARGIN * 2;
+    _babyEquipmentLabel=[[UILabel alloc]init];
+    _babyEquipmentLabel.text=@"宝贝设备码";
+    _babyEquipmentLabel.font=[UIFont systemFontOfSize:EHSiz2];
+    _babyEquipmentLabel.textColor=EHCor5;
+    _babyEquipmentLabel.textAlignment=NSTextAlignmentCenter;
+    CGFloat labelHeightsize = [@"text" sizeWithFontSize:EHSiz2 Width:CGRectGetWidth(_babyEquipmentLabel.frame)].height;
+    [_backgroundView addSubview:_babyEquipmentLabel];
+    [_babyEquipmentLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(_deviceCodeQRImageView.mas_bottom).with.offset(16*SCREEN_SCALE);
+        make.centerX.equalTo(_backgroundView.mas_centerX);
+        make.width.equalTo(_backgroundView.mas_width);
+        make.height.mas_equalTo(labelHeightsize);
+    }];
     
     
-    _deviceCodeQRImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, imageViewWidth , imageViewWidth)];
-    _deviceCodeQRImageView.center = CGPointMake(CGRectGetWidth([UIScreen mainScreen].bounds)/2, QRIMAGE_Y_MARGIN+imageViewWidth/2);
-    _deviceCodeQRImageView.image = [MWQREncode qrImageForString:_deviceCode imageSize:imageViewWidth*2];
-    _deviceCodeQRImageView.backgroundColor = [UIColor whiteColor];
+    UIImageView *outlineView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_phone_twodimensioncode_babyidentity"]];
+    [_backgroundView addSubview:outlineView];
+    [outlineView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(_babyEquipmentLabel.mas_bottom).with.offset(11*SCREEN_SCALE);
+        make.centerX.equalTo(_backgroundView.mas_centerX);
+        make.left.equalTo(_backgroundView.mas_left).with.offset(36*SCREEN_SCALE);
+        make.right.equalTo(_backgroundView.mas_right).with.offset(-36*SCREEN_SCALE);
+        make.bottom.equalTo(_backgroundView.mas_bottom).with.offset(-9*SCREEN_SCALE);
+    }];
     
-    [self.view addSubview:_deviceCodeQRImageView];
+    
+    UILabel *deviceCode=[[UILabel alloc]init];
+    deviceCode.text=_deviceCode;
+    deviceCode.font=[UIFont systemFontOfSize:EHSiz2];
+    deviceCode.textColor=EHCor5;
+    deviceCode.textAlignment=NSTextAlignmentCenter;
+    [_backgroundView addSubview:deviceCode];
+    [deviceCode mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(outlineView.mas_top).with.offset(2*SCREEN_SCALE);
+        make.centerX.equalTo(_backgroundView.mas_centerX);
+        make.width.equalTo(outlineView.mas_width);
+        make.bottom.equalTo(outlineView.mas_bottom).with.offset(-2*SCREEN_SCALE);
+    }];
     
     
 }
@@ -166,29 +143,48 @@
 
 
 -(void)setupShareViews{
-    CGFloat imageWidth = (CGRectGetWidth(self.view.bounds) - (kSideSpaceX * 2 + kViewSpaceX * (kColumn - 1))) / ((CGFloat)kColumn);
+    UILabel *shareLabel=[[UILabel alloc]init];
+    NSString *share=@"可以通过以下三种方式对宝贝设备码进行分享";
+    shareLabel.text=share;
+    shareLabel.font=[UIFont systemFontOfSize:EHSiz5];
+    shareLabel.textColor=EHCor3;
+    shareLabel.textAlignment=NSTextAlignmentCenter;
+  //  float shHeight=[self heightForString:share fontSize:EH_siz5 andWidth:CGRectGetWidth(_backgroundView.frame)];
+     CGFloat shHeight = [@"text" sizeWithFontSize:EH_siz2 Width:CGRectGetWidth(_babyEquipmentLabel.frame)].height;
+    
+    [self.view addSubview:shareLabel];
+    [shareLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(_backgroundView.mas_bottom).with.offset(33*SCREEN_SCALE);
+        make.centerX.equalTo(_backgroundView.mas_centerX);
+        make.width.equalTo(self.view.mas_width);
+        make.height.mas_equalTo(shHeight);
+    }];
+    
+    
+    CGFloat imageWidth = (CGRectGetWidth(self.view.frame) - 70 * 2 ) / ((CGFloat)kColumn);
     CGFloat imageHeight = imageWidth;
     
   //  UIImageView *sharedBtnBgView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_share_wechatanefriend"]];
     UIImageView *sharedBtnBgView=[[UIImageView alloc]init];
-    sharedBtnBgView.backgroundColor=[UIColor whiteColor];
     [self.view addSubview:sharedBtnBgView];
     CGFloat labelHeight = [self heightForString:@"微信" fontSize:12.0f andWidth
                                                :imageWidth];
     [sharedBtnBgView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.equalTo(self.view.mas_bottom).with.offset(-40);
+        make.bottom.equalTo(self.view.mas_bottom);
         make.centerX.equalTo(self.view.mas_centerX);
-       make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH, imageHeight+labelHeight+40*SCREEN_SCALE));
+        make.top.equalTo(shareLabel.mas_bottom).with.offset(26*SCREEN_SCALE);
+        make.width.equalTo(self.view.mas_width);
+       // make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH, imageHeight+labelHeight+40*SCREEN_SCALE));
     }];
     
     UIButton *weChatBtn=[[UIButton alloc]init];
-    [weChatBtn setBackgroundImage:[UIImage imageNamed:@"ico_share_wechat"] forState:UIControlStateNormal];
+    [weChatBtn setBackgroundImage:[UIImage imageNamed:@"public_icon_share_wechat"] forState:UIControlStateNormal];
     weChatBtn.tag=EHShareTypeWechatSession;
     //[self.dayButton addTarget:self action:@selector(onClickButton:) forControlEvents:UIControlEventTouchUpInside];
     [weChatBtn addTarget:self action:@selector(sharedButonClick:) forControlEvents:UIControlEventTouchUpInside];
     [sharedBtnBgView addSubview:weChatBtn];
     [weChatBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(sharedBtnBgView.mas_top).with.offset(15*SCREEN_SCALE);
+        make.top.equalTo(sharedBtnBgView.mas_top);
         make.left.equalTo(sharedBtnBgView.mas_left).with.offset(kSideSpaceX);
         make.size.mas_equalTo(CGSizeMake(imageWidth,imageHeight));
     }];
@@ -196,24 +192,50 @@
     
     UILabel *label=[[UILabel alloc]init];
     label.text=@"微信";
-    label.font=EH_font6;
-    label.textColor = RGB(0x66, 0x66, 0x66);
+    label.font=[UIFont systemFontOfSize:EHSiz5];
+    label.textColor =EHCor5;
     label.textAlignment=NSTextAlignmentCenter;
     [sharedBtnBgView addSubview:label];
     [label mas_makeConstraints:^(MASConstraintMaker *make){
-        make.left.equalTo(sharedBtnBgView.mas_left).with.offset(kSideSpaceX);
-        make.top.equalTo(weChatBtn.mas_bottom).with.offset(10*SCREEN_SCALE);
+        make.left.equalTo(sharedBtnBgView.mas_left).with.offset(kSideSpaceX*SCREEN_SCALE);
+        make.top.equalTo(weChatBtn.mas_bottom).with.offset(11*SCREEN_SCALE);
         make.bottom.equalTo(sharedBtnBgView.mas_bottom).with.offset(-15*SCREEN_SCALE);
         make.centerX.equalTo(weChatBtn.mas_centerX);
     }];
 
     
+    UIButton *QQMessageBtn=[[UIButton alloc]initWithFrame:CGRectZero];
+    [QQMessageBtn setBackgroundImage:[UIImage imageNamed:@"public_icon_share_QQ"] forState:UIControlStateNormal];
+    [sharedBtnBgView addSubview:QQMessageBtn];
+    [QQMessageBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(sharedBtnBgView.mas_top);
+        make.left.equalTo(weChatBtn.mas_right).with.offset(kViewSpaceX*SCREEN_SCALE);
+        make.size.mas_equalTo(CGSizeMake(imageWidth,imageHeight));
+    }];
+    QQMessageBtn.tag=EHShareTypeQQ;
+    [QQMessageBtn addTarget:self action:@selector(sharedButonClick:) forControlEvents:UIControlEventTouchUpInside];
+    
+    UILabel *shareMessagelabelQQ=[[UILabel alloc]init];
+    shareMessagelabelQQ.text=@"QQ";
+    shareMessagelabelQQ.font=[UIFont systemFontOfSize:EHSiz5];
+    shareMessagelabelQQ.textColor =EHCor5;
+    shareMessagelabelQQ.textAlignment=NSTextAlignmentCenter;
+    [sharedBtnBgView addSubview:shareMessagelabelQQ];
+    [shareMessagelabelQQ mas_makeConstraints:^(MASConstraintMaker *make){
+        make.left.equalTo(QQMessageBtn.mas_left);
+        make.top.equalTo(QQMessageBtn.mas_bottom).with.offset(11*SCREEN_SCALE);
+        make.bottom.equalTo(sharedBtnBgView.mas_bottom).with.offset(-15*SCREEN_SCALE);
+        make.centerX.equalTo(QQMessageBtn.mas_centerX);
+    }];
+
+    
+    
     UIButton *shareMessageBtn=[[UIButton alloc]initWithFrame:CGRectZero];
-    [shareMessageBtn setBackgroundImage:[UIImage imageNamed:@"ico_share_message"] forState:UIControlStateNormal];
+    [shareMessageBtn setBackgroundImage:[UIImage imageNamed:@"public_icon_share_message"] forState:UIControlStateNormal];
     [sharedBtnBgView addSubview:shareMessageBtn];
     [shareMessageBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(sharedBtnBgView.mas_top).with.offset(15*SCREEN_SCALE);
-        make.left.equalTo(weChatBtn.mas_right).with.offset(kViewSpaceX);
+        make.top.equalTo(sharedBtnBgView.mas_top);
+        make.left.equalTo(QQMessageBtn.mas_right).with.offset(kViewSpaceX*SCREEN_SCALE);
         make.size.mas_equalTo(CGSizeMake(imageWidth,imageHeight));
     }];
     shareMessageBtn.tag=EHShareTypeSms;
@@ -221,13 +243,13 @@
     
     UILabel *shareMessagelabel=[[UILabel alloc]init];
     shareMessagelabel.text=@"短信";
-    shareMessagelabel.font=EH_font6;
-    shareMessagelabel.textColor = RGB(0x66, 0x66, 0x66);
+    shareMessagelabel.font=[UIFont systemFontOfSize:EHSiz5];
+    shareMessagelabel.textColor = EHCor5;
     shareMessagelabel.textAlignment=NSTextAlignmentCenter;
     [sharedBtnBgView addSubview:shareMessagelabel];
     [shareMessagelabel mas_makeConstraints:^(MASConstraintMaker *make){
         make.left.equalTo(shareMessageBtn.mas_left);
-        make.top.equalTo(shareMessageBtn.mas_bottom).with.offset(10*SCREEN_SCALE);
+        make.top.equalTo(shareMessageBtn.mas_bottom).with.offset(11*SCREEN_SCALE);
         make.bottom.equalTo(sharedBtnBgView.mas_bottom).with.offset(-15*SCREEN_SCALE);
         make.centerX.equalTo(shareMessageBtn.mas_centerX);
     }];

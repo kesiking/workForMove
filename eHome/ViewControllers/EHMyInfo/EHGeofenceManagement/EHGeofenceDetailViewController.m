@@ -334,7 +334,6 @@ typedef NS_ENUM(NSInteger, EHGeofenceType){
             grlVC.geofence_id = @(strongSelf.geofenceInfo.geofence_id);
             grlVC.geofenceName = strongSelf.topView.geofenceName;
             [strongSelf.navigationController pushViewController:grlVC animated:YES];
-            EHLogInfo(@"EHGeofenceRemindView - clickedBlock");
         };
     }
     return _remindView;

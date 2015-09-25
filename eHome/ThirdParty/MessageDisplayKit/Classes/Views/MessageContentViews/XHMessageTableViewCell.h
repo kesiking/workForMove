@@ -113,6 +113,14 @@
                displaysTimestamp:(BOOL)displayTimestamp;
 
 /**
+ *  根据消息Model配置用户名字的显示内容
+ *
+ *  @param message          目标消息Model
+ *
+ */
+- (void)configUserNameWithMessage:(id <XHMessageModel>)message;
+
+/**
  *  根据消息Model计算Cell的高度
  *
  *  @param message          目标消息Model

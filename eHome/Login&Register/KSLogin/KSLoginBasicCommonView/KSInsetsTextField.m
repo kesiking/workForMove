@@ -19,6 +19,7 @@
     if (self) {
         self.textEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 0);
         self.leftViewEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 0);
+        self.rightViewEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0);
         
         UIImage *backgroundImage = [UIImage imageNamed:@"inputbox.png"];
         backgroundImage = [backgroundImage stretchableImageWithLeftCapWidth:floorf(backgroundImage.size.width/2) topCapHeight:floorf(backgroundImage.size.height/2)];
@@ -32,6 +33,7 @@
     if(self){
         self.textEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 0);
         self.leftViewEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 0);
+        self.rightViewEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0);
         
         UIImage *backgroundImage = [UIImage imageNamed:@"inputbox.png"];
         backgroundImage = [backgroundImage stretchableImageWithLeftCapWidth:floorf(backgroundImage.size.width/2) topCapHeight:floorf(backgroundImage.size.height/2)];
@@ -53,6 +55,14 @@
     //    return [super leftViewRectForBounds:UIEdgeInsetsInsetRect(bounds, leftViewEdgeInsets)];
     CGRect iconRect = [super leftViewRectForBounds:bounds];
     iconRect.origin.x += self.leftViewEdgeInsets.left;// 右偏10	return iconRect;
+    return iconRect;
+}
+
+- (CGRect)rightViewRectForBounds:(CGRect)bounds
+{
+    //    return [super leftViewRectForBounds:UIEdgeInsetsInsetRect(bounds, leftViewEdgeInsets)];
+    CGRect iconRect = [super rightViewRectForBounds:bounds];
+    iconRect.origin.x -= self.rightViewEdgeInsets.right;// 左偏10	return iconRect;
     return iconRect;
 }
 

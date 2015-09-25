@@ -72,9 +72,17 @@ typedef void(^historyTraceListDidSelectedBlock) (NSArray* dataList, NSUInteger i
 
 -(void)initMapHistoryTraceNavBarViews{
     [self refreshNavigationItemTitleWithDate:self.selectDate];
+    UIButton* dataSelectTraceBarBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+    [dataSelectTraceBarBtn setImage:[UIImage imageNamed:@"public_icon_calendar"] forState:UIControlStateNormal];
+    [dataSelectTraceBarBtn setImageEdgeInsets:UIEdgeInsetsMake((dataSelectTraceBarBtn.height - 22)/2, (dataSelectTraceBarBtn.width - 22)/2, (dataSelectTraceBarBtn.height - 22)/2, (dataSelectTraceBarBtn.width - 22)/2)];
+    [dataSelectTraceBarBtn addTarget:self action:@selector(dataSelectNarvigationBarItemClicked:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem* dataSelectTraceBarItem = [[UIBarButtonItem alloc] initWithCustomView:dataSelectTraceBarBtn];
     
-    UIBarButtonItem* dataSelectTraceBarItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ico_calendar"] style:UIBarButtonItemStylePlain target:self action:@selector(dataSelectNarvigationBarItemClicked:)];
-    UIBarButtonItem* mapHistoryTraceBarItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"public_ico_tbar_map"] style:UIBarButtonItemStylePlain target:self action:@selector(mapHistoryNarvigationBarItemClicked:)];
+    UIButton* mapHistoryTraceBarBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+    [mapHistoryTraceBarBtn setImage:[UIImage imageNamed:@"public_icon_map"] forState:UIControlStateNormal];
+    [mapHistoryTraceBarBtn setImageEdgeInsets:UIEdgeInsetsMake((mapHistoryTraceBarBtn.height - 22)/2, (mapHistoryTraceBarBtn.width - 22)/2, (mapHistoryTraceBarBtn.height - 22)/2, (mapHistoryTraceBarBtn.width - 22)/2)];
+    [mapHistoryTraceBarBtn addTarget:self action:@selector(mapHistoryNarvigationBarItemClicked:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem* mapHistoryTraceBarItem = [[UIBarButtonItem alloc] initWithCustomView:mapHistoryTraceBarBtn];
     
     self.navigationItem.rightBarButtonItems = @[mapHistoryTraceBarItem, dataSelectTraceBarItem];
 }

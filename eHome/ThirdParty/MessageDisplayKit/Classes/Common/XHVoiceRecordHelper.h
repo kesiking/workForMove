@@ -29,6 +29,7 @@ typedef void(^XHPeakPowerForChannel)(float peakPowerForChannel);
 @property (nonatomic, readonly) NSTimeInterval currentTimeInterval;
 
 + (NSString *)getRecorderPath;
++ (NSString *)getRecorderPathofType:(NSString *)_type;
 - (void)prepareRecordingWithPath:(NSString *)path prepareRecorderCompletion:(XHPrepareRecorderCompletion)prepareRecorderCompletion;
 - (void)startRecordingWithStartRecorderCompletion:(XHStartRecorderCompletion)startRecorderCompletion;
 - (void)pauseRecordingWithPauseRecorderCompletion:(XHPauseRecorderCompletion)pauseRecorderCompletion;

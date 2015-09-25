@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface EHHealthySettingViewController : UIViewController
+@interface EHHealthySettingViewController : KSViewController
 @property(nonatomic,strong)NSNumber *currentTargetSteps;
 @end

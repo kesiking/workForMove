@@ -157,18 +157,20 @@
         _userNickName.textView.lineEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 20);
         //_userNickName.textView.clearButtonMode = UITextFieldViewModeNever;
         _userNickName.textView.placeholder = @"输入用户昵称";
-        [_userNickName setFrame:CGRectMake(20, 0, self.view.width-20, 49)];
-        _userNickName.textView.font = [UIFont systemFontOfSize:EH_siz3];
-        _userNickName.textView.textColor = EH_cor3;
+        [_userNickName setFrame:CGRectMake(12, 12, self.view.width-24, 44)];
+        _userNickName.textView.font = [UIFont systemFontOfSize:EHSiz2];
+        _userNickName.textView.textColor = EHCor5;
+        _userNickName.textView.clearButtonMode=UITextFieldViewModeNever;
         [_userNickName.textView becomeFirstResponder];
-        UIImage *rightImgNormal = [UIImage imageNamed:@"ico_contacts_qinqingdianhua_normal"];
-        UIImage *rightImgPressed = [UIImage imageNamed:@"ico_contacts_qinqingdianhua_press"];
+        
+        UIImage *rightImgNormal = [UIImage imageNamed:@"icon_addressbook"];
+      //  UIImage *rightImgPressed = [UIImage imageNamed:@"ico_contacts_qinqingdianhua_press"];
         
         //UIButton *rightBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
         
-        UIButton *rightBtn = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width-42.5, 12, 22.5, 25)];
+        UIButton *rightBtn = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width-50, 21.5, 23, 23)];
         [rightBtn setImage:rightImgNormal forState:UIControlStateNormal];
-        [rightBtn setImage:rightImgPressed forState:UIControlStateSelected];
+    //    [rightBtn setImage:rightImgPressed forState:UIControlStateSelected];
         
         [rightBtn addTarget:self action:@selector(rightViewBtn:) forControlEvents:UIControlEventTouchUpInside];
         _userNickName.textView.clearButtonEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 15);
@@ -178,7 +180,7 @@
         if (self.phoneModel.phone_name) {
             _userNickName.textView.text = self.phoneModel.phone_name;
             //rightBtn.hidden = YES;
-            _userNickName.textView.clearButtonMode = UITextFieldViewModeWhileEditing;
+            _userNickName.textView.clearButtonMode = UITextFieldViewModeNever;
         }
         else{
             //rightBtn.hidden = NO;
@@ -206,9 +208,9 @@
         //_userPhone.textView.textEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0);
         _userPhone.textView.lineEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 20);
         _userPhone.textView.colorWhileEditing = EH_cor2;
-        [_userPhone setFrame:CGRectMake(20, 49, self.view.width-20, 49)];
-        _userPhone.textView.font = [UIFont systemFontOfSize:EH_siz3];
-        _userPhone.textView.textColor = EH_cor3;
+        [_userPhone setFrame:CGRectMake(12, 80, self.view.width-24, 44)];
+        _userPhone.textView.font = [UIFont systemFontOfSize:EHSiz2];
+        _userPhone.textView.textColor = EHCor5;
         _userPhone.textView.placeholder = @"输入用户手机号码";
         _userPhone.textView.keyboardType = UIKeyboardTypeNumberPad;
         _userPhone.textView.clearButtonEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 15);

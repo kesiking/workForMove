@@ -42,7 +42,7 @@
 
     self.dateLabel=[[UILabel alloc]init];
     self.dateLabel.textColor = EHCor1;
-    self.dateLabel.font = EH_font2;
+    self.dateLabel.font = EHFont1;
     
     [self.dateLabel sizeToFit];
     [self.firstView addSubview:self.dateLabel];
@@ -82,8 +82,8 @@
     
     self.sTargetStepsLabel=[[UILabel alloc]initWithFrame:CGRectZero];
     self.sTargetStepsLabel.text=@"目标：8000步";
-    self.sTargetStepsLabel.textColor= EH_cor9;
-    self.sTargetStepsLabel.font=[UIFont systemFontOfSize:EH_siz4];
+    self.sTargetStepsLabel.textColor= EHCor6;
+    self.sTargetStepsLabel.font=[UIFont systemFontOfSize:EHSiz2];
     self.sTargetStepsLabel.textAlignment= NSTextAlignmentCenter;
     [self.sTargetStepsLabel sizeToFit];
     [self.secondView addSubview:self.sTargetStepsLabel];
@@ -96,14 +96,14 @@
 
     
     self.finishSteps=[[UILabel alloc]initWithFrame:CGRectZero];
-//    self.finishSteps.text=@"3";
-    self.finishSteps.textColor=[UIColor redColor];
-    self.finishSteps.font=[UIFont systemFontOfSize:EH_size10];
+    UIColor *textColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"jianbian"]];
+    self.finishSteps.textColor=textColor;
+    self.finishSteps.font=[UIFont systemFontOfSize:EHSize8];
 //    self.finishSteps.textAlignment=NSTextAlignmentCenter;
 //     [self.finishSteps sizeToFit];
 
     //UiLabel自适应
-    NSDictionary *attributesq = [NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:EH_size10]forKey:NSFontAttributeName];
+    NSDictionary *attributesq = [NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:EHSize8]forKey:NSFontAttributeName];
 //    CGSize sizeForLabelq = [self.finishSteps.text boundingRectWithSize:CGSizeMake(380, 200) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading  attributes:attributesq context:nil].size;
     CGSize sizeForLabelq = [self.finishSteps.text boundingRectWithSize:CGSizeMake(380, 200) options:NSStringDrawingUsesLineFragmentOrigin  attributes:attributesq context:nil].size;
 
@@ -122,8 +122,8 @@
     
     self.step=[[UILabel alloc]initWithFrame:CGRectZero];
     self.step.text=@"步";
-    self.step.font=[UIFont systemFontOfSize:EH_siz2];
-    self.step.textColor= EH_cor9;
+    self.step.font=[UIFont systemFontOfSize:EHSiz1];
+    self.step.textColor= EHCor6;
     [self.step sizeToFit];
     [self.secondView addSubview:self.step];
     [self.step mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -151,7 +151,7 @@
     self.sDistanceLabel=[[UILabel alloc]init];
     self.sDistanceLabel.text=@"距离";
     self.sDistanceLabel.textColor=EH_cor3;
-    self.sDistanceLabel.font=EH_font6;
+    self.sDistanceLabel.font=EHFont5;
     self.sDistanceLabel.textAlignment=NSTextAlignmentCenter;
     [self.sDistanceLabel sizeToFit];
     [self.thirdView addSubview:_sDistanceLabel];
@@ -163,8 +163,8 @@
     
     self.distanceLabel=[[UILabel alloc]init];
     self.distanceLabel.text=@"0千米";
-    self.distanceLabel.textColor=EH_cor14;
-    self.distanceLabel.font=EH_font4;
+    self.distanceLabel.textColor=EHCor16;
+    self.distanceLabel.font=EHFont2;
     self.distanceLabel.textAlignment=NSTextAlignmentCenter;
     [self.distanceChart sizeToFit];
     [self.thirdView addSubview:_distanceLabel];
@@ -178,7 +178,7 @@
     self.sEnergyLabel=[[UILabel alloc]init];
     self.sEnergyLabel.text=@"热量";
     self.sEnergyLabel.textColor=EH_cor3;
-    self.sEnergyLabel.font=EH_font6;
+    self.sEnergyLabel.font=EHFont5;
     self.sEnergyLabel.textAlignment=NSTextAlignmentCenter;
     [self.sEnergyLabel sizeToFit];
     [self.thirdView addSubview:_sEnergyLabel];
@@ -190,8 +190,8 @@
     
     self.energyLabel=[[UILabel alloc]init];
     self.energyLabel.text=@"0千卡";
-    self.energyLabel.textColor=EH_cor15;
-    self.energyLabel.font=EH_font4;
+    self.energyLabel.textColor=EHCor17;
+    self.energyLabel.font=EHFont2;
     self.energyLabel.textAlignment=NSTextAlignmentCenter;
     [self.energyChart sizeToFit];
     [self.thirdView addSubview:_energyLabel];
@@ -205,7 +205,7 @@
     self.sRatioLabel=[[UILabel alloc]init];
     self.sRatioLabel.text=@"完成";
     self.sRatioLabel.textColor=EH_cor3;
-    self.sRatioLabel.font=EH_font6;
+    self.sRatioLabel.font=EHFont5;
     self.sRatioLabel.textAlignment=NSTextAlignmentCenter;
     [self.sRatioLabel sizeToFit];
     [self.thirdView addSubview:_sRatioLabel];
@@ -217,8 +217,8 @@
     
     self.ratioLabel=[[UILabel alloc]init];
     self.ratioLabel.text=@"90%";
-    self.ratioLabel.textColor=EH_cor16;
-    self.ratioLabel.font=EH_font4;
+    self.ratioLabel.textColor=EHCor18;
+    self.ratioLabel.font=EHFont2;
     self.ratioLabel.textAlignment=NSTextAlignmentCenter;
     [self.ratioLabel sizeToFit];
     [self.thirdView addSubview:_ratioLabel];
@@ -284,10 +284,23 @@
     
     self.lineViewOne = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_histogram_line"]];
     [self.bgChartView addSubview:self.lineViewOne];
+    
+//    self.linelightViewOne = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_histogram_line"]];
+    
+    self.linelightViewOne = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH-28*SCREEN_SCALE, 1)];
+    self.linelightViewOne.backgroundColor = EHCor15;
+    
+    [self.bgChartView addSubview:self.linelightViewOne];
+    
+//    self.linelightViewTwo = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_histogram_line"]];
+    self.linelightViewTwo = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH-28*SCREEN_SCALE, 1)];
+    self.linelightViewTwo.backgroundColor = EHCor15;
+    [self.bgChartView addSubview:self.linelightViewTwo];
+    
     self.lineViewTwo = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_histogram_line"]];
     [self.bgChartView addSubview:self.lineViewTwo];
-    self.lineViewThree = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_histogram_line"]];
-    [self.bgChartView addSubview:self.lineViewThree];
+//    self.lineViewThree = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_histogram_line"]];
+//    [self.bgChartView addSubview:self.lineViewThree];
     self.lineViewFour = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_histogram_line"]];
     [self.bgChartView addSubview:self.lineViewFour];
     self.barChart=[[PNBarChart alloc]initWithFrame:CGRectMake(0,0,self.bgChartView.size.width,self.bgChartView.size.height)];
@@ -305,7 +318,8 @@
     CGSize sizeForDateLabel2=[self.maxYValueLabel.text boundingRectWithSize:CGSizeMake(400, 80) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes2 context:nil].size;
     self.maxYValueLabel.height = sizeForDateLabel2.height;
     
-    [self.barChart addSubview:self.maxYValueLabel];
+    [self.bgChartView addSubview:self.maxYValueLabel];
+
     
     //添加约束
     [self.maxYValueLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -322,7 +336,7 @@
 
     self.middleValueLabel.height = sizeForDateLabel2.height;
     
-    [self.barChart addSubview:self.middleValueLabel];
+    [self.bgChartView addSubview:self.middleValueLabel];
     
     //添加约束
     [self.middleValueLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -341,11 +355,11 @@
     
     [self.barChart addSubview:self.minYValueLabel];
     
-    //添加约束
-    [self.minYValueLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.lineViewThree.mas_top).offset(0*SCREEN_SCALE);
-        make.left.equalTo(self.barChart.mas_left).offset(0*SCREEN_SCALE);
-    }];
+//    //添加约束
+//    [self.minYValueLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.top.equalTo(self.lineViewThree.mas_top).offset(0*SCREEN_SCALE);
+//        make.left.equalTo(self.barChart.mas_left).offset(0*SCREEN_SCALE);
+//    }];
 
 
     [self.lineViewOne mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -353,16 +367,27 @@
         make.left.equalTo(self.fourthView.mas_left).offset(14*SCREEN_SCALE);
         make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH-28*SCREEN_SCALE, 1));
     }];
+    
+    
+    [self.linelightViewOne mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.lineViewOne.mas_bottom).offset(27*SCREEN_SCALE-1);
+        make.left.equalTo(self.fourthView.mas_left).offset(14*SCREEN_SCALE);
+        make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH-28*SCREEN_SCALE, 1));
+    }];
+    
+    
     [self.lineViewTwo mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.lineViewOne.mas_bottom).offset(36*SCREEN_SCALE-1);
+        make.top.equalTo(self.lineViewOne.mas_bottom).offset(54*SCREEN_SCALE-1);
         make.left.equalTo(self.fourthView.mas_left).offset(14*SCREEN_SCALE);
         make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH-28*SCREEN_SCALE, 1));
     }];
-    [self.lineViewThree mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.lineViewTwo.mas_bottom).offset(36*SCREEN_SCALE-1);
+
+    [self.linelightViewTwo mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.lineViewTwo.mas_bottom).offset(27*SCREEN_SCALE-1);
         make.left.equalTo(self.fourthView.mas_left).offset(14*SCREEN_SCALE);
         make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH-28*SCREEN_SCALE, 1));
     }];
+    
     [self.lineViewFour mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.fourthView.mas_top).offset(36*3*SCREEN_SCALE+14*SCREEN_SCALE-1);
         make.left.equalTo(self.fourthView.mas_left).offset(14*SCREEN_SCALE);

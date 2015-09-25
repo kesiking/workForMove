@@ -128,7 +128,7 @@
         
         if ([dayToday daysEarlierThan:dateNow]||[dateNow daysEarlierThan:dayFrom]) {
             self.userInteractionEnabled = NO;
-            _textLabel.textColor = [UIColor yellowColor];
+            _textLabel.textColor = EHCor14;
             
         }else{
             self.userInteractionEnabled = YES;

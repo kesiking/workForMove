@@ -8,6 +8,14 @@
 
 #import "XHMessageTableViewCell.h"
 
+@protocol EHMessageTableViewCellDelegate <XHMessageTableViewCellDelegate>
+
+@optional
+
+- (void)didSelectedReSendBtnOnChatMessage:(id <XHMessageModel>)message atIndexPath:(NSIndexPath *)indexPath;
+
+@end
+
 @interface EHBabyMessageTableViewCell : XHMessageTableViewCell
 
 @end

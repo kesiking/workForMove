@@ -14,5 +14,5 @@
 @property(strong,nonatomic)EHGetHealthyWeekInfoService* getWeekInfoList;
 @property (strong, nonatomic) EHGetHealthyWeekInfoRsp *weekVCmodel;
 @property (strong, nonatomic) NSString *selectedWeek;
-- (void)loadHealthyWeek;
+//@property(assign,nonatomic) BOOL showSharePage;
 @end

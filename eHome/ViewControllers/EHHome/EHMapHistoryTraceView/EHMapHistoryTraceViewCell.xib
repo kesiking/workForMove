@@ -39,11 +39,11 @@
                         <constraint firstAttribute="height" constant="14" id="XG7-1w-oMr"/>
                     </constraints>
                 </imageView>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="timer" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c42-3N-vg7">
-                    <rect key="frame" x="10" y="15" width="40" height="21"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="timer" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c42-3N-vg7">
+                    <rect key="frame" x="0.0" y="15" width="60" height="21"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="21" id="BSB-Cw-omA"/>
-                        <constraint firstAttribute="width" constant="40" id="Dla-6l-YmJ"/>
+                        <constraint firstAttribute="width" constant="60" id="Dla-6l-YmJ"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                     <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -68,7 +68,7 @@
                 <constraint firstItem="Z0r-rQ-mKm" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="18" id="Xuc-Js-pjW"/>
                 <constraint firstAttribute="trailing" secondItem="Z0r-rQ-mKm" secondAttribute="trailing" constant="45" id="axw-be-3i2"/>
                 <constraint firstAttribute="trailing" secondItem="VQu-79-xJe" secondAttribute="trailing" constant="6" id="dWJ-91-4Zp"/>
-                <constraint firstItem="c42-3N-vg7" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="10" id="fNp-vj-1dr"/>
+                <constraint firstItem="c42-3N-vg7" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="fNp-vj-1dr"/>
                 <constraint firstItem="c42-3N-vg7" firstAttribute="leading" secondItem="Z0r-rQ-mKm" secondAttribute="leading" id="hds-6J-JxD"/>
                 <constraint firstItem="VQu-79-xJe" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="15" id="i18-Jb-4hK"/>
                 <constraint firstItem="VQu-79-xJe" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="59" id="iBm-vT-nIV"/>

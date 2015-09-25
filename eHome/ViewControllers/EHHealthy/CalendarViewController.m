@@ -17,7 +17,6 @@
     NSDate *_todayDate;
     NSDate *_minDate;
     NSDate *_maxDate;
-    
     NSDate *_dateSelected;
 }
 
@@ -58,6 +57,23 @@
     [_calendarManager setDate:_todayDate];
 }
 
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    NSDateFormatter *formater1=[[NSDateFormatter alloc]init];
+    formater1.dateFormat=@"yyyy-MM-dd HH:mm:ss";
+    NSDate *myDate=[formater1 dateFromString:@"2015-06-14 11:07:16"];
+    if (_selectedDate!=nil) {
+        [_calendarManager setDate:_selectedDate];
+        _dateSelected = _selectedDate;
+    }
+   
+   
+  
+//    NSDate * curr = _dateSelected;
+    [_calendarManager reload];
+
+   
+}
 
 - (void)returnDateText:(ReturnSelectedDateBlock)block {
     self.returnSelectedDateBlock = block;
@@ -71,18 +87,20 @@
 // Used to customize the appearance of dayView
 - (void)calendar:(JTCalendarManager *)calendar prepareDayView:(JTCalendarDayView *)dayView
 {
-    dayView.textLabel.font = [UIFont systemFontOfSize:EH_siz4];
+    dayView.textLabel.font = [UIFont systemFontOfSize:EHSiz2];
     // Today
-    if([_calendarManager.dateHelper date:[NSDate date] isTheSameDayThan:dayView.date]){
+    if([_calendarManager.dateHelper date:_todayDate isTheSameDayThan:dayView.date]){
         dayView.circleView.hidden = NO;
         dayView.circleView.backgroundColor = [UIColor redColor];
         dayView.dotView.backgroundColor = [UIColor whiteColor];
         dayView.textLabel.textColor = [UIColor whiteColor];
     }
+    
+    // 注释掉了以后就不单独设置selected的样式了
     // Selected date
     else if(_dateSelected && [_calendarManager.dateHelper date:_dateSelected isTheSameDayThan:dayView.date]){
         dayView.circleView.hidden = NO;
-        dayView.circleView.backgroundColor = EH_cor9;
+        dayView.circleView.backgroundColor = EHCor6;
         dayView.dotView.backgroundColor = [UIColor whiteColor];
         dayView.textLabel.textColor = [UIColor whiteColor];
     }

@@ -12,13 +12,11 @@
 @interface EHHealthyDayViewController ()<EHHealthyDelegate, iCarouselDataSource, iCarouselDelegate>
 
 @property (strong, nonatomic) EHHealthyDayService *queryDataService;
-@property (strong, nonatomic) UIView* calendarView;
-@property (strong, nonatomic) UIView* bgView;
-@property (strong, nonatomic) CalendarViewController *calendarVC;
 @property (strong, nonatomic) NSDateFormatter *dateFormatter;
 @property (strong, nonatomic) UIImageView *circleImageView;
 //当前切换到的日期
 @property (strong, nonatomic) NSDate *currentDate;
+@property(assign,nonatomic) BOOL show;
 @end
 
 @implementation EHHealthyDayViewController
@@ -59,9 +57,15 @@
 {
     [super viewWillAppear:animated];
     
+    self.currentDate = [NSDate date];
+    self.previousIndex = [self.items count]-1;
     //每次进入健康页面显示“今天”数据
     [self.healthyView.carousel scrollToItemAtIndex:[self.items count]-1 animated:NO];
-    self.healthyView.dateLabel.text = @"今天";
+    self.queryDataService.needCache = NO;
+    self.queryDataService.onlyUserCache = NO;
+    [self.queryDataService queryBabyHealthyDataWithBabyId:[self.babyId integerValue] AndDate:[self.dateFormatter stringFromDate:[NSDate date]]];
+    
+    self.show = YES;
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -70,73 +74,110 @@
 #pragma mark - EHHealthyDelegate方法
 - (void)configDateBtnClick:(EHHealthyBasicView *)healthyView
 {
-    UIWindow* window = [[UIApplication sharedApplication] keyWindow];
-    
-    if (!_calendarVC) {
-        _calendarVC = [CalendarViewController new];
-    }
-    _calendarVC.babyStartDate = [[EHBabyListDataCenter sharedCenter] currentBabyUserInfo].babyDeviceStartUserDay;
-    
-    WEAKSELF
-    [_calendarVC returnDateText:^(NSString *showSelectedDate){
-        STRONGSELF
-        NSDate *sdate=[strongSelf.dateFormatter dateFromString:showSelectedDate];
-        NSString *selectedDateString = [strongSelf.dateFormatter stringFromDate:sdate];
-        strongSelf.healthyView.dateLabel.text = selectedDateString;
-        //点击日历返回，日期滚动条更新
-        NSTimeInterval secondsInterval= [sdate timeIntervalSinceDate:self.startUserDay];
-        NSInteger dayInterval = secondsInterval/(24*60*60)+1;
-        [self.healthyView.carousel scrollToItemAtIndex:dayInterval animated:YES];
-        [_bgView removeFromSuperview];
-        [_calendarView removeFromSuperview];
+    if (self.show) {
+        UIWindow* window = [[UIApplication sharedApplication] keyWindow];
+        UIScrollView *supScrollView = (UIScrollView *)self.view.superview;
+        supScrollView.scrollEnabled = NO;
         
-//         [strongSelf.queryDataService queryBabyHealthyDataWithBabyId:[self.babyId integerValue] AndDate:selectedDateString];
-    }];
-    if (!_bgView) {
-        _bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 60, window.bounds.size.width, window.bounds.size.height-60)];
+        if (!healthyView.calendarVC) {
+            healthyView.calendarVC = [CalendarViewController new];
+        }
+        healthyView.calendarVC.babyStartDate = [[EHBabyListDataCenter sharedCenter] currentBabyUserInfo].babyDeviceStartUserDay;
+        
+        WEAKSELF
+        [healthyView.calendarVC returnDateText:^(NSString *showSelectedDate){
+            STRONGSELF
+            NSDate *sdate=[strongSelf.dateFormatter dateFromString:showSelectedDate];
+            NSString *selectedDateString = [strongSelf.dateFormatter stringFromDate:sdate];
+            strongSelf.healthyView.dateLabel.text = selectedDateString;
+            //点击日历返回，日期滚动条更新
+            NSTimeInterval secondsInterval= [sdate timeIntervalSinceDate:self.startUserDay];
+            NSInteger dayInterval = secondsInterval/(24*60*60)+1;
+            [strongSelf.healthyView.carousel scrollToItemAtIndex:dayInterval animated:YES];
+            supScrollView.scrollEnabled = YES;
+            [strongSelf.healthyView.bgView removeFromSuperview];
+            [strongSelf.healthyView.calendarView removeFromSuperview];
+            
+            //        NSDateFormatter *formater1=[[NSDateFormatter alloc]init];
+            //        formater1.dateFormat=@"yyyy-MM-dd HH:mm:ss";
+            //        NSDate *myDate=[formater1 dateFromString:@"2015-08-11 11:07:16"];
+            //    [_calendarManager setDate:_todayDate];
+            strongSelf.healthyView.calendarVC.selectedDate = sdate;
+            self.show = YES;
+        }];
+        if (!healthyView.bgView) {
+            healthyView.bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 60, window.bounds.size.width, window.bounds.size.height-60)];
+            
+        }
+        healthyView.bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0];
+        if (!healthyView.calendarView) {
+            healthyView.calendarView = [[UIView alloc] initWithFrame:CGRectMake(0,0, self.view.width, 374.5*SCREEN_SCALE+16.5*SCREEN_SCALE)];
+        }
+        
+        healthyView.calendarView.backgroundColor = [UIColor whiteColor];
+        
+        UIView *canldara = healthyView.calendarVC.view;
+        
+        [healthyView.calendarVC.view setFrame:CGRectMake(0, 0, self.view.width, 374.5*SCREEN_SCALE)];
+        [healthyView.calendarView addSubview:canldara];
+        
+        healthyView.calendarView.alpha = 0;
+        [self.view addSubview:healthyView.bgView];
+        [self.view addSubview:healthyView.calendarView];
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(hideCalendarView)];
+        [healthyView.bgView addGestureRecognizer:tap];
+        //
+        CGRect rectBegin = healthyView.calendarView.frame;
+        rectBegin.origin.y = 60;
+        [healthyView.calendarView setFrame:rectBegin];
+        
+        CGRect rect = healthyView.calendarView.frame;
+        rect.origin.y = 60;
+        [UIView animateKeyframesWithDuration:0.3 delay:0 options:UIViewKeyframeAnimationOptionLayoutSubviews animations:^{
+            [healthyView.calendarView setFrame:rect];
+            healthyView.calendarView.alpha = (NSUInteger)(1);
+            healthyView.bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0.6];
+            
+        } completion:nil];
+        self.show = NO;
 
+    }else{
+        [self hideCalendarView];
+//        self.show = YES;
+        
+        
     }
-    _bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0];
-    if (!_calendarView) {
-        _calendarView = [[UIView alloc] initWithFrame:CGRectMake(0,0, self.view.width, 374.5*SCREEN_SCALE+16.5*SCREEN_SCALE)];
-    }
-    
-    _calendarView.backgroundColor = [UIColor whiteColor];
-    
-    UIView *canldara = _calendarVC.view;
-   
-    [_calendarVC.view setFrame:CGRectMake(0, 0, self.view.width, 374.5*SCREEN_SCALE)];
-//    _calendarVC.view.clipsToBounds = YES;
-//    self.calendarView.clipsToBounds = YES;
-    [self.calendarView addSubview:canldara];
-    
-    _calendarView.alpha = 0;
-    [self.view addSubview:_bgView];
-    [self.view addSubview:_calendarView];
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(hideCalendarView)];
-    [_bgView addGestureRecognizer:tap];
-    
-    CGRect rect = self.calendarView.frame;
-    rect.origin.y = 60;
-//    [self.view bringSubviewToFront:self.babyListView];
-    [UIView animateKeyframesWithDuration:0.3 delay:0 options:UIViewKeyframeAnimationOptionLayoutSubviews animations:^{
-        [self.calendarView setFrame:rect];
-        self.calendarView.alpha = (NSUInteger)(1);
-        _bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0.6];
-
-    } completion:nil];
     
 }
 - (void)reloadDataWhenHeadBtnClick
 {
     //更换宝贝后配置数据源
+    self.healthyView.calendarVC = nil;
     [self configItemsForDatasource];
+    self.currentDate = [NSDate date];
     [self.healthyView.carousel reloadData];
-    [self.healthyView.carousel scrollToItemAtIndex:[self.items count]-1 animated:YES];
+    [self.healthyView.carousel scrollToItemAtIndex:[self.items count]-1 animated:NO];
+    self.queryDataService.needCache = NO;
+    self.queryDataService.onlyUserCache = NO;
+    [self.queryDataService queryBabyHealthyDataWithBabyId:[self.babyId integerValue] AndDate:[self.dateFormatter stringFromDate:[NSDate date]]];
+    
+    //更新日历控件
+    self.healthyView.calendarVC = [CalendarViewController new];
+
+    
+    
+    
+    
+    
+    
 }
 - (void)reloadDataWhenViewScroll
 {
-    [self.healthyView.carousel scrollToItemAtIndex:[self.items count]-1 animated:YES];
+    self.currentDate = [NSDate date];
+    [self.healthyView.carousel scrollToItemAtIndex:[self.items count]-1 animated:NO];
+    self.queryDataService.needCache = NO;
+    self.queryDataService.onlyUserCache = NO;
+    [self.queryDataService queryBabyHealthyDataWithBabyId:[self.babyId integerValue] AndDate:[self.dateFormatter stringFromDate:[NSDate date]]];
 }
 #pragma mark - 私有方法
 //配置items数组
@@ -164,9 +205,22 @@
     dispatch_async( dispatch_get_main_queue(), ^{
         [self hideLoadingView];
         [self hideErrorView];
+        
+        static NSDateFormatter *myDateFormatter = nil;
+        if (myDateFormatter == nil) {
+            myDateFormatter = [[NSDateFormatter alloc]init];
+            [myDateFormatter setDateFormat:@"yyyy年MM月"];
+        }
+        healthyView.dateLabel.text = [myDateFormatter stringFromDate:self.currentDate];
+        healthyView.calendarVC.selectedDate = self.currentDate;
+        NSString *dateString = [self.dateFormatter stringFromDate:self.currentDate];
+        NSString *todayString = [self.dateFormatter stringFromDate:[NSDate date]];
+        if ([dateString isEqual:todayString]) {
+            healthyView.dateLabel.text = @"今天";
+        }
         healthyView.sTargetStepsLabel.text = [NSString stringWithFormat:@"目标：%ld步",dayModel.target_steps];
         healthyView.finishSteps.text=[NSString stringWithFormat:@"%ld",(long)dayModel.steps];
-        healthyView.distanceLabel.text=[NSString stringWithFormat:@"%.0f千米",dayModel.mileage];
+        healthyView.distanceLabel.text=[NSString stringWithFormat:@"%.3f千米",dayModel.mileage/1000.0];
         healthyView.energyLabel.text=[NSString stringWithFormat:@"%ld千卡",dayModel.calorie];
         healthyView.ratioLabel.text=[NSString stringWithFormat:@"%@%%",dayModel.percent];
         [healthyView.distanceChart updateChartByCurrent:[NSNumber numberWithInteger:[dayModel.percent integerValue]]];
@@ -198,8 +252,13 @@
             }
         }
         
-        healthyView.maxYValueLabel.text = [NSString stringWithFormat:@"%ld",maxValue];
-        
+        if (maxValue == 0) {
+            healthyView.maxYValueLabel.text = @"";
+            healthyView.middleValueLabel.text = @"";
+        }else{
+            healthyView.maxYValueLabel.text = [NSString stringWithFormat:@"%ld",maxValue];
+            healthyView.middleValueLabel.text = [NSString stringWithFormat:@"%ld",maxValue/2];
+        }
         
         NSMutableArray *colors = [NSMutableArray new];
         int index = 0;
@@ -210,54 +269,23 @@
             else
                 index++;
         }
-        for (NSNumber *aa in dayModel.responseData) {
-            int max = [max1 intValue];
-            int aaa = [aa intValue];
-            if(aaa <= max/3.0) {
-                UIColor *color = EH_barcor2;
-                [colors addObject:color];
-            }
-            
-            else{
-                if (aaa<=(max/3)*2) {
-                    UIColor *color = EH_barcor3;
-                    [colors addObject:color];
-                }
-                else{
-                    UIColor *color = EH_barcor1;
-                    [colors addObject:color];
-                    
-                }
-            }
+        for (int i=0 ;i<[dayModel.responseData count];i++) {
+
+            UIColor *color = EHCor13;
+            [colors addObject:color];
             
         }
-        //设置不同的颜色
-        
         [healthyView.barChart setStrokeColors:colors];
-        //        if ([max1 integerValue]==0) {
-        //            healthyView.maxLabel.hidden=YES;
-        //        }else
-        //        {
-        //            healthyView.maxLabel.hidden=NO;
-        //            healthyView.maxLabel.text = [NSString stringWithFormat:@"%ld",[max1 integerValue]];
-        //        }
-        //
-        //
-        //        NSDictionary *attributes = [NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:EH_siz7]forKey:NSFontAttributeName];
-        //        CGSize sizeForDateLabel2=[healthyView.maxLabel.text boundingRectWithSize:CGSizeMake(800, 30) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
-        //
+        
         
         double barMargin = 17.5*SCREEN_SCALE;
-        double barWidth = ((SCREEN_WIDTH-44.5*SCREEN_SCALE) -10*SCREEN_SCALE-(colors.count-1)*barMargin)/(colors.count*1.0);
+        double barWidth = ((SCREEN_WIDTH-28*SCREEN_SCALE) -10*SCREEN_SCALE-(colors.count-1)*barMargin)/(colors.count*1.0);
         
         [healthyView.barChart setDayXLabels:@[@"0-6",@"6",@"8",@"10",@"12",@"14",@"16",@"18",@"20-24"] andMargin:barMargin andWidth:barWidth];
-        
-        //        double barXPosition = 5*SCREEN_SCALE+index*(barMargin+barWidth);
-        //        [healthyView.maxLabel mas_updateConstraints:^(MASConstraintMaker *make) {
-        //            make.left.equalTo(healthyView.thirdView.mas_left).with.offset(34.5*SCREEN_SCALE+barXPosition-0.5*(sizeForDateLabel2.width-barWidth));
-        //        }];
         [healthyView.barChart strokeChartWeekWithMargin:barMargin andWidth:barWidth];
         
+        [healthyView.bgChartView bringSubviewToFront:healthyView.maxYValueLabel];
+        [healthyView.bgChartView bringSubviewToFront:healthyView.middleValueLabel];
     });
 }
 //showErrorView刷新回调方法
@@ -265,12 +293,15 @@
     [self.queryDataService queryBabyHealthyDataWithBabyId:[self.babyId integerValue] AndDate:[self.dateFormatter stringFromDate:self.currentDate]];
 }
 - (void)hideCalendarView{
+    self.show = YES;
     [UIView animateWithDuration:0.2 animations:^{
-        _bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0];
-        _calendarView.layer.transform = CATransform3DMakeTranslation(0, -CGRectGetHeight(_calendarView.frame), 0);
+        self.healthyView.bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0];
+//        self.healthyView.calendarView.layer.transform = CATransform3DMakeTranslation(0, -CGRectGetHeight(self.healthyView.calendarView.frame), 0);
     } completion:^(BOOL finished) {
-        [_bgView removeFromSuperview];
-        [_calendarView removeFromSuperview];
+        [self.healthyView.bgView removeFromSuperview];
+        [self.healthyView.calendarView removeFromSuperview];
+        UIScrollView *supRScrollView = (UIScrollView *)self.view.superview;
+        supRScrollView.scrollEnabled = YES;
     }];
 }
 #pragma mark - 懒加载queryDataService,dateFormatter,circleImageView
@@ -467,25 +498,10 @@
     }
     self.previousIndex = carousel.currentItemIndex;
     
-    //设置dateLabel的值
+    //更新currentDate的值
     self.currentDate = [NSDate dateWithTimeInterval:carousel.currentItemIndex*24*60*60 sinceDate:self.startUserDay];
-    static NSDateFormatter *myDateFormatter = nil;
-    if (myDateFormatter == nil) {
-        myDateFormatter = [[NSDateFormatter alloc]init];
-        [myDateFormatter setDateFormat:@"yyyy年MM月"];
-    }
-    self.healthyView.dateLabel.text = [myDateFormatter stringFromDate:self.currentDate];
     
-    //根据当前日期请求数据
-    NSString *dateString = [self.dateFormatter stringFromDate:self.currentDate];
-    NSString *todayString = [self.dateFormatter stringFromDate:[NSDate date]];
-    if ([dateString isEqual:todayString]) {
-        self.queryDataService.needCache = NO;
-        self.queryDataService.onlyUserCache = NO;
-        self.healthyView.dateLabel.text = @"今天";
-    }else{
     self.queryDataService.onlyUserCache=YES;
-    }
-    [self.queryDataService queryBabyHealthyDataWithBabyId:[self.babyId integerValue] AndDate:dateString];
+    [self.queryDataService queryBabyHealthyDataWithBabyId:[self.babyId integerValue] AndDate:[self.dateFormatter stringFromDate:self.currentDate]];
 }
 @end

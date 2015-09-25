@@ -8,34 +8,48 @@
 
 #import "EHBaseGeofenceRemindViewController.h"
 #import "EHRemindDateTableViewCell.h"
+#import "EHBabyDetailTableViewCell.h"
 #import "RMActionController.h"
-#import "UIViewController+BackButtonHandler.h"
+#import "EHPickerView.h"
 
 #define kRowHeight 50
 
-@interface EHBaseGeofenceRemindViewController ()<UIPickerViewDataSource,UIPickerViewDelegate,UITableViewDataSource,UITableViewDelegate>
+@interface EHBaseGeofenceRemindViewController ()<EHPickerViewDataSource,EHPickerViewDelegate,UITableViewDataSource,UITableViewDelegate>
+
+@property (nonatomic, strong)GroupedTableView *tableView;
+
+@property (nonatomic, strong)EHPickerView     *pickerView;
+
+@property (nonatomic, strong)NSMutableArray   *hourArray;
+
+@property (nonatomic, strong)NSMutableArray   *minArray;
 
 @end
 
 @implementation EHBaseGeofenceRemindViewController
 {
-    UIPickerView   *_pickerView;
-    UITableView    *_tableView;
-    NSMutableArray *_hourArray;
-    NSMutableArray *_minArray;
+    
+}
+
+#pragma mark - Life Cycle
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+    }
+    return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self.view addSubview:[self pickerView]];
-    [self.view addSubview:[self tableView]];
+    self.view.backgroundColor = EH_bgcor1;
+    
+    [self.view addSubview:self.tableView];
 
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithTitle:@"确定" style:UIBarButtonItemStylePlain target:self action:@selector(sureItemClick)];
     self.navigationItem.rightBarButtonItem = rightItem;
     
-    _hourArray = [self hourArray];
-    _minArray = [self minArray];
     self.remindUpdated = NO;
+    [self showWorkDate];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -48,19 +62,22 @@
     
     NSArray *dateArray = [self.remindModel.time componentsSeparatedByString:@":"];
     [_pickerView  selectRow:[dateArray[0] integerValue] inComponent:0 animated:YES];
-    [_pickerView  selectRow:([dateArray[1] integerValue] / 10) inComponent:2 animated:YES];
+    [_pickerView  selectRow:[dateArray[1] integerValue] inComponent:1 animated:YES];
+
 }
 
 #pragma mark - Events Response
-//子类重载
+//确定按钮。子类重载。
 - (void)sureItemClick {
     if (!self.remindUpdated) {
         [self.navigationController popViewControllerAnimated:YES];
         return;
     }
-    EHLogInfo(@"base - sureItemClick");
 }
 
+/**
+ *  频率：重复/仅一次
+ */
 - (void)showFrequencyAlert
 {
     
@@ -91,9 +108,17 @@
     
     onceAction.titleColor = EH_cor4;
     
+    RMAction *cancelAction = [RMAction actionWithTitle:@"取消" style:RMActionStyleCancel andHandler:^(RMActionController *controller) {
+        
+    }];
+    
+    cancelAction.titleColor = [UIColor blueColor];
+    cancelAction.titleFont = EH_font2;
+    
     [frequencyVC addAction:onceAction];
     [frequencyVC addAction:repeatAction];
-    
+    [frequencyVC addAction:cancelAction];
+
     frequencyVC.seperatorViewColor = EH_linecor1;
     frequencyVC.contentView = [[UIView alloc] initWithFrame:CGRectZero];
     frequencyVC.disableBouncingEffects = YES;
@@ -103,204 +128,208 @@
     [self presentViewController:frequencyVC animated:YES completion:nil];
 }
 
-- (void)showReturnAlert
-{
-    RMActionController* returnAlert = [RMActionController actionControllerWithStyle:RMActionControllerStyleWhite];
-    returnAlert.title = @"主动提醒状态尚未保存，是否确定返回？";
-    returnAlert.titleColor = EH_cor5;
-    returnAlert.titleFont = EH_font6;
+/**
+ *  删除提醒。子类重载。
+ */
+- (void)showdeleteRemindAlert {
     
-    WEAKSELF
-    RMAction *returnAction = [RMAction actionWithTitle:@"不保存并返回" style:RMActionStyleDefault andHandler:^(RMActionController *controller) {
-        STRONGSELF
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [strongSelf.navigationController popViewControllerAnimated:YES];
-        });
-    }];
-    
-    returnAction.titleColor = EH_cor7;
-    returnAction.titleFont = EH_font2;
-    
-    RMAction *cancelAction = [RMAction actionWithTitle:@"取消" style:RMActionStyleCancel andHandler:^(RMActionController *controller) {
-        
-    }];
-    
-    cancelAction.titleColor = EH_cor4;
-    cancelAction.titleFont = EH_font2;
-    
-    [returnAlert addAction:returnAction];
-    [returnAlert addAction:cancelAction];
-    
-    returnAlert.seperatorViewColor = EH_linecor1;
-    
-    returnAlert.contentView=[[UIView alloc]init];
-    returnAlert.contentView.translatesAutoresizingMaskIntoConstraints = NO;
-    
-    NSLayoutConstraint *heightConstraint = [NSLayoutConstraint constraintWithItem:returnAlert.contentView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:0];
-    [returnAlert.contentView addConstraint:heightConstraint];
-    
-    //You can enable or disable blur, bouncing and motion effects
-    returnAlert.disableBouncingEffects = YES;
-    returnAlert.disableMotionEffects = YES;
-    returnAlert.disableBlurEffects = YES;
-    
-    //Now just present the date selection controller using the standard iOS presentation method
-    [self presentViewController:returnAlert animated:YES completion:nil];
-}
-
-#pragma mark - BackButtonHandlerProtocol
--(BOOL) navigationShouldPopOnBackButton
-{
-    if (self.remindUpdated) {
-        [self showReturnAlert];
-    }
-    else {
-        [self.navigationController popViewControllerAnimated:YES];
-    }
-    return NO;
-}
-
-#pragma mark - UIPickerViewDataSource
-- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
-    return 4;
-}
-
-- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
-    switch (component) {
-        case 0:
-            return _hourArray.count;
-        case 1:
-            return 1;
-        case 2:
-            return _minArray.count;
-        case 3:
-            return 1;
-        default:
-            return 0;
-    }
-}
-
-#pragma mark - UIPickerViewDelegate
-- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
-    switch (component) {
-        case 0:
-            return _hourArray[row];
-        case 1:
-            return @"时";
-        case 2:
-            return _minArray[row];
-        case 3:
-            return @"分";
-        default:
-            return nil;
-    }
-}
-
-- (CGFloat)pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component {
-    return kRowHeight;
-}
-
-- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
-    NSMutableString *muStr = [self.remindModel.time mutableCopy];
-    EHLogInfo(@"1 time = %@",self.remindModel.time);
-    if (component == 0) {
-        NSRange range = NSMakeRange(0, 2);
-        [muStr replaceCharactersInRange:range withString:[NSString stringWithFormat:@"%.2ld",row]];
-        EHLogInfo(@"2.0 time = %@",self.remindModel.time);
-    }
-    else {
-        NSRange range = NSMakeRange(3, 2);
-        [muStr replaceCharactersInRange:range withString:[NSString stringWithFormat:@"%.2ld",(row * 10)]];
-        EHLogInfo(@"2.1 time = %@",self.remindModel.time);
-    }
-    self.remindModel.time = (NSString *)muStr;
-    self.remindUpdated = YES;
-    EHLogInfo(@"3 time = %@",self.remindModel.time);
-
 }
 
 #pragma mark - UITableViewDataSource
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    if (self.remindStatusType == EHRemindStatusTypeAdd) {
+        return 3;
+    }
+    else return 4;
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 2;
+    if (section == 0) return 1;
+    else if(section == 1) return 1;
+    else if(section == 2) return 2;
+    else return 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *cellID = @"cellID";
-    if (indexPath.row == 0) {
-        EHRemindDateTableViewCell *cell = [[EHRemindDateTableViewCell alloc]init];
-        [cell selectWorkDate:self.remindModel.work_date];
-        cell.dateBtnClickBlock = ^(NSString *dateStr){
-            EHLogInfo(@"_dateStr = %@",dateStr);
-            self.remindModel.work_date = dateStr;
-            self.remindUpdated = YES;
-        };
+    if (indexPath.section == 0) {
+        
+        EHBabyDetailTableViewCell * cell = [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass([EHBabyDetailTableViewCell class]) owner:self options:nil] firstObject];;
+        
+        UIImage *defaultHeadImage = [UIImage imageNamed:@"headportrait_boy_160"];
+        NSURL *imageUrl = [NSURL URLWithString:self.babyUser.babyHeadImage];
+        [cell.babyHeadImageView sd_setImageWithURL:imageUrl placeholderImage:[EHUtils getBabyHeadPlaceHolderImage:self.babyUser.babyId newPlaceHolderImagePath:self.babyUser.babyHeadImage defaultHeadImage:defaultHeadImage]];
+        
+        cell.babyNameLabel.text = self.babyUser.babyNickName;
+        cell.babyDetalLabel.text = [NSString stringWithFormat:@"围栏：%@",self.geofenceName];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
+    else if (indexPath.section == 1) {
+        
+        UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+        [cell.contentView addSubview:self.pickerView];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        return cell;
+    }
+    else if (indexPath.section == 2) {
+        
+        if (indexPath.row == 0) {
+            EHRemindDateTableViewCell *cell = [[EHRemindDateTableViewCell alloc]init];
+            [cell selectWorkDate:self.remindModel.work_date];
+            cell.dateBtnClickBlock = ^(NSString *dateStr){
+                self.remindModel.work_date = dateStr;
+                self.remindUpdated = YES;
+            };
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            return cell;
+        }
+        else {
+            UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellID];
+            cell.textLabel.text = @"频率";
+            cell.detailTextLabel.text = [self.remindModel.is_repeat boolValue]?@"重复":@"仅一次";
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            return cell;
+        }
+    }
     else {
         UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellID];
-        cell.textLabel.text = @"频率";
-        cell.detailTextLabel.text = [self.remindModel.is_repeat boolValue]?@"重复":@"仅一次";
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        
+        UILabel *deleteLabel = [[UILabel alloc]initWithFrame:cell.bounds];
+        deleteLabel.text = @"删除该提醒";
+        deleteLabel.font = EH_font2;
+        deleteLabel.textColor = RGB(0xff, 0x3e, 0x3e);
+        deleteLabel.textAlignment = NSTextAlignmentCenter;
+        
+        [cell.contentView addSubview:deleteLabel];
         return cell;
     }
 }
 
 #pragma mark - UITableViewDelegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row == 0) {
-        return kRowHeight * 2;
+    if (indexPath.section == 0) {
+        return 80;
+    }
+    else if (indexPath.section == 1) {
+        return self.pickerView.height;
+    }
+    else if (indexPath.section == 2) {
+        if (indexPath.row == 0) {
+            CGFloat btnWidth = (CGRectGetWidth(tableView.frame) - 11 * 6 - 12 * 2) / 7;
+            return (15 + [@"text" sizeWithFontSize:EH_siz2 Width:MAXFLOAT].height + 21 + btnWidth + 21);
+        }
+        else {
+            return 44;
+        }
     }
     else {
-        return kRowHeight;
+        return 44;
     }
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    if (section <= 2) {
+        return 12;
+    }
+    else return 31;
+}
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    return 0.1;
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row == 1) {
-        [self showFrequencyAlert];
+    if (indexPath.section == 2) {
+        if (indexPath.row == 1) {
+            [self showFrequencyAlert];
+        }
+    }
+    else if (indexPath.section == 3){
+        [self showdeleteRemindAlert];
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+#pragma mark - EHPickerViewDataSource
+- (NSInteger)numberOfComponentsInPickerView:(nonnull EHPickerView *)pickerView {
+    return 2;
+}
+
+- (NSInteger)pickerView:(nonnull EHPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
+    if (component == 0) {
+        return self.hourArray.count;
+    }
+    else return self.minArray.count;
+}
+
+#pragma mark - EHPickerViewDelegate
+- (void)pickerView:(nonnull EHPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
+
+    NSMutableString *muStr = [self.remindModel.time mutableCopy];
+    if (component == 0) {
+        NSRange range = NSMakeRange(0, 2);
+        [muStr replaceCharactersInRange:range withString:self.hourArray[row]];
+    }
+    else {
+        NSRange range = NSMakeRange(3, 2);
+        [muStr replaceCharactersInRange:range withString:self.minArray[row]];
+    }
+    self.remindModel.time = (NSString *)muStr;
+    self.remindUpdated = YES;
+}
+
+- (nullable NSString *)pickerView:(nonnull EHPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
+    if (component == 0) {
+        return self.hourArray[row];
+    }
+    else {
+        return self.minArray[row];
+    }
+}
+
+- (nullable NSString *)pickerView:(nonnull EHPickerView *)pickerView unitTitleForComponent:(NSInteger)component {
+    if (component == 0) {
+        return @"时";
+    }
+    else {
+        return @"分";
+    }
 }
 
 #pragma mark - Getters And Setters
 - (EHGeofenceRemindModel *)remindModel {
     if (!_remindModel) {
         _remindModel = [[EHGeofenceRemindModel alloc]init];
-        _remindModel.work_date = @"0000000";
+        _remindModel.work_date = [self showWorkDate];
         _remindModel.is_active = @1;
-        _remindModel.is_repeat = @1;
+        _remindModel.is_repeat = @0;
         _remindModel.time = [self showTime];
-        EHLogInfo(@"self.remindModel.work_date = %@",self.remindModel.work_date);
     }
     return _remindModel;
 }
 
-- (UIPickerView *)pickerView {
-    if (!_pickerView) {
-        _pickerView = [[UIPickerView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetWidth(self.view.frame))];
-        _pickerView.dataSource = self;
-        _pickerView.delegate = self;
-        
-        UIBezierPath *bp = [UIBezierPath bezierPathWithRect:CGRectMake(0, 0, CGRectGetWidth(_pickerView.frame), 0.1)];
-        CAShapeLayer *layer = [CAShapeLayer layer];
-        layer.frame = CGRectMake(0, CGRectGetHeight(_pickerView.frame) - 0.1, CGRectGetWidth(_pickerView.frame), 0.1);
-        layer.path = bp.CGPath;
-        layer.strokeColor = [UIColor lightGrayColor].CGColor;
-        layer.fillColor = [UIColor clearColor].CGColor;
-        [_pickerView.layer addSublayer:layer];
-    }
-    return _pickerView;
-}
-
 - (UITableView *)tableView {
     if (!_tableView) {
-        _tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(_pickerView.frame), CGRectGetWidth(self.view.frame), kRowHeight * 4) style:UITableViewStylePlain];
+        _tableView = [[GroupedTableView alloc]initWithFrame:CGRectMake(8, 0, CGRectGetWidth(self.view.frame) - 16, CGRectGetHeight(self.view.frame)) style:UITableViewStyleGrouped];
         _tableView.delegate = self;
         _tableView.dataSource = self;
         _tableView.tableFooterView = [[UIView alloc] init];
+        _tableView.backgroundColor = [UIColor clearColor];
     }
     return _tableView;
+}
+
+- (EHPickerView *)pickerView {
+    if (!_pickerView) {
+        
+        _pickerView = [[EHPickerView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.frame), 0)];
+        _pickerView.rowHeight = [@"title" sizeWithFontSize:_pickerView.titleSize Width:MAXFLOAT].height + 27;
+        _pickerView.dataSource = self;
+        _pickerView.delegate = self;
+        [_pickerView reloadData];
+        [self.view addSubview:_pickerView];
+    }
+    return _pickerView;
 }
 
 - (NSMutableArray *)hourArray {
@@ -318,35 +347,34 @@
 - (NSMutableArray *)minArray {
     if (!_minArray) {
         _minArray = [[NSMutableArray alloc]init];
-        NSString *hourStr;
-        for (NSInteger i = 0; i < 6; i++) {
-            if (i == 0) {
-                hourStr = [NSString stringWithFormat:@"0%ld",i];
-            }
-            else {
-                hourStr = [@(i * 10) stringValue];
-            }
-            [_minArray addObject:hourStr];
+        NSString *minStr;
+        for (NSInteger i = 0; i < 60; i++) {
+            minStr = [NSString stringWithFormat:@"%.2ld",i];
+            [_minArray addObject:minStr];
         }
     }
     return _minArray;
 }
 
-//以10分钟为间隔，不足10分的就向上进位
+- (NSString *)showWorkDate {
+    NSDate *date = [NSDate date];
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSDateComponents *comps = [[NSDateComponents alloc] init];
+    NSInteger unitFlags = NSWeekdayCalendarUnit;
+    comps = [calendar components:unitFlags fromDate:date];
+    NSInteger week = [comps weekday];
+    NSLog(@"week = %ld",week);
+    NSMutableString *workDateStr = [[NSMutableString alloc]initWithString:@"0000000"];
+    [workDateStr replaceCharactersInRange:NSMakeRange(week - 1, 1) withString:@"1"];
+    return workDateStr;
+}
+
 - (NSString *)showTime {
     
     NSString *showTime = [EHUtils stringFromDate:[NSDate date] withFormat:@"HH:mm"];
     NSArray *dateArray = [showTime componentsSeparatedByString:@":"];
     NSInteger hour = [dateArray[0] integerValue];
     NSInteger min = [dateArray[1] integerValue];
-    
-    if ((min % 10) != 0) {
-        min = ((min / 10) + 1) * 10;
-    }
-    if (min == 60) {
-        min = 0;
-        hour = (hour + 1) % 24;
-    }
     
     showTime = [NSString stringWithFormat:@"%.2ld:%.2ld",hour,min];
     

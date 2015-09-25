@@ -12,11 +12,11 @@
 #import "KSAuthenticationCenter.h"
 
 #define DEFAULT_SCHEME @"http"
-#define DEFAULT_HOST @"112.54.207.8" /*@"112.54.207.8"*/
-//#define DEFAULT_HOST @"192.168.8.22" /*@"112.54.207.8"*/
+#define DEFAULT_HOST @"112.54.207.8"
+//#define DEFAULT_HOST @"172.20.13.123"
 
-#define DEFAULT_PORT @"8081"  //@"8080"
-//#define DEFAULT_PORT @"8080"  //@"8080"
+#define DEFAULT_PORT @"8081"
+//#define DEFAULT_PORT @"8080"
 //#define DEFAULT_HOST @"172.20.6.133" //@"172.20.6.148"
 //#define DEFAULT_PORT @"8080"  //@"8080"
 #define DEFAULT_PARH @"PersonSafeManagement/"

@@ -168,7 +168,7 @@ static BOOL bFamilyMemberCellRegistered = NO;
     EHFamilyMemberTableViewCell *cell = nil;
     if ([_currentSecectMembers  objectForKey:indexPath]) {
         cell = (EHFamilyMemberTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-        cell.checkImageView.image = [UIImage imageNamed:@"btn_checkbox_normal"];
+        cell.checkImageView.image = [UIImage imageNamed:@"public_radiobox_set_off"];
         
         [_currentSecectMembers removeObjectForKey:indexPath];
         
@@ -176,7 +176,7 @@ static BOOL bFamilyMemberCellRegistered = NO;
     else
     {
         cell = (EHFamilyMemberTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-        cell.checkImageView.image = [UIImage imageNamed:@"btn_checkbox_press"];
+        cell.checkImageView.image = [UIImage imageNamed:@"public_radiobox_set_on"];
         [_currentSecectMembers setObject:cell.phoneLabel.text forKey:indexPath];
     }
     

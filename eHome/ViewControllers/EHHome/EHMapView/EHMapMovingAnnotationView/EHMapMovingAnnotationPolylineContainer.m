@@ -182,9 +182,10 @@
         
         // 设置中心点偏移，使得标注底部中间点成为经纬度对应点
         annotationView.centerOffset = CGPointMake(0, 0);
-        if ([KSAuthenticationCenter isTestAccount]) {
+        /*if ([KSAuthenticationCenter isTestAccount]) {
             [annotationView setImage:self.default_baby_map_header_image];
-        }else{
+        }else*/
+        {
             __typeof(annotationView) __weak __block weakAnnotationView = annotationView;
             [annotationView sd_setImageWithURL:[NSURL URLWithString:self.babyUserInfo.babyHeadImage] placeholderImage:[EHUtils getBabyHeadPlaceHolderImage:self.babyUserInfo.babyId newPlaceHolderImagePath:self.babyUserInfo.babyHeadImage defaultHeadImage:self.headerViewImage] options:0 completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
                 __typeof(annotationView) __strong strongAnnotationView = weakAnnotationView;

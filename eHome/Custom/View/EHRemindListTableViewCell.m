@@ -7,8 +7,9 @@
 //
 
 #import "EHRemindListTableViewCell.h"
-#import "SevenSwitch.h"
 #import "NSString+StringSize.h"
+
+#define kSpace 12
 
 @interface EHRemindListTableViewCell()
 
@@ -25,8 +26,6 @@
     EHRemindType _remindType;
     CGFloat _timeLabelHeight;
     CGFloat _timeLabelY;
-    CGFloat _subViewHeight;
-    CGFloat _subViewY;
 }
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -37,7 +36,7 @@
         [self.contentView addSubview:self.lineView];
         [self.contentView addSubview:self.workDataLabel];
         [self.contentView addSubview:self.isRepeatLabel];
-        [self.contentView addSubview:self.isActiveButton];
+        [self.contentView addSubview:self.isActiveSwitch];
     }
     return self;
 }
@@ -47,7 +46,7 @@
     self.timeLabel.text = remindModel.time;
     self.workDataLabel.text = remindModel.date;
     self.isRepeatLabel.text = [remindModel.is_repeat boolValue]?@"重复":@"仅一次";
-    self.isActiveButton.selected = [remindModel.is_active boolValue];
+    self.isActiveSwitch.on = [remindModel.is_active boolValue];
     
     if (remindType == EHRemindTypeBaby) {
         [self.commentsLabel removeFromSuperview];
@@ -65,40 +64,56 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    _timeLabelHeight = [@"text" sizeWithFontSize:EH_siz3 Width:MAXFLOAT].height;
-    _timeLabelY = (kCellHeight - _timeLabelHeight) / 2.0;
-    CGRect timeLabelFrame = CGRectMake(kSpaceX, _timeLabelY, 60, _timeLabelHeight);
+    
+    CGFloat cellHeight = CGRectGetHeight(self.frame);
+    
+    CGFloat _subViewHeight = [@"text" sizeWithFontSize:EH_siz5 Width:MAXFLOAT].height;
+    CGFloat _subViewY1 = (cellHeight - _subViewHeight * 2) / 3.0;
+    CGFloat _subViewY2 = _subViewY1 * 2 + _subViewHeight;
 
+    //时间
+    _timeLabelHeight = [@"text" sizeWithFontSize:EH_siz1 Width:MAXFLOAT].height;
+    _timeLabelY = (cellHeight - _timeLabelHeight) / 2.0;
+    CGRect timeLabelFrame = CGRectMake(0, 0, 80, cellHeight);
+
+    //竖线
     CGRect lineViewFrame = CGRectMake(CGRectGetMaxX(timeLabelFrame) - 0.5, 0, 0.5, CGRectGetHeight(self.frame));
     
-    _subViewHeight = [@"text" sizeWithFontSize:EH_siz5 Width:MAXFLOAT].height;
+    //一周
+    CGFloat workDataLabelWidth = [_workDataLabel.text sizeWithFontSize:EH_siz5 Width:MAXFLOAT].width;
+    CGRect workDataLabelFrame = CGRectMake(CGRectGetMaxX(timeLabelFrame) + kSpace, _subViewY1, workDataLabelWidth, _subViewHeight);
+    
+    //开关
+    CGRect isActiveSwitchFrame = CGRectMake(CGRectGetWidth(self.frame) - kSpace - 50, (cellHeight - 30) / 2.0, 50, 30);
+
+    //重复、备注
+    CGRect isRepeatLabelFrame;
+    CGRect commentsLabelFrame;
     if (_remindType == EHRemindTypeGeofence) {
-        _subViewY = (kCellHeight - _subViewHeight) / 2.0;
+        isRepeatLabelFrame = CGRectMake(CGRectGetMaxX(timeLabelFrame) + kSpace, _subViewY2, 60, _subViewHeight);
+        commentsLabelFrame = CGRectZero;
     }
     else {
-        _subViewY = (kCellHeight - _subViewHeight * 2) / 3.0;
-        self.commentsLabel.frame = CGRectMake(CGRectGetMaxX(timeLabelFrame) + kSpaceX, _subViewY * 2 + _subViewHeight, 200, _subViewHeight);
+        isRepeatLabelFrame = CGRectMake(CGRectGetMaxX(workDataLabelFrame) + kSpace, _subViewY1, 60, _subViewHeight);
+        CGFloat commentsLabelWidth =(CGRectGetWidth(self.frame) - CGRectGetWidth(timeLabelFrame) - CGRectGetWidth(isActiveSwitchFrame) - kSpace * 2);
+        commentsLabelFrame = CGRectMake(CGRectGetMaxX(timeLabelFrame) + kSpace, _subViewY2, commentsLabelWidth, _subViewHeight);
     }
-    
-    CGFloat workDataLabelWidth = [_workDataLabel.text sizeWithFontSize:EH_siz5 Width:MAXFLOAT].width;
-    CGRect workDataLabelFrame = CGRectMake(CGRectGetMaxX(timeLabelFrame) + kSpaceX, _subViewY, workDataLabelWidth, _subViewHeight);
-    
-    CGRect isRepeatLabelFrame = CGRectMake(CGRectGetMaxX(workDataLabelFrame) + kSpaceX, _subViewY, 60, _subViewHeight);
-    
-    CGRect isActiveButtonFrame = CGRectMake(CGRectGetWidth(self.frame) - kSpaceX - 20, (kCellHeight - 20) / 2.0, 20, 20);
     
     self.timeLabel.frame = timeLabelFrame;
     self.lineView.frame = lineViewFrame;
     self.workDataLabel.frame = workDataLabelFrame;
+    self.isActiveSwitch.frame = isActiveSwitchFrame;
     self.isRepeatLabel.frame = isRepeatLabelFrame;
-    self.isActiveButton.frame = isActiveButtonFrame;
+    self.commentsLabel.frame = commentsLabelFrame;
 }
 
+#pragma mark - Getters And Setters
 - (UILabel *)timeLabel {
     if (!_timeLabel) {
         _timeLabel = [[UILabel alloc]init];
-        _timeLabel.textAlignment = NSTextAlignmentLeft;
-        _timeLabel.font = EH_font3;
+        _timeLabel.textAlignment = NSTextAlignmentCenter;
+        _timeLabel.font = EH_font1;
+        _timeLabel.textColor = EHCor5;
     }
     return _timeLabel;
 }
@@ -106,7 +121,7 @@
 - (UIView *)lineView {
     if (!_lineView) {
         _lineView = [[UIView alloc]init];
-        _lineView.backgroundColor = [UIColor lightGrayColor];
+        _lineView.backgroundColor = [[UIColor lightGrayColor] colorWithAlphaComponent:0.8];
     }
     return _lineView;
 }
@@ -116,6 +131,7 @@
         _workDataLabel = [[UILabel alloc]init];
         _workDataLabel.textAlignment = NSTextAlignmentLeft;
         _workDataLabel.font = EH_font5;
+        _workDataLabel.textColor = EHCor4;
     }
     return _workDataLabel;
 }
@@ -125,6 +141,7 @@
         _isRepeatLabel = [[UILabel alloc]init];
         _isRepeatLabel.textAlignment = NSTextAlignmentLeft;
         _isRepeatLabel.font = EH_font5;
+        _isRepeatLabel.textColor = EHCor4;
     }
     return _isRepeatLabel;
 }
@@ -138,15 +155,16 @@
     return _commentsLabel;
 }
 
-- (UIButton *)isActiveButton {
-    if (!_isActiveButton) {
-        _isActiveButton = [[UIButton alloc]init];
-        [_isActiveButton setImage:[UIImage imageNamed:@"btn_checkbox_normal"] forState:UIControlStateNormal];
-        [_isActiveButton setImage:[UIImage imageNamed:@"btn_checkbox_press"] forState:UIControlStateSelected];
-        [_isActiveButton addTarget:self action:@selector(_isActiveButtonClick:) forControlEvents:UIControlEventTouchUpInside];
-        _isActiveButton.selected = YES;
+-(EHSwitch *)isActiveSwitch {
+    if (!_isActiveSwitch) {
+        _isActiveSwitch = [[EHSwitch alloc]init];
+        WEAKSELF
+        _isActiveSwitch.switchChangedBlock = ^(BOOL on){
+            !weakSelf.activeStatusChangeBlock?:weakSelf.activeStatusChangeBlock(on);
+            NSLog(@"on? - %d",on);
+        };
     }
-    return _isActiveButton;
+    return _isActiveSwitch;
 }
 
 - (void)awakeFromNib {

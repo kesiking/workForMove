@@ -14,7 +14,7 @@
 #define kSubViewHeight 20
 #define kSubViewWidth 25
 #define kSpace 10
-#define kHudViewHeight (kBtnHeight * 3 + kSpace *2)
+#define kHudViewHeight (kBtnHeight * 4 + kSpace *2)
 #define kHudViewWidth (CGRectGetWidth(self.frame) - kSpace * 2)
 
 typedef NS_ENUM(NSInteger, kButtonTag) {
@@ -137,19 +137,19 @@ typedef NS_ENUM(NSInteger, kButtonTag) {
     _hudView = [[UIView alloc]initWithFrame:CGRectMake(kSpace, CGRectGetHeight(self.frame) - kHudViewHeight, kHudViewWidth, kHudViewHeight)];
     _hudView.backgroundColor = [UIColor clearColor];
     
-    UIView *topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kHudViewWidth, kBtnHeight * 2)];
+    UIView *topView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kHudViewWidth, kBtnHeight * 3)];
     topView.layer.cornerRadius = 4;
     topView.clipsToBounds = YES;
     [topView addSubview:[self cameraButton]];
     [topView addSubview:[self photoButton]];
-
+    [topView addSubview:[self titleButton]];
     [_hudView addSubview:topView];
     [_hudView addSubview:[self cancleButton]];
     return _hudView;
 }
 
 - (UIButton *)cameraButton{
-    UIButton *cameraButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, kHudViewWidth, kBtnHeight)];
+    UIButton *cameraButton = [[UIButton alloc]initWithFrame:CGRectMake(0, kBtnHeight, kHudViewWidth, kBtnHeight)];
     cameraButton.backgroundColor = [UIColor whiteColor];
     [cameraButton addTarget:self action:@selector(cameraButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -176,7 +176,7 @@ typedef NS_ENUM(NSInteger, kButtonTag) {
 }
 
 - (UIButton *)photoButton{
-    UIButton *photoButton = [[UIButton alloc]initWithFrame:CGRectMake(0, kBtnHeight, kHudViewWidth, kBtnHeight)];
+    UIButton *photoButton = [[UIButton alloc]initWithFrame:CGRectMake(0, kBtnHeight*2, kHudViewWidth, kBtnHeight)];
     photoButton.backgroundColor = [UIColor whiteColor];
     [photoButton addTarget:self action:@selector(photoButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -193,6 +193,29 @@ typedef NS_ENUM(NSInteger, kButtonTag) {
     
     return photoButton;
 }
+
+
+- (UIButton *)titleButton{
+    UIButton *titleButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, kHudViewWidth, kBtnHeight)];
+    titleButton.backgroundColor = [UIColor whiteColor];
+    UILabel *resetLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, (kBtnHeight - kSubViewHeight) / 2.0, kHudViewWidth, kSubViewHeight)];
+    resetLabel.text = @"头像设置";
+    resetLabel.font = EH_font2;
+    resetLabel.textColor = EH_cor4;
+    resetLabel.textAlignment = NSTextAlignmentCenter;
+
+    [titleButton addSubview:resetLabel];
+    
+    
+    CALayer *lineLayer = [CALayer layer];
+    lineLayer.frame = CGRectMake(0, kBtnHeight - 0.5, CGRectGetWidth(titleButton.frame), 0.5);
+    lineLayer.backgroundColor = EH_linecor1.CGColor;;
+    [titleButton.layer addSublayer:lineLayer];
+    
+    return titleButton;
+}
+
+
 
 - (UIButton *)cancleButton{
     UIButton *cancleButton = [[UIButton alloc]initWithFrame:CGRectMake(0, kHudViewHeight - kBtnHeight - kSpace, kHudViewWidth, kBtnHeight)];

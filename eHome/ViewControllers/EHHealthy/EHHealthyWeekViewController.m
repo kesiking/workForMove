@@ -9,7 +9,7 @@
 #import "EHHealthyWeekViewController.h"
 #import "EHGetHealthyWeekInfoService.h"
 #import "EHHealthWeekInfoModel.h"
-#import "CalendarViewController.h"
+
 
 
 @interface EHHealthyWeekViewController ()<EHHealthyDelegate,iCarouselDataSource, iCarouselDelegate>
@@ -18,11 +18,10 @@
 @property(assign,nonatomic)BOOL reachStop;
 @property(assign,nonatomic)NSInteger totalWeek;
 @property(strong,nonatomic)NSMutableArray* allWeekIndexArray;
-@property(strong,nonatomic)UIView* calendarView;
-@property(strong,nonatomic)UIView* bgView;
-@property(strong,nonatomic)CalendarViewController *calendarVC;
+
 @property(strong,nonatomic)NSDateFormatter *dateFormatter;
 @property (strong, nonatomic) UIImageView *ellipseImageView;
+@property(assign,nonatomic) BOOL show;
 @end
 
 @implementation EHHealthyWeekViewController
@@ -45,12 +44,14 @@
     self.stop = NO;
     self.totalWeek = 0;
     
+    self.healthyView.calendarBtn.hidden = YES;
+    
     //添加选中椭圆视图
     [self.healthyView.carousel addSubview:self.ellipseImageView];
     [self.ellipseImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.view.mas_centerX);
         make.centerY.equalTo(self.healthyView.carousel.mas_centerY);
-        make.size.mas_equalTo(CGSizeMake(100, 30));
+        make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH/3, 30));
     }];
     
     //柱状图参数配置
@@ -67,16 +68,25 @@
 {
     [super viewWillAppear:animated];
     self.currentWeek = 0;
+//    if (_showSharePage == YES) {
+//        return;
+//        
+//        
+//    }
+    
     [self.healthyView.carousel scrollToItemAtIndex:[self.items count]-1 animated:NO];
+    self.previousIndex = [self.items count]-1;
+    
+    NSString *date = [self.dateFormatter stringFromDate:[NSDate date]];
+    [self configDateLabelText];
+    self.getWeekInfoList.needCache = NO;
+    self.getWeekInfoList.onlyUserCache = NO;
+    [self.getWeekInfoList getHealthWeekInfowithBabyID:[self.babyId integerValue] date:date type:@"week"];
+    self.show = YES;
+    
 }
 #pragma mark - EHHealthyDelegate方法
 - (void)reloadDataWhenHeadBtnClick{
-    //需要修改
-//    NSString *date = [self.dateFormatter stringFromDate:[NSDate date]];
-//    self.getWeekInfoList.needCache = NO;
-//    self.getWeekInfoList.onlyUserCache = NO;
-//    [self.getWeekInfoList getHealthWeekInfowithBabyID:[self.babyId integerValue] date:date type:@"week"];
-    
     NSInteger count = 0;
     self.stop = NO;
     [self.items removeAllObjects];
@@ -92,88 +102,115 @@
     self.allWeekIndexArray = (NSMutableArray *)[[self.allWeekIndexArray reverseObjectEnumerator] allObjects];
     
     [self.healthyView.carousel reloadData];
-    [self.healthyView.carousel scrollToItemAtIndex:[self.items count]-1 animated:YES];
+    [self.healthyView.carousel scrollToItemAtIndex:[self.items count]-1 animated:NO];
+    
+    NSString *date = [self.dateFormatter stringFromDate:[NSDate date]];
+    [self configDateLabelText];
+    self.getWeekInfoList.needCache = NO;
+    self.getWeekInfoList.onlyUserCache = NO;
+    [self.getWeekInfoList getHealthWeekInfowithBabyID:[self.babyId integerValue] date:date type:@"week"];
 }
 - (void)reloadDataWhenViewScroll
 {
-    [self.healthyView.carousel scrollToItemAtIndex:[self.items count]-1 animated:YES];
-//    self.getWeekInfoList.needCache = NO;
-//    self.getWeekInfoList.onlyUserCache = NO;
-//    NSString *date = [self.dateFormatter stringFromDate:[NSDate date]];
-//    [self.getWeekInfoList getHealthWeekInfowithBabyID:[self.babyId integerValue] date:date type:@"week"];
+    [self.healthyView.carousel scrollToItemAtIndex:[self.items count]-1 animated:NO];
+    [self configDateLabelText];
+    self.getWeekInfoList.needCache = NO;
+    self.getWeekInfoList.onlyUserCache = NO;
+    NSString *date = [self.dateFormatter stringFromDate:[NSDate date]];
+    [self.getWeekInfoList getHealthWeekInfowithBabyID:[self.babyId integerValue] date:date type:@"week"];
 }
 - (void)configDateBtnClick:(EHHealthyBasicView *)healthyView
 {
-    UIWindow* window = [[UIApplication sharedApplication] keyWindow];
-    
-    if (!_calendarVC) {
-        _calendarVC = [CalendarViewController new];
-    }
-    _calendarVC.babyStartDate = [[EHBabyListDataCenter sharedCenter] currentBabyUserInfo].babyDeviceStartUserDay;
-    
-    WEAKSELF
-    [_calendarVC returnDateText:^(NSString *showSelectedDate){
-        STRONGSELF
-        NSDate *sdate=[strongSelf.dateFormatter dateFromString:showSelectedDate];
-        NSString *selectedDateString = [strongSelf.dateFormatter stringFromDate:sdate];
-        strongSelf.healthyView.dateLabel.text = selectedDateString;
-        //点击完日历的操作
-        NSInteger acount = 0;
-        self.reachStop = NO;
+    if (self.show) {
+        UIWindow* window = [[UIApplication sharedApplication] keyWindow];
         
-        while (!self.reachStop) {
-            [self getTotalWeeksFromSelectedDate:acount*(-7) andStartDate:sdate];
+        UIScrollView *supScrollView = (UIScrollView *)self.view.superview;
+        supScrollView.scrollEnabled = NO;
+        if (!healthyView.calendarVC) {
+            healthyView.calendarVC = [CalendarViewController new];
+        }
+        healthyView.calendarVC.babyStartDate = [[EHBabyListDataCenter sharedCenter] currentBabyUserInfo].babyDeviceStartUserDay;
+        
+        WEAKSELF
+        [healthyView.calendarVC returnDateText:^(NSString *showSelectedDate){
+            STRONGSELF
+            NSDate *sdate=[strongSelf.dateFormatter dateFromString:showSelectedDate];
+            NSString *selectedDateString = [strongSelf.dateFormatter stringFromDate:sdate];
+            strongSelf.healthyView.dateLabel.text = selectedDateString;
+            //点击完日历的操作
+            NSInteger acount = 0;
+            strongSelf.reachStop = NO;
             
-            acount++;
+            while (!strongSelf.reachStop) {
+                [strongSelf getTotalWeeksFromSelectedDate:acount*(-7) andStartDate:sdate];
+                
+                acount++;
+            }
+            
+            NSInteger index = [self.items count] - acount;
+            
+            [strongSelf.healthyView.carousel scrollToItemAtIndex:index animated:YES];
+            supScrollView.scrollEnabled = YES;
+            [strongSelf.healthyView.bgView removeFromSuperview];
+            [strongSelf.healthyView.calendarView removeFromSuperview];
+            self.show = YES;
+
+            
+        }];
+        if (!self.healthyView.bgView) {
+            self.healthyView.bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 60, window.bounds.size.width, window.bounds.size.height-60)];
+            
+        }
+        self.healthyView.bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0];
+        if (!self.healthyView.calendarView) {
+            self.healthyView.calendarView = [[UIView alloc] initWithFrame:CGRectMake(0,0, self.view.width, 374.5*SCREEN_SCALE+16.5*SCREEN_SCALE)];
         }
         
-        NSInteger index = [self.items count] - acount;
+        self.healthyView.calendarView.backgroundColor = [UIColor whiteColor];
         
-        [self.healthyView.carousel scrollToItemAtIndex:index animated:NO];
-        [_bgView removeFromSuperview];
-        [_calendarView removeFromSuperview];
+        UIView *canldara = self.healthyView.calendarVC.view;
         
-    }];
-    if (!_bgView) {
-        _bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 60, window.bounds.size.width, window.bounds.size.height-60)];
+        [self.healthyView.calendarVC.view setFrame:CGRectMake(0, 0, self.view.width, 374.5*SCREEN_SCALE)];
+        //    _calendarVC.view.clipsToBounds = YES;
+        //    self.calendarView.clipsToBounds = YES;
+        [self.healthyView.calendarView addSubview:canldara];
+        
+        
+        self.healthyView.calendarView.alpha = 0;
+        [self.view addSubview:self.healthyView.bgView];
+        [self.view addSubview:self.healthyView.calendarView];
+        
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(atap)];
+        [self.healthyView.bgView addGestureRecognizer:tap];
+        
+        CGRect rect = self.healthyView.calendarView.frame;
+        //日历控件往下偏移60px
+        rect.origin.y = 60;
+        //    [self.view bringSubviewToFront:self.babyListView];
+        [UIView animateKeyframesWithDuration:0.3 delay:0 options:UIViewKeyframeAnimationOptionLayoutSubviews animations:^{
+            [self.healthyView.calendarView setFrame:rect];
+            self.healthyView.calendarView.alpha = (NSUInteger)(1);
+            self.healthyView.bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0.6];
+            
+        } completion:nil];
+        self.show = NO;
+    }else{
+         [self ahide];
         
     }
-    _bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0];
-    if (!_calendarView) {
-        _calendarView = [[UIView alloc] initWithFrame:CGRectMake(0,0, self.view.width, 374.5*SCREEN_SCALE+16.5*SCREEN_SCALE)];
-    }
-    
-    _calendarView.backgroundColor = [UIColor whiteColor];
-    
-    UIView *canldara = _calendarVC.view;
-    
-    [_calendarVC.view setFrame:CGRectMake(0, 0, self.view.width, 374.5*SCREEN_SCALE)];
-    //    _calendarVC.view.clipsToBounds = YES;
-    //    self.calendarView.clipsToBounds = YES;
-    [self.calendarView addSubview:canldara];
-    
-    
-    _calendarView.alpha = 0;
-    [self.view addSubview:_bgView];
-    [self.view addSubview:_calendarView];
-    
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(atap)];
-    [_bgView addGestureRecognizer:tap];
-    
-    CGRect rect = self.calendarView.frame;
-    //日历控件往下偏移60px
-    rect.origin.y = 60;
-    //    [self.view bringSubviewToFront:self.babyListView];
-    [UIView animateKeyframesWithDuration:0.3 delay:0 options:UIViewKeyframeAnimationOptionLayoutSubviews animations:^{
-        [self.calendarView setFrame:rect];
-        self.calendarView.alpha = (NSUInteger)(1);
-        _bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0.6];
-        
-    } completion:nil];
 }
 
 
 #pragma mark - 私有方法
+- (void)configDateLabelText
+{
+    static NSDateFormatter *myDateFormatter = nil;
+    if (!myDateFormatter) {
+        myDateFormatter = [[NSDateFormatter alloc]init];
+        [myDateFormatter setDateFormat:@"yyyy年"];
+    }
+    self.healthyView.dateLabel.text = [myDateFormatter stringFromDate:[NSDate date]];
+}
 - (void)configItemsForDatasource
 {
     self.startUserDay=[[EHBabyListDataCenter sharedCenter] currentBabyUserInfo].babyDeviceStartUserDay;
@@ -215,7 +252,7 @@
     NSString *enda = [endString stringByReplacingOccurrencesOfString:@"-" withString:@"."];
 //    [healthyView.dateBtn setTitle:[NSString stringWithFormat:@"%@-%@",begina,enda] forState:UIControlStateNormal];
 //    healthyView.dateLabel.text = [NSString stringWithFormat:@"%@-%@",begina,enda];
-    self.selectedWeek = [NSString stringWithFormat:@"%@-%@",begina,enda];
+    self.selectedWeek = [NSString stringWithFormat:@"%@~%@",begina,enda];
     
     
     NSMutableArray* stepsdata = [NSMutableArray arrayWithCapacity:[weekmodel.data count]];
@@ -225,7 +262,6 @@
     [stepsdata addObject:weekmodel.data[0]];
     //            NSLog(@"stepsData---------%@\n",stepsdata);
     
-    //    NSArray * stepsdata= @[@10,@20,@21,@30,@0,@9,@19];
     
     //            [strongSelf.currentWeekView.barChart setYValues:stepsdata];
     [healthyView.barChart setYValues:stepsdata];
@@ -233,7 +269,7 @@
     healthyView.sTargetStepsLabel.text = [NSString stringWithFormat:@"目标：%ld步",model.targetSteps];
     healthyView.finishSteps.text=[NSString stringWithFormat:@"%ld",(long)model.steps];
     //    NSLog(@"\nmodel.steps\n\n%ld",model.steps);
-    healthyView.distanceLabel.text=[NSString stringWithFormat:@"%.0f公里",model.mileage];
+    healthyView.distanceLabel.text=[NSString stringWithFormat:@"%.3f千米",model.mileage/1000.0];
     healthyView.energyLabel.text=[NSString stringWithFormat:@"%.0f千卡",model.calorie];
     healthyView.ratioLabel.text=[NSString stringWithFormat:@"%@%%",model.percent];
     [healthyView.distanceChart updateChartByCurrent:[NSNumber numberWithInteger:[model.percent integerValue]]];
@@ -242,6 +278,36 @@
     
     
     NSNumber* max1=[stepsdata valueForKeyPath:@"@max.intValue"];
+    
+    long maxValue = [max1 integerValue];
+    //截断最大值，如果<500,取到500，如果<1000,取到1000(0的话取0)
+    if (maxValue <= 500) {
+        if (maxValue == 0) {
+            maxValue = 0;
+        }else{
+            maxValue = 500;
+        }
+        
+    }else if (maxValue <= 1000){
+        maxValue = 1000;
+    }else{
+        int trail = maxValue%1000;
+        if (trail < 500) {
+            maxValue = (maxValue/1000) *1000 +500;
+        }else{
+            maxValue = (maxValue/1000) *1000 +1000;
+        }
+    }
+    
+    if (maxValue == 0) {
+        healthyView.maxYValueLabel.text = @"";
+        healthyView.middleValueLabel.text = @"";
+    }else{
+        healthyView.maxYValueLabel.text = [NSString stringWithFormat:@"%ld",maxValue];
+        healthyView.middleValueLabel.text = [NSString stringWithFormat:@"%ld",maxValue/2];
+    }
+
+    
     NSMutableArray *colors = [NSMutableArray new];
     int index = 0;
     for (NSNumber *bb in stepsdata) {
@@ -251,56 +317,18 @@
         else
             index++;
     }
-    for (NSNumber *aa in stepsdata) {
-        int max = [max1 intValue];
-        int aaa = [aa intValue];
-        if(aaa <= max/3.0) {
-            UIColor *color = EH_barcor2;
-            [colors addObject:color];
-        }
+    for (int i=0 ;i<[stepsdata count];i++) {
         
-        else{
-            if (aaa<=(max/3)*2) {
-                UIColor *color = EH_barcor3;
-                [colors addObject:color];
-            }
-            else{
-                UIColor *color = EH_barcor1;
-                [colors addObject:color];
-                
-            }
-        }
+        UIColor *color = EHCor13;
+        [colors addObject:color];
         
     }
-    //设置不同的颜色
-    
+        
     [healthyView.barChart setStrokeColors:colors];
-//    if ([max1 integerValue]==0) {
-//        healthyView.maxLabel.hidden=YES;
-//    }else
-//    {
-//        healthyView.maxLabel.hidden=NO;
-//        healthyView.maxLabel.text = [NSString stringWithFormat:@"%ld",[max1 integerValue]];
-//    }
-//    
-    
-//    NSDictionary *attributes = [NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:EH_siz7]forKey:NSFontAttributeName];
-//    CGSize sizeForDateLabel2=[healthyView.maxLabel.text boundingRectWithSize:CGSizeMake(800, 30) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
-//    
-    
     double barMargin = 30*SCREEN_SCALE;
-    double barWidth = ((SCREEN_WIDTH-44.5*SCREEN_SCALE) -10*SCREEN_SCALE-(colors.count-1)*barMargin)/(colors.count*1.0);
+    double barWidth = ((SCREEN_WIDTH-28*SCREEN_SCALE) -10*SCREEN_SCALE-(colors.count-1)*barMargin)/(colors.count*1.0);
     
     [healthyView.barChart setXLabels:@[@"一",@"二",@"三",@"四",@"五",@"六",@"日"] andMargin:barMargin andWidth:barWidth];
-    
-    
-    
-//    double barXPosition = 5*SCREEN_SCALE+index*(barMargin+barWidth);
-    
-//    [healthyView.maxLabel mas_updateConstraints:^(MASConstraintMaker *make) {
-//        make.left.equalTo(healthyView.thirdView.mas_left).with.offset(34.5*SCREEN_SCALE+barXPosition-0.5*(sizeForDateLabel2.width-barWidth));
-//    }];
-//    
     [healthyView.barChart strokeChartWeekWithMargin:barMargin andWidth:barWidth];
 }
 //showErrorView刷新回调方法
@@ -376,8 +404,11 @@
     [self.items addObject:weekMargin];
     
     [self.allWeekIndexArray addObject:beginDateString];
-//    [self.allWeekMargins addObject:weekMargin];
-//    [self.moreWeekMargins addObject:weekMargin];
+
+    
+    
+    
+    
 
 }
 
@@ -421,7 +452,7 @@
 
 
 
-- (NSString *)agetWeekBeginAndEndWith:(NSInteger)count{
+- (NSString *)getSingleWeekBeginAndEndWith:(NSInteger)count{
     NSDate *oldDate = [NSDate date];
     //    NSLog(@"%@",oldDate);
     
@@ -464,12 +495,16 @@
 }
 
 - (void)ahide{
+    self.show = YES;
     [UIView animateWithDuration:0.2 animations:^{
-        _bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0];
-        _calendarView.layer.transform = CATransform3DMakeTranslation(0, -CGRectGetHeight(_calendarView.frame), 0);
+        self.healthyView.bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0];
+        self.healthyView.calendarView.layer.transform = CATransform3DMakeTranslation(0, -CGRectGetHeight(self.healthyView.calendarView.frame), 0);
     } completion:^(BOOL finished) {
-        [_bgView removeFromSuperview];
-        [_calendarView removeFromSuperview];
+        [self.healthyView.bgView removeFromSuperview];
+        [self.healthyView.calendarView removeFromSuperview];
+        UIScrollView *supRScrollView = (UIScrollView *)self.view.superview;
+        supRScrollView.scrollEnabled = YES;
+
         //        _bgView = nil;
         //        _calendarView = nil;
     }];
@@ -550,7 +585,7 @@
 //        NSInteger nextPlaceholder = nextDate.day;
 //        [placeholderArr addObject:@(nextPlaceholder)];
         
-        NSString *everyWeekMargin = [self agetWeekBeginAndEndWith:(self.totalWeek+3-j)*(-7)];
+        NSString *everyWeekMargin = [self getSingleWeekBeginAndEndWith:(self.totalWeek+3-j)*(-7)];
         [placeholderArr addObject:everyWeekMargin];
     }
     
@@ -561,7 +596,7 @@
         
         
         
-        NSString *everyWeekMargin = [self agetWeekBeginAndEndWith:(-i)*(-7)];
+        NSString *everyWeekMargin = [self getSingleWeekBeginAndEndWith:(-i)*(-7)];
         [placeholderArr addObject:everyWeekMargin];
         
     }
@@ -649,12 +684,7 @@
     }
     self.healthyView.dateLabel.text = [NSString stringWithFormat:@"%@年",yearString];
 
-    if (carousel.currentItemIndex == self.totalWeek-1) {
-        self.getWeekInfoList.needCache = NO;
-        self.getWeekInfoList.onlyUserCache = NO;
-    }else{
-        self.getWeekInfoList.onlyUserCache=YES;
-    }
+    self.getWeekInfoList.onlyUserCache=YES;
     [self.getWeekInfoList getHealthWeekInfowithBabyID:[self.babyId integerValue] date:self.allWeekIndexArray[carousel.currentItemIndex] type:@"week"];
 }
 #pragma mark - 懒加载

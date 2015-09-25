@@ -18,7 +18,7 @@
 #define btn_smsCode_width   (120.0)
 
 #define text_height         (40.0)
-#define text_border         (8.0)
+#define text_border         (10.0)
 
 @class KSValidateCodeViewCtl;
 

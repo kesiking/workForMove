@@ -8,6 +8,12 @@
 
 #import "EHBaseGeofenceRemindViewController.h"
 
+typedef void(^RemindNeedEdit)(EHGeofenceRemindModel *remindModel);
+
 @interface EHGeofenceRemindEditViewController : EHBaseGeofenceRemindViewController
+
+@property (nonatomic, strong)RemindNeedEdit remindNeedUpdate;
+
+@property (nonatomic, strong)RemindNeedEdit remindNeedDelete;
 
 @end

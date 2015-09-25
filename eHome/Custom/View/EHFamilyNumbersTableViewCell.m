@@ -16,17 +16,22 @@
 
 - (void)awakeFromNib {
     // Initialization code
-    self.nickNameLabel.textColor = EH_cor3;
-    self.nickNameLabel.font = [UIFont systemFontOfSize:EH_siz3];
-    self.phoneLabel.textColor = EH_cor4;
-    self.phoneLabel.font = [UIFont systemFontOfSize:EH_siz6];
-    self.placeHolder.textColor = EH_cor6;
-    self.placeHolder.font = [UIFont systemFontOfSize:EH_siz3];
-    self.rankImage.image = [UIImage imageNamed:@"bg_familyphone_normal"];
+    self.nickNameLabel.textColor = EHCor5;
+    self.nickNameLabel.font = [UIFont systemFontOfSize:EHSiz2];
+    self.phoneLabel.textColor = EHCor6;
+    self.phoneLabel.font = [UIFont systemFontOfSize:EHSiz5];
+    self.placeHolder.textColor = EHCor3;
+    self.placeHolder.font = [UIFont systemFontOfSize:EHSiz2];
+ //   self.rankImage.image = [UIImage imageNamed:@"bg_familyphone"];
+    self.rankImage.backgroundColor=EHCor23;
     self.rankLabel.font = [UIFont boldSystemFontOfSize: EH_siz6];
-    self.rankLabel.textColor = EH_cor1;
+    self.rankLabel.textColor = EHCor22;
+    self.rankLabel.textAlignment=NSTextAlignmentCenter;
+  //  self.colorfulRankImage.backgroundColor=EHCor20;
     self.colorfulRankImage.image = [UIImage imageNamed:@"bg_familyphone"];
     self.selectImage.hidden = YES;
+    self.line.image=[UIImage imageNamed:@"line_606"];
+    self.selectionStyle=UITableViewCellSelectionStyleNone;
 }
 
 //-(void)layoutSubviews{
@@ -72,9 +77,8 @@
         self.nickNameLabel.hidden = NO;
         self.phoneLabel.hidden = NO;
         self.placeHolder.hidden = YES;
-        self.rankImage.hidden = YES;
+       // self.rankImage.hidden = YES;
         self.selectImage.hidden = hide;
-        self.colorfulRankImage.hidden = NO;
         //self.markButton.hidden = hide;
         self.nickNameLabel.text = model.phone_name;
         self.phoneLabel.text = model.attention_phone;
@@ -82,8 +86,7 @@
         self.nickNameLabel.hidden = YES;
         self.phoneLabel.hidden = YES;
         self.placeHolder.hidden = NO;
-        self.colorfulRankImage.hidden = YES;
-        self.rankImage.hidden = NO;
+     //   self.rankImage.hidden = NO;
         self.selectImage.hidden = YES;
         //self.markButton.hidden = YES;
     }

@@ -28,14 +28,18 @@
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gnx-ih-P0F">
-                        <rect key="frame" x="80" y="39" width="159" height="21"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gnx-ih-P0F">
+                        <rect key="frame" x="80" y="39.5" width="42" height="20.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="U8d-Vw-ulV">
-                        <rect key="frame" x="252" y="20" width="60" height="30"/>
+                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="U8d-Vw-ulV">
+                        <rect key="frame" x="278" y="20" width="27" height="29"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="45" id="bVa-qj-4I8"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <state key="normal" title="Button">
                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                         </state>
@@ -45,15 +49,14 @@
                     </button>
                 </subviews>
                 <constraints>
+                    <constraint firstAttribute="trailing" secondItem="U8d-Vw-ulV" secondAttribute="trailing" constant="15" id="4zB-F5-4W5"/>
                     <constraint firstItem="nb7-W1-fDh" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="7" id="Dp1-ef-Fhx"/>
                     <constraint firstItem="SEO-3x-DKs" firstAttribute="leading" secondItem="nb7-W1-fDh" secondAttribute="trailing" constant="15" id="Dr0-Vt-ss0"/>
-                    <constraint firstItem="U8d-Vw-ulV" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="244" id="GFM-GV-jeJ"/>
                     <constraint firstAttribute="bottomMargin" secondItem="Gnx-ih-P0F" secondAttribute="bottom" constant="2" id="Hdq-fz-1yA"/>
-                    <constraint firstAttribute="centerY" secondItem="U8d-Vw-ulV" secondAttribute="centerY" constant="-0.25" id="Hf2-x4-j8r"/>
+                    <constraint firstAttribute="centerY" secondItem="U8d-Vw-ulV" secondAttribute="centerY" id="Hf2-x4-j8r"/>
                     <constraint firstItem="SEO-3x-DKs" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="2" id="MUb-i2-2Re"/>
                     <constraint firstAttribute="centerY" secondItem="nb7-W1-fDh" secondAttribute="centerY" id="RNU-bT-O3E"/>
                     <constraint firstItem="SEO-3x-DKs" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="2" id="UsE-Ie-ObN"/>
-                    <constraint firstItem="U8d-Vw-ulV" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" id="YmJ-v4-Gjs"/>
                     <constraint firstItem="Gnx-ih-P0F" firstAttribute="leading" secondItem="nb7-W1-fDh" secondAttribute="trailing" constant="15" id="aTy-cr-0cP"/>
                 </constraints>
             </tableViewCellContentView>

@@ -6,7 +6,7 @@
 		<key>name</key>
 		<string>家庭成员</string>
 		<key>imagename</key>
-		<string>headportrait_boy_160</string>
+		<string>icon_my_family</string>
 		<key>tag</key>
 		<integer>1000</integer>
 	</dict>
@@ -14,7 +14,7 @@
 		<key>name</key>
 		<string>亲情号码</string>
 		<key>imagename</key>
-		<string>headportrait_boy_160</string>
+		<string>icon_my_phone</string>
 		<key>tag</key>
 		<real>1001</real>
 	</dict>
@@ -22,7 +22,7 @@
 		<key>name</key>
 		<string>安全围栏</string>
 		<key>imagename</key>
-		<string>headportrait_boy_160</string>
+		<string>icon_my_crawl</string>
 		<key>tag</key>
 		<real>1002</real>
 	</dict>
@@ -30,7 +30,7 @@
 		<key>name</key>
 		<string>宝贝提醒</string>
 		<key>imagename</key>
-		<string>headportrait_boy_160</string>
+		<string>icon_my_remind</string>
 		<key>tag</key>
 		<integer>1003</integer>
 	</dict>
@@ -38,7 +38,7 @@
 		<key>name</key>
 		<string>定位模式</string>
 		<key>imagename</key>
-		<string>headportrait_boy_160</string>
+		<string>icon_my_location</string>
 		<key>tag</key>
 		<integer>1004</integer>
 	</dict>
@@ -46,7 +46,7 @@
 		<key>name</key>
 		<string>分享宝贝</string>
 		<key>imagename</key>
-		<string>headportrait_boy_160</string>
+		<string>icon_my_share01</string>
 		<key>tag</key>
 		<real>1005</real>
 	</dict>

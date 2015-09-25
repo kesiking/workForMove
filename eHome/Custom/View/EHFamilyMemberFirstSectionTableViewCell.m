@@ -21,14 +21,5 @@
     // Configure the view for the selected state
 }
 
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        self.headImageView.layer.cornerRadius = CGRectGetHeight(self.headImageView.frame)/2;
-        self.headImageView.layer.masksToBounds = YES;
-    });
-}
 
 @end

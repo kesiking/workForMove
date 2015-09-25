@@ -13,7 +13,7 @@
 - (void)addSubcontroller:(UIViewController *)controller navigateType:(TBNavigationType)type animated:(BOOL)animated {
     if (TBNavigationTypeTabbarSelect == type) {
         if (controller.rdv_tabBarController) {
-            [self.navigationController popToViewController:controller.rdv_tabBarController animated:YES];
+            [self.navigationController popToViewController:controller.rdv_tabBarController animated:animated];
         }
         [self setSelectedViewController:controller];
     } else if (TBNavigationTypePresent == type) {

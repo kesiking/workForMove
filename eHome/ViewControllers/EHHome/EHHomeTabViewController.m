@@ -93,7 +93,22 @@
 }
 
 -(void)loginWithNativeParams:(NSDictionary *)nativeParams{
-    [self checkLogin];
+    WEAKSELF
+    dispatch_block_t block = ^(){
+        [weakSelf checkLogin];
+    };
+    
+    if (IOS_VERSION >= 8.0) {
+        if (block) {
+            block();
+        }
+    }else{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            if (block) {
+                block();
+            }
+        });
+    }
 }
 
 -(void)switchToBabyWithBabyId:(NSNumber *)babyId{
@@ -215,6 +230,10 @@
     }
 }
 
+-(BOOL)needSetupBabyData{
+    return NO;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark - 懒加载  mapview、navBarTItleView
 -(EHMapOverLayWithOutLineServiceContainer *)mapView{
@@ -279,12 +298,15 @@
 #pragma mark - 消息响应 messageBtnClicked
 -(void)messageBtnClicked:(id)sender{
     // goto 消息列表页面
-    if ([self checkLogin]) {
+    BOOL isLogin = [KSAuthenticationCenter isLogin];
+    if (isLogin) {
         NSMutableDictionary* params = [NSMutableDictionary dictionary];
         if (self.babyHorizontalListView.babyListArray) {
             [params setObject:self.babyHorizontalListView.babyListArray forKey:@"babyListArray"];
         }
         TBOpenURLFromSourceAndParams(internalURL(@"EHMessageInfoViewController"), self, params);
+    }else{
+        [self alertCheckLoginWithCompleteBlock:nil];
     }
 }
 

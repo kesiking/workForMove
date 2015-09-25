@@ -76,9 +76,10 @@
     self.navigationItem.titleView = self.titleView;
     self.navigationController.navigationBarHidden = NO;
     
-    [self switchToBabyWithBabyId:[NSNumber numberWithInteger:[[[EHBabyListDataCenter sharedCenter] currentBabyId] integerValue]]];
-    [self.babyHorizontalListView setupBabyDataWithDataList:[[EHBabyListDataCenter sharedCenter] babyList]];
-
+    if ([self needSetupBabyData]) {
+        [self switchToBabyWithBabyId:[NSNumber numberWithInteger:[[[EHBabyListDataCenter sharedCenter] currentBabyId] integerValue]]];
+        [self.babyHorizontalListView setupBabyDataWithDataList:[[EHBabyListDataCenter sharedCenter] babyList]];
+    }
 }
 
 -(void)viewDidAppear:(BOOL)animated{
@@ -214,6 +215,10 @@
         [bgImageView setFrame:rect];
         self.babyHorizontalListView.alpha = (NSUInteger)(show?1:0);
     } completion:nil];
+}
+
+-(BOOL)needSetupBabyData{
+    return YES;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

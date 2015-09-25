@@ -28,6 +28,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *rankImage;
 @property (weak, nonatomic) IBOutlet UIImageView *colorfulRankImage;
 
+@property (weak, nonatomic) IBOutlet UIImageView *line;
 
 
 @property (assign,nonatomic) BOOL isCellSelected;

@@ -59,24 +59,34 @@ static NSDateFormatter *dateFormatter = nil;
     if (message.create_time) {
         timestamp = [dateFormatter dateFromString:message.create_time];
     }
-    switch ([message.context_type integerValue]) {
-        case XHBubbleMessageMediaTypeVideo:{
-            babyChatMessage = [[XHBabyChatMessage alloc] initWithVoicePath:nil voiceUrl:message.context voiceDuration:[NSString stringWithFormat:@"%@",message.call_duration] sender:message.sender timestamp:timestamp isRead:YES];
-        }
-            break;
-        case XHBubbleMessageMediaTypeText:{
-            babyChatMessage = [[XHBabyChatMessage alloc] initWithText:message.context sender:message.sender timestamp:timestamp];
-        }
-            break;
-        default:
-            break;
+    if ([message.context_type isEqualToString:CONTEXT_TYPE_TEXT]) {
+         babyChatMessage = [[XHBabyChatMessage alloc] initWithText:message.context sender:message.user_phone timestamp:timestamp];
+    }else if ([message.context_type isEqualToString:CONTEXT_TYPE_VOICE]) {
+        babyChatMessage = [[XHBabyChatMessage alloc] initWithVoicePath:nil voiceUrl:message.context voiceDuration:[NSString stringWithFormat:@"%@",message.call_duration] sender:message.user_phone timestamp:timestamp isRead:YES];
     }
+    babyChatMessage.avatarUrl = message.head_imag_small;
+    babyChatMessage.originPhotoUrl = message.head_imag_small;
     babyChatMessage.recieverBabyID = message.baby_id;
     babyChatMessage.user_nick_name = message.user_nick_name;
+    babyChatMessage.messageIsFromBaby = [message.sender boolValue];
+    babyChatMessage.bubbleMessageType = XHBubbleMessageTypeReceiving;
     babyChatMessage.msgStatus = EHBabyChatMessageStatusReceived;
     [babyChatMessage configMessageID];
-
+    
     return babyChatMessage;
+}
+
+-(void)updateMessgeWithChatMessageinfoModel:(EHChatMessageinfoModel *)chatMessageinfoModel{
+    if (chatMessageinfoModel == nil) {
+        return;
+    }
+    self.user_nick_name = chatMessageinfoModel.user_nick_name?:self.user_nick_name;
+    self.head_imag_small = chatMessageinfoModel.head_imag_small?:self.head_imag_small;
+    self.create_time = chatMessageinfoModel.create_time?:self.create_time;
+    self.uuid = chatMessageinfoModel.uuid?:self.uuid;
+    if (self.babyChatMessage.messageMediaType == XHBubbleMessageMediaTypeVoice) {
+        self.babyChatMessage.voiceUrl = chatMessageinfoModel.context?:chatMessageinfoModel.babyChatMessage.voiceUrl;
+    }
 }
 
 + (EHChatMessageinfoModel *)makeMessage:(XHBabyChatMessage *)babyChatMessage
@@ -106,7 +116,6 @@ static NSDateFormatter *dateFormatter = nil;
     message.head_imag_small = [KSAuthenticationCenter userComponent].user_head_img;
     message.user_nick_name = [KSAuthenticationCenter userComponent].nick_name;
     message.msgTimestamp = babyChatMessage.msgTimestamp;
-    message.user_phone = [KSAuthenticationCenter userPhone];
 
     message.babyInfoModel = [EHChatMessageBabyInfoModel new];
     message.babyInfoModel.baby_id = message.baby_id;

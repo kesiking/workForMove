@@ -105,7 +105,7 @@
     
     if ([self selectedViewController]) {
         [[self selectedViewController] willMoveToParentViewController:nil];
-        if (IOS_VERSION < 7.1) {
+        if (IOS_VERSION < 7.1 && [[self selectedViewController] isViewLoaded]) {
             [[self selectedViewController] viewWillDisappear:YES];
         }
         [[[self selectedViewController] view] removeFromSuperview];

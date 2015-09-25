@@ -10,6 +10,7 @@
 #import "EHGetBabyBindingStatusListService.h"
 #import "EHNewApplyFamilyMemberTableViewCell.h"
 #import "EHCheckBabyIsAgreeService.h"
+#import "GroupedTableView.h"
 
 @interface EHNewApplyFamilyMemberViewController ()<UITableViewDataSource,UITableViewDelegate>{
     EHGetBabyBindingStatusListService *getBabyBindingStatusListService;
@@ -38,17 +39,20 @@
     [super viewDidLoad];
     self.title=@"新申请的成员";
     [self.view addSubview:[self newApplyFamilyMemberTableView]];
+    self.view.backgroundColor=_newfamilyMemberTableView.backgroundColor;
     if (self.redPointIsShow) {
         self.redPointIsShow(NO);
     }
-    
     [self getBabyBindingStatus];
 }
 
+
+
+
 -(UITableView *)newApplyFamilyMemberTableView{
     if (!_newfamilyMemberTableView) {
-        _newfamilyMemberTableView=[[UITableView alloc]initWithFrame:self.view.frame style:UITableViewStyleGrouped];
-        _newfamilyMemberTableView.rowHeight=70;
+        _newfamilyMemberTableView=[[GroupedTableView alloc]initWithFrame:CGRectMake(8, 0, CGRectGetWidth(self.view.frame)-16, CGRectGetHeight(self.view.frame)) style:UITableViewStyleGrouped];
+        _newfamilyMemberTableView.rowHeight=61;
         _newfamilyMemberTableView.sectionFooterHeight=0;
         _newfamilyMemberTableView.dataSource=self;
         _newfamilyMemberTableView.delegate=self;
@@ -96,12 +100,15 @@ static BOOL babyBindingStatusListRegistered=NO;
     cell.phoneLabel.text=babyBindindStatusItem.user_phone;
     if ([babyBindindStatusItem.baby_status isEqualToString:@"1"]) {
         [cell.agreeButton setTitle:@"已同意" forState:UIControlStateNormal];
+        [cell.agreeButton setBackgroundImage:nil forState:UIControlStateNormal];
         [cell.agreeButton setEnabled:NO];
     }else if ([babyBindindStatusItem.baby_status isEqualToString:@"2"]){
         [cell.agreeButton setTitle:@"同意" forState:UIControlStateNormal];
+        [cell.agreeButton setBackgroundImage:[UIImage imageNamed:@"btn_agree"] forState:UIControlStateNormal];
         [cell.agreeButton setEnabled:YES];
 
     }else{
+        [cell.agreeButton setBackgroundImage:nil forState:UIControlStateNormal];
         [cell.agreeButton setTitle:@"已过期" forState:UIControlStateNormal];
         [cell.agreeButton setEnabled:NO];
     }
@@ -130,6 +137,11 @@ static BOOL babyBindingStatusListRegistered=NO;
     [checkBabyIsAgreeService  checkBabyIsAgreeService:userphone babyId:baby_id baby_nickname:nickname relationship:relationship];
     
     
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 12;
 }
 
 
@@ -166,5 +178,6 @@ static BOOL babyBindingStatusListRegistered=NO;
     [getBabyBindingStatusListService getBabyBindingStatusList:self.baby_Id Phone:[KSAuthenticationCenter userPhone]];
     
 }
+
 
 @end

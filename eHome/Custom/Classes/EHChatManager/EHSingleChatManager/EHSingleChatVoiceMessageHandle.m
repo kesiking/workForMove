@@ -43,7 +43,7 @@
         return;
     }
     
-    EHChatMessageinfoModel* chatMessageModel = [EHChatMessageinfoModel modelWithJSON:responseObject];
+    EHChatMessageinfoModel* chatMessageModel = [EHChatMessageinfoModel modelWithJSON:[(NSDictionary*)responseObject objectForKey:@"message"]];
     [[EHSingleChatCacheManager sharedCenter] recieveBabyChatMessage:chatMessageModel];
     
 }

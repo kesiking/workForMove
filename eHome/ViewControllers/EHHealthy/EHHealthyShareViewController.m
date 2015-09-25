@@ -74,7 +74,7 @@
     UILabel *weChartLabel = [[UILabel alloc]initWithFrame:CGRectZero];
     weChartLabel.text = @"微信";
 //    weChartLabel.textColor = [UIColor redColor];
-    weChartLabel.font = EH_font6;
+    weChartLabel.font = EHFont5;
     [weChartLabel sizeToFit];
     [sharedBtnBgView addSubview:weChartLabel];
     [weChartLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -100,7 +100,7 @@
     UILabel *friendsLabel = [[UILabel alloc]initWithFrame:CGRectZero];
     friendsLabel.text = @"朋友圈";
 //    friendsLabel.textColor = [UIColor redColor];
-    friendsLabel.font = EH_font6;
+    friendsLabel.font = EHFont5;
     [friendsLabel sizeToFit];
     [sharedBtnBgView addSubview:friendsLabel];
     [friendsLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -147,7 +147,7 @@
     self.nameLabel.text=_sharedBabyName;
     //CGFloat
     self.nameLabel.textColor=EH_cor1;
-    self.nameLabel.font=EH_font4;
+    self.nameLabel.font=EHFont2;
     
     NSLog(@"self.nameLabel.size.width = %f",self.nameLabel.size.width);
     [self.nameLabel sizeToFit];
@@ -166,7 +166,8 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     //日期标签
     self.dateLabel.text=_sharedDate;
     self.dateLabel.textColor=EH_cor1;
-    self.dateLabel.font=EH_font2;
+    
+    self.dateLabel.font=EHFont1;
     [self.dateLabel sizeToFit];
     //[self.view addSubview:self.dateLabel];
     [self.sharedBgView addSubview:self.dateLabel];
@@ -181,9 +182,9 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     
     //计步标签
     self.finishedSteps.textColor= EHCor12;
-    self.finishedSteps.font = EH_font10;
+    self.finishedSteps.font = EHFont8;
     self.finishedSteps.textAlignment=NSTextAlignmentCenter;
-    NSDictionary *attributes22 = [NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:EH_size10]forKey:NSFontAttributeName];
+    NSDictionary *attributes22 = [NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:EHSize8]forKey:NSFontAttributeName];
     CGSize labelSize22=[self.finishedSteps.text boundingRectWithSize:CGSizeMake(360, 300) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes22 context:nil].size;
     self.finishedSteps.size=labelSize22;
     ////////完成步数
@@ -192,7 +193,7 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     
     self.step=[[UILabel alloc]initWithFrame:CGRectZero];
     self.step.text=@"步";
-    self.step.font=[UIFont systemFontOfSize:EH_siz2];
+    self.step.font=[UIFont systemFontOfSize:EHSiz1];
     self.step.textColor= EHCor12;
     [self.step sizeToFit];
     [self.sharedBgView addSubview:self.step];
@@ -204,9 +205,9 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     //目标步数
     //计步标签
     self.babyTargetSteps.textColor=EHCor7;
-    self.babyTargetSteps.font = EH_font4;
+    self.babyTargetSteps.font = EHFont2;
     self.babyTargetSteps.textAlignment=NSTextAlignmentCenter;
-    NSDictionary *attributes12 = [NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:EH_siz4]forKey:NSFontAttributeName];
+    NSDictionary *attributes12 = [NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:EHSiz2]forKey:NSFontAttributeName];
     CGSize labelSize12=[self.babyTargetSteps.text boundingRectWithSize:CGSizeMake(160, 36) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes12 context:nil].size;
     self.babyTargetSteps.size=labelSize12;
     ////////完成步数
@@ -214,7 +215,7 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
 
     NSLog(@"\nbaby%@",self.babyTargetSteps);
     
-    NSDictionary *attributes3 = [NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:EH_siz4]forKey:NSFontAttributeName];
+    NSDictionary *attributes3 = [NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:EHSiz2]forKey:NSFontAttributeName];
     NSDictionary *attributes4 = [NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:EH_siz8]forKey:NSFontAttributeName];
 
     CGSize sizeForLabel = [self.distanceLabel.text boundingRectWithSize:CGSizeMake(80, 21) options:NSStringDrawingUsesLineFragmentOrigin  attributes:attributes3 context:nil].size;
@@ -223,14 +224,14 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     //距离标签
     self.distanceLabel.text = @"距离";
     self.distanceLabel.textColor = EHCor1;
-    self.distanceLabel.font = EH_font6;
+    self.distanceLabel.font = EHFont5;
     self.distanceLabel.textAlignment = NSTextAlignmentCenter;
     [self.distanceLabel sizeToFit];
     //self.distanceLabel.layer.borderWidth = 1;
     
     
     self.distanceDigitLabel.textColor=EHCor10;
-    self.distanceDigitLabel.font=[UIFont systemFontOfSize:EH_siz4];
+    self.distanceDigitLabel.font=[UIFont systemFontOfSize:EHSiz2];
     self.distanceDigitLabel.textAlignment=NSTextAlignmentCenter;
     self.distanceDigitLabel.size = [self.distanceDigitLabel.text boundingRectWithSize:CGSizeMake(180, 61) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes3 context:nil].size;
 
@@ -244,13 +245,13 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     self.energyLabel = [[UILabel alloc]initWithFrame:CGRectZero];
     self.energyLabel.text = @"热量";
     self.energyLabel.textColor = EH_cor1;
-    self.energyLabel.font = EH_font6;
+    self.energyLabel.font = EHFont5;
     self.energyLabel.textAlignment = NSTextAlignmentCenter;
     self.energyLabel.size = sizeForLabel;
     
     
     self.energyDigitLabel.textColor=EHCor9;
-    self.energyDigitLabel.font=[UIFont systemFontOfSize:EH_siz4];
+    self.energyDigitLabel.font=[UIFont systemFontOfSize:EHSiz2];
     self.energyDigitLabel.textAlignment=NSTextAlignmentCenter;
     self.energyDigitLabel.size = [self.energyDigitLabel.text boundingRectWithSize:CGSizeMake(180, 71) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes3 context:nil].size;
    
@@ -263,13 +264,13 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     self.finishRateLabel = [[UILabel alloc]initWithFrame:CGRectZero];
     self.finishRateLabel.text = @"完成";
     self.finishRateLabel.textColor = EH_cor1;
-    self.finishRateLabel.font = EH_font6;
+    self.finishRateLabel.font = EHFont5;
     self.finishRateLabel.textAlignment = NSTextAlignmentCenter;
     self.finishRateLabel.size = sizeForLabel;
     
     
     self.finishDigitRateLabel.textColor=EHCor11;
-    self.finishDigitRateLabel.font=[UIFont systemFontOfSize:EH_siz4];
+    self.finishDigitRateLabel.font=[UIFont systemFontOfSize:EHSiz2];
     self.finishDigitRateLabel.size = [self.finishDigitRateLabel.text boundingRectWithSize:CGSizeMake(80, 21) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes3 context:nil].size;
     self.finishDigitRateLabel.textAlignment=NSTextAlignmentCenter;
     
@@ -288,7 +289,7 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
 
     //创建底部标语
     self.markedWordsLabel.textColor = EH_cor1;
-    self.finishDigitRateLabel.font=[UIFont systemFontOfSize:EH_siz4];
+    self.finishDigitRateLabel.font=[UIFont systemFontOfSize:EHSiz2];
     [self.markedWordsLabel sizeToFit];
     [self.sharedBgView addSubview:self.markedWordsLabel];
 }

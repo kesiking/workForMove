@@ -9,6 +9,7 @@
 #import "KSView.h"
 #import "PNChart.h"
 #import "iCarousel.h"
+#import "CalendarViewController.h"
 
 @interface EHHealthyBasicView : KSView
 /**
@@ -38,6 +39,10 @@
 @property(strong,nonatomic) UILabel *dateLabel;
 @property(strong,nonatomic) UIButton *calendarBtn;
 @property (nonatomic, strong) iCarousel *carousel;
+//日历控件
+@property(strong,nonatomic)UIView* calendarView;
+@property(strong,nonatomic)UIView* bgView;
+@property(strong,nonatomic)CalendarViewController *calendarVC;
 
 /**
  *	secondView包含的内容
@@ -81,7 +86,11 @@
 @property(strong,nonatomic)UIView *bgChartView;
 @property(strong,nonatomic)UIImageView *lineViewOne;
 @property(strong,nonatomic)UIImageView *lineViewTwo;
-@property(strong,nonatomic)UIImageView *lineViewThree;
+
+@property(strong,nonatomic)UIView *linelightViewOne;
+@property(strong,nonatomic) UIView *linelightViewTwo;
+
+//@property(strong,nonatomic)UIImageView *lineViewThree;
 @property(strong,nonatomic)UIImageView *lineViewFour;
 @property (strong, nonatomic)UILabel *totalStepsLabel;
 

@@ -101,9 +101,9 @@
 
 #define EHCor1 RGB(0xff, 0xff, 0xff)
 #define EHCor2 RGB(0xae, 0xae, 0xae)
-#define EHCor3 RGB(0x09, 0x09, 0x09)
-#define EHCor4 RGB(0x06, 0x06, 0x06)
-#define EHCor5 RGB(0x03, 0x03, 0x03)
+#define EHCor3 RGB(0x99, 0x99, 0x99)
+#define EHCor4 RGB(0x66, 0x66, 0x66)
+#define EHCor5 RGB(0x33, 0x33, 0x33)
 #define EHCor6 RGB(0x23, 0x74, 0xfa)
 #define EHCor7 RGB(0xff, 0xff, 0x00)
 #define EHCor8 RGB(0x4d, 0x52, 0xfb)
@@ -112,5 +112,36 @@
 #define EHCor11 RGB(0xf8, 0x68, 0xfd)
 #define EHCor12 RGB(0xff, 0xff, 0x00)
 #define EHCor13 RGB(0xb4, 0xd0, 0xff)
+#define EHCor14 RGB(0xea, 0xea, 0xea)
+#define EHCor15 RGB(0xf4, 0xf4, 0xf4)
+#define EHCor16 RGB(0xa3, 0xd6, 0xff)
+#define EHCor17 RGB(0x9c, 0x00, 0xff)
+#define EHCor18 RGB(0x00, 0xc5, 0x20)
+#define EHCor19 RGB(0x00, 0xcd, 0x44)
+#define EHCor20 RGB_A(0x00, 0xcd, 0x44, 0.6)
+#define EHCor21 RGB_A(0x23, 0x74, 0xfa, 0.6)
+#define EHCor22 RGB(0xff, 0x3e, 0x3e)
+#define EHCor23 RGB(0xfc, 0xfc, 0xfc)
+
+
+
+#define EHSiz1 17//34px
+#define EHSiz2 15//30px
+#define EHSiz3 14//28px
+#define EHSiz4 13//26px
+#define EHSiz5 12//24px
+#define EHSiz6 11//22px
+#define EHSiz7 10//20px
+#define EHSize8 60//120px
+
+
+#define EHFont1 [UIFont systemFontOfSize:EHSiz1]//34px
+#define EHFont2 [UIFont systemFontOfSize:EHSiz2]//30px
+#define EHFont3 [UIFont systemFontOfSize:EHSiz3]//28px
+#define EHFont4 [UIFont systemFontOfSize:EHSiz4]//26px
+#define EHFont5 [UIFont systemFontOfSize:EHSiz5]//24px
+#define EHFont6 [UIFont systemFontOfSize:EHSiz6]//22px
+#define EHFont7 [UIFont systemFontOfSize:EHSiz7]//20px
+#define EHFont8 [UIFont systemFontOfSize:EHSize8]//120px
 
 #endif

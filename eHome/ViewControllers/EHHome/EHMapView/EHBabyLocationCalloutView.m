@@ -78,9 +78,9 @@
 -(void)reloadBabyHeadImage{
     EHGetBabyListRsp* currentBabyUserInfo=[[EHBabyListDataCenter sharedCenter] currentBabyUserInfo];
     
-    if ([KSAuthenticationCenter isTestAccount]) {
+    /*if ([KSAuthenticationCenter isTestAccount]) {
         [self.babyHeadImageView setImage:[UIImage imageNamed:@"public_headportrait_map_dorpdown_boy_80"]];
-    }else if ([currentBabyUserInfo.babySex integerValue] == EHBabySexType_girl) {
+    }else */if ([currentBabyUserInfo.babySex integerValue] == EHBabySexType_girl) {
         [self.babyHeadImageView sd_setImageWithURL:[NSURL URLWithString:currentBabyUserInfo.babyHeadImage] placeholderImage:[EHUtils getBabyHeadPlaceHolderImage:currentBabyUserInfo.babyId newPlaceHolderImagePath:currentBabyUserInfo.babyHeadImage defaultHeadImage:[UIImage imageNamed:@"public_headportrait_map_dorpdown_girl_80"]]];
     }else{
         [self.babyHeadImageView sd_setImageWithURL:[NSURL URLWithString:currentBabyUserInfo.babyHeadImage] placeholderImage:[EHUtils getBabyHeadPlaceHolderImage:currentBabyUserInfo.babyId newPlaceHolderImagePath:currentBabyUserInfo.babyHeadImage defaultHeadImage:[UIImage imageNamed:@"public_headportrait_map_dorpdown_boy_80"]]];
@@ -117,23 +117,23 @@
 }
 
 -(void)reloadBatterView{
-    self.batteryLabel.text = [NSString stringWithFormat:@"电量%.0f%%",[self.position.device_kwh floatValue] * (100 / device_kwh_int)];
+    self.batteryLabel.text = [NSString stringWithFormat:@"%.0f%%",[self.position.device_kwh floatValue] * (100 / device_kwh_int)];
     [self.batteryLabel sizeToFit];
     
-    //    float batteryNumber = [self.position.device_kwh floatValue];
-    //    [_batteryImageView.layer removeAllAnimations];
-    //    if (batteryNumber > 0.75 * device_kwh_int) {
-    //        [self.batteryImageView setImage:[UIImage imageNamed:@"public_ico_address_map_battery_100"]];
-    //    }else if (batteryNumber > 0.5 * device_kwh_int){
-    //        [self.batteryImageView setImage:[UIImage imageNamed:@"public_ico_address_map_battery_75"]];
-    //    }else if (batteryNumber > 0.20 * device_kwh_int){
-    //        [self.batteryImageView setImage:[UIImage imageNamed:@"public_ico_address_map_battery_50"]];
-    //    }else if (batteryNumber > 0.05 * device_kwh_int){
-    //        [self.batteryImageView setImage:[UIImage imageNamed:@"public_ico_address_map_battery_20"]];
-    //    }else if (batteryNumber >= 0){
-    //        [self.batteryImageView setImage:[UIImage imageNamed:@"public_ico_address_map_battery_0"]];
-    //        [_batteryImageView.layer addAnimation:[self opacityForever_Animation:0.5] forKey:nil];
-    //    }
+    float batteryNumber = [self.position.device_kwh floatValue];
+    [_batteryImageView.layer removeAllAnimations];
+     if (batteryNumber > 0.75 * device_kwh_int) {
+        [self.batteryImageView setImage:[UIImage imageNamed:@"ico_address_battery_100"]];
+    }else if (batteryNumber > 0.5 * device_kwh_int){
+        [self.batteryImageView setImage:[UIImage imageNamed:@"ico_address_battery_75"]];
+    }else if (batteryNumber > 0.20 * device_kwh_int){
+        [self.batteryImageView setImage:[UIImage imageNamed:@"ico_address_battery_50"]];
+    }else if (batteryNumber > 0.05 * device_kwh_int){
+        [self.batteryImageView setImage:[UIImage imageNamed:@"ico_address_battery_25"]];
+    }else if (batteryNumber >= 0){
+        [self.batteryImageView setImage:[UIImage imageNamed:@"ico_address_battery_20"]];
+        [_batteryImageView.layer addAnimation:[self opacityForever_Animation:0.5] forKey:nil];
+    }
 }
 
 -(void)reloadLocationView{
@@ -153,9 +153,9 @@
 
 -(void)reloadBackgroundView{
     if ([self needChangeAnnotationImageViewAnimation]) {
-        _bgImageView.image = [[UIImage imageNamed:@"bg_map_address"] resizableImageWithCapInsets:UIEdgeInsetsMake(20, 30, 40,30)];
+        _bgImageView.image = [UIImage imageNamed:@"bg_map_address"];//[[UIImage imageNamed:@"bg_map_address"] resizableImageWithCapInsets:UIEdgeInsetsMake(20, 30, 40,30)];
     }else{
-        _bgImageView.image = [[UIImage imageNamed:@"bg2_map_address"] resizableImageWithCapInsets:UIEdgeInsetsMake(20, 30, 40,30)];
+        _bgImageView.image = [UIImage imageNamed:@"bg2_map_address"];//[[UIImage imageNamed:@"bg2_map_address"] resizableImageWithCapInsets:UIEdgeInsetsMake(20, 30, 40,30)];
     }
 }
 
@@ -209,7 +209,6 @@
 -(UIImageView *)bgImageView{
     if (!_bgImageView) {
         _bgImageView = [[UIImageView alloc] initWithFrame:CGRectMake(kBgImageMarginLeft, 0, self.width-kBgImageMarginLeft, self.height)];
-        _bgImageView.image = [[UIImage imageNamed:@"bg_map_address"] resizableImageWithCapInsets:UIEdgeInsetsMake(20, 30, 40,30)];
         [self addSubview:_bgImageView];
     }
     return _bgImageView;
@@ -237,14 +236,14 @@
     return _timerLabel;
 }
 
-//-(UIImageView *)batteryImageView{
-//    if (!_batteryImageView) {
-//        _batteryImageView = [[UIImageView alloc] initWithFrame:CGRectMake(self.batteryLabel.left - kBatteryImageMargin, 8, kTimerWidth, kTimerHeight)];
-//        _batteryImageView.image = [UIImage imageNamed:@"public_ico_address_map_battery_100"];
-//        [self addSubview:_batteryImageView];
-//    }
-//    return _batteryImageView;
-//}
+-(UIImageView *)batteryImageView{
+    if (!_batteryImageView) {
+        _batteryImageView = [[UIImageView alloc] initWithFrame:CGRectMake(self.batteryLabel.left - kBatteryImageMargin, 17, 24, 9)];
+        _batteryImageView.image = [UIImage imageNamed:@"public_ico_address_map_battery_100"];
+        [self addSubview:_batteryImageView];
+    }
+    return _batteryImageView;
+}
 
 -(UILabel *)batteryLabel{
     if (!_batteryLabel) {
@@ -281,12 +280,10 @@
 
 -(UIImageView *) babyHeadImageView{
     if (!_babyHeadImageView) {
-        _babyHeadImageView = [[UIImageView alloc]initWithFrame:CGRectMake(10,self.height/2-12, 30,30)];
+        _babyHeadImageView = [[UIImageView alloc]initWithFrame:CGRectMake(12,self.height/2-12, 30,30)];
         _babyHeadImageView.image = [UIImage imageNamed:@"public_headportrait_map_dorpdown_boy_80"];
         _babyHeadImageView.layer.cornerRadius = _babyHeadImageView.height/2;
         _babyHeadImageView.layer.masksToBounds = YES;
-        _babyHeadImageView.layer.borderWidth = 1.5;
-        _babyHeadImageView.layer.borderColor = UINAVIGATIONBAR_COMMON_COLOR.CGColor;
         [self addSubview:_babyHeadImageView];
     }
     return _babyHeadImageView;
@@ -335,7 +332,7 @@
 -(void)layoutSubviews{
     [super layoutSubviews];
     self.babyHeadImageView.center = CGPointMake(_babyHeadImageView.center.x, self.height/2-3);
-    [self.bgImageView setFrame:CGRectMake(kBgImageMarginLeft, 0, self.width-kBgImageMarginLeft, self.height)];
+    [self.bgImageView setFrame:CGRectMake(0, 0, self.width, self.height)];
     CGFloat navigationBtnRightMargin = 0;
     if ([self needChangeAnnotationImageViewAnimation]) {
         [self showNavigationComponent];
@@ -343,8 +340,12 @@
     }else{
         [self hideNavigationComponent];
     }
+    /*
     [self.batteryLabel setFrame:CGRectMake(self.width - kBatteryLabelMargin - self.batteryLabel.width - navigationBtnRightMargin, _timerLabel.top + (_timerLabel.height - self.batteryLabel.height)/2 , self.batteryLabel.width, self.batteryLabel.height)];
     [self.batteryImageView setFrame:CGRectMake(self.batteryLabel.left - kBatteryImageMargin - self.batteryImageView.width, 11, self.batteryImageView.width, self.batteryImageView.height)];
+     */
+    [self.batteryImageView setFrame:CGRectMake(self.width - kBatteryLabelMargin - self.batteryImageView.width - navigationBtnRightMargin - 10, self.batteryImageView.origin.y, self.batteryImageView.width, self.batteryImageView.height)];
+    [self.batteryLabel setFrame:CGRectMake(self.batteryImageView.left - self.batteryLabel.width - 1, _timerLabel.top + (_timerLabel.height - self.batteryLabel.height)/2 , self.batteryLabel.width, self.batteryLabel.height)];
     if (_statusImageView == nil || _statusImageView.hidden) {
         [self.locationLabel setFrame:CGRectMake(_timerLabel.left, _timerLabel.bottom + 5, self.width - _timerLabel.left-kBatteryLabelMargin - navigationBtnRightMargin, self.locationLabel.height)];
     }else{

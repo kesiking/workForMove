@@ -25,8 +25,136 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
+            filePath = "eHome/Custom/Classes/EHAudioPlayDownload/EHAudioDataCache.m"
+            timestampString = "464761771.346549"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "270"
+            endingLineNumber = "270"
+            landmarkName = "-cleanDiskWithCompletionBlock:"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[EHAudioDataCache cleanDiskWithCompletionBlock:]"
+                  moduleName = "eHome"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mengxixi/Desktop/kesiking/work/smartHomeCode/trunk/Client/iOS/eHome/eHome/Custom/Classes/EHAudioPlayDownload/EHAudioDataCache.m"
+                  timestampString = "464866320.146362"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "270"
+                  endingLineNumber = "270"
+                  offsetFromSymbolStart = "56">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__49-[EHAudioDataCache cleanDiskWithCompletionBlock:]_block_invoke"
+                  moduleName = "eHome"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mengxixi/Desktop/kesiking/work/smartHomeCode/trunk/Client/iOS/eHome/eHome/Custom/Classes/EHAudioPlayDownload/EHAudioDataCache.m"
+                  timestampString = "464866320.146503"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "270"
+                  endingLineNumber = "270"
+                  offsetFromSymbolStart = "56">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "eHome/Custom/Classes/EHAudioPlayDownload/EHAudioDataCache.m"
+            timestampString = "464761773.875878"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "250"
+            endingLineNumber = "250"
+            landmarkName = "-clearDiskOnCompletion:"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[EHAudioDataCache clearDiskOnCompletion:]"
+                  moduleName = "eHome"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mengxixi/Desktop/kesiking/work/smartHomeCode/trunk/Client/iOS/eHome/eHome/Custom/Classes/EHAudioPlayDownload/EHAudioDataCache.m"
+                  timestampString = "464866320.147165"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "250"
+                  endingLineNumber = "250"
+                  offsetFromSymbolStart = "56">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__42-[EHAudioDataCache clearDiskOnCompletion:]_block_invoke"
+                  moduleName = "eHome"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/mengxixi/Desktop/kesiking/work/smartHomeCode/trunk/Client/iOS/eHome/eHome/Custom/Classes/EHAudioPlayDownload/EHAudioDataCache.m"
+                  timestampString = "464866320.147288"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "250"
+                  endingLineNumber = "250"
+                  offsetFromSymbolStart = "32">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "eHome/Custom/Classes/EHMessageManager/EHMessageHandle/EHRemoteMessageHandle.m"
+            timestampString = "464843773.540705"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
+            landmarkName = "-handleMessage:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
             filePath = "eHome/Network/NetworkAdapter/KSAdapterNetWork.m"
-            timestampString = "464253243.23135"
+            timestampString = "464866074.200508"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "108"
+            endingLineNumber = "108"
+            landmarkName = "-getSuccessCompleteBlockWithApiName:withParam:jsonTopKey:onSuccess:onError:onCancel:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "eHome/Network/NetworkAdapter/KSAdapterNetWork.m"
+            timestampString = "464866079.216404"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "147"

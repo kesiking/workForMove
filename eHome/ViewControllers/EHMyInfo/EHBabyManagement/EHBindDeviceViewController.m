@@ -20,15 +20,10 @@
     EHBindingBabyService* _bindingBabyService;
     EHSendRandomToManagerService* _sendRandomService;
 }
-@property (weak, nonatomic) IBOutlet UILabel *chargePrompt;
-@property (weak, nonatomic) IBOutlet UILabel *openPrompt;
-@property (weak, nonatomic) IBOutlet UIImageView *sampleWatchImageView;
-@property (weak, nonatomic) IBOutlet UIButton *inputDeviceCodeBtn;
-@property (weak, nonatomic) IBOutlet UIButton *scanQRCodeBtn;
-@property (weak, nonatomic) IBOutlet UIButton *freeUseBtn;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *sampleImageViewWidth;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *sampleImageViewHeight;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *sampleImageViewTop;
+
+@property(nonatomic, strong)UIImageView* backgroundImageView;
+@property (strong, nonatomic) UIButton *inputDeviceCodeBtn;
+@property (strong, nonatomic) UIButton *scanQRCodeBtn;
 
 @property (nonatomic, strong)EHBindingBabyRsp* bindBabyRsp;
 @end
@@ -40,41 +35,66 @@
     // Do any additional setup after loading the view from its nib.
     
     self.title = @"绑定手表";
-    
-    self.view.backgroundColor = EH_bgcor1;
-    self.chargePrompt.text = @"对手表进行充电15分钟以上，并且可以开机";
-    self.chargePrompt.textColor = EH_cor3;
-    self.chargePrompt.font = [UIFont systemFontOfSize:EH_siz1];
-    self.openPrompt.text = @"长按开关键2秒以上开机";
-    self.openPrompt.textColor = EH_cor3;
-    self.openPrompt.font = [UIFont systemFontOfSize:EH_siz6];
-    
-    self.scanQRCodeBtn.backgroundColor = [UIColor whiteColor];
-    self.scanQRCodeBtn.titleLabel.text = @"    扫描二维码绑定";
-    self.scanQRCodeBtn.titleLabel.font = [UIFont systemFontOfSize:EH_siz3];
-    self.scanQRCodeBtn.titleLabel.textColor = EH_cor3;
-    
-    self.inputDeviceCodeBtn.backgroundColor = [UIColor whiteColor];
-    self.inputDeviceCodeBtn.titleLabel.text = @"    输入设备码绑定";
-    self.inputDeviceCodeBtn.titleLabel.font = [UIFont systemFontOfSize:EH_siz3];
-    self.inputDeviceCodeBtn.titleLabel.textColor = EH_cor3;
-    
 
-    self.freeUseBtn.backgroundColor = [UIColor whiteColor];
-    self.freeUseBtn.titleLabel.text = @"试用体验";
-    self.freeUseBtn.titleLabel.font = [UIFont systemFontOfSize:EH_siz3];
-    self.freeUseBtn.titleLabel.textColor = EH_cor3;
+    _backgroundImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"img_bingdingwatch"]];
+    [self.view addSubview:_backgroundImageView];
+    [_backgroundImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.view);
+    }];
+    
+    
+    self.scanQRCodeBtn = [[UIButton alloc] initWithFrame:CGRectZero];
+    [self.scanQRCodeBtn setBackgroundImage:[[UIImage imageNamed:@"btn_purple_n"] resizableImageWithCapInsets:UIEdgeInsetsMake(10, 100, 10, 100) ] forState:UIControlStateNormal];
+    [self.scanQRCodeBtn setBackgroundImage:[[UIImage imageNamed:@"btn_purple_p"] resizableImageWithCapInsets:UIEdgeInsetsMake(10, 100, 10, 100) ] forState:UIControlStateHighlighted];
+    [self.scanQRCodeBtn setTitle:@"扫描二维码绑定" forState:UIControlStateNormal];
+    [self.scanQRCodeBtn setTitleColor:EHCor1 forState:UIControlStateNormal];
+    self.scanQRCodeBtn.titleLabel.font = EHFont2;
+    
+    [self.scanQRCodeBtn addTarget:self action:@selector(bindingUseQRCode:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.scanQRCodeBtn];
+    [self.scanQRCodeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left).offset(32);
+        make.right.equalTo(self.view.mas_right).offset(-32);
+        if (SCREEN_HEIGHT < 568) {
+            make.bottom.equalTo(self.view.mas_bottom).offset(-60);
+        }
+        else
+        {
+            make.bottom.equalTo(self.view.mas_bottom).offset(-70);
+        }
+        
+        make.height.equalTo(@40);
+
+    }];
+    
+    self.inputDeviceCodeBtn = [[UIButton alloc] initWithFrame:CGRectZero];
+    [self.inputDeviceCodeBtn setBackgroundImage:[[UIImage imageNamed:@"btn_red_n"] resizableImageWithCapInsets:UIEdgeInsetsMake(10, 100, 10, 100) ] forState:UIControlStateNormal];
+    [self.inputDeviceCodeBtn setBackgroundImage:[[UIImage imageNamed:@"btn_red_p"] resizableImageWithCapInsets:UIEdgeInsetsMake(10, 100, 10, 100) ] forState:UIControlStateHighlighted];
+    [self.inputDeviceCodeBtn setTitle:@"输入设备码绑定" forState:UIControlStateNormal];
+    [self.inputDeviceCodeBtn setTitleColor:EHCor1 forState:UIControlStateNormal];
+    self.inputDeviceCodeBtn.titleLabel.font = EHFont2;
+    [self.inputDeviceCodeBtn addTarget:self action:@selector(bindingUseDeviceCode:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.view addSubview:self.inputDeviceCodeBtn];
+    
+    [self.inputDeviceCodeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.view.mas_left).offset(32);
+        make.right.equalTo(self.view.mas_right).offset(-32);
+        if (SCREEN_HEIGHT < 568) {
+            make.bottom.equalTo(self.view.mas_bottom).offset(-10);
+        }
+        else
+        {
+            make.bottom.equalTo(self.view.mas_bottom).offset(-15);
+        }
+        
+        make.height.equalTo(@40);
+        
+        
+    }];
     
 }
 
-- (void)viewDidLayoutSubviews
-{
-    [super viewDidLayoutSubviews];
-    self.sampleImageViewHeight.constant = 255*SCREEN_SCALE;
-    self.sampleImageViewWidth.constant = 200*SCREEN_SCALE;
-    self.sampleImageViewTop.constant = 145*SCREEN_SCALE;
-    [self.view layoutIfNeeded];
-}
 
 - (IBAction)bindingUseQRCode:(id)sender {
     EHQRCodeReaderViewController* qrcodeVC = [[EHQRCodeReaderViewController alloc] init];
@@ -127,7 +147,7 @@
         else
         {
             // 手表未被绑定，直接成为管理员，完善宝贝信息
-            EHAddBabyInfoViewController* addBabyInfoVC = [[EHAddBabyInfoViewController alloc] initWithNibName:@"EHAddBabyInfoViewController" bundle:[NSBundle mainBundle]];
+            EHAddBabyInfoViewController* addBabyInfoVC = [[EHAddBabyInfoViewController alloc] init];
             addBabyInfoVC.deviceCode = qrcode;
             [strongSelf.navigationController pushViewController:addBabyInfoVC animated:YES];
         }

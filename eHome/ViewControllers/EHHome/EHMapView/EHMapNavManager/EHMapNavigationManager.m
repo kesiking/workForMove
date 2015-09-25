@@ -17,7 +17,7 @@
 @implementation EHMapNavigationManager
 
 +(NSArray *)checkHasOwnApp{
-    NSDictionary *mapSchemeDict = @{@"iosamap://navi":@{@"mapDescription":@"高德地图",@"mapImageBundle":@""},@"baidumap://map/":@{@"mapDescription":@"百度地图",@"mapImageBundle":@""},@"iosDefaultMap":@{@"mapDescription":@"苹果地图",@"mapImageBundle":@""}};
+    NSDictionary *mapSchemeDict = @{@"iosamap://navi":@{@"mapDescription":@"高德地图",@"mapImageBundle":@"public_icon_gaode_map"},@"baidumap://map/":@{@"mapDescription":@"百度地图",@"mapImageBundle":@"public_icon_baidumap"},@"iosDefaultMap":@{@"mapDescription":@"苹果地图",@"mapImageBundle":@"public_icon_iosmap"}};
     NSMutableArray *mapsArray = [NSMutableArray array];
     for (NSString* mapSchemeStr in [mapSchemeDict allKeys]) {
         NSURL *mapUrl = [NSURL URLWithString:[NSString stringWithFormat:@"%@",mapSchemeStr]];

@@ -1124,7 +1124,8 @@ NSComparisonResult compareViewDepth(UIView *view1, UIView *view2, iCarousel *sel
     {
         if (_scrollToItemBoundary)
         {
-            [self scrollToItemAtIndex:self.currentItemIndex animated:YES];
+            //去除第一次加载中会出现的动画调用操作 YES->NO
+            [self scrollToItemAtIndex:self.currentItemIndex animated:NO];
         }
         else
         {

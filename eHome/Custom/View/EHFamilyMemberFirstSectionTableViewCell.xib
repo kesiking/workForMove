@@ -9,40 +9,39 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="EHFamilyMemberFirstSectionTableViewCell">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="70"/>
+            <rect key="frame" x="0.0" y="0.0" width="304" height="44"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
                 <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UI0-uh-SSE">
-                        <rect key="frame" x="15" y="10" width="50" height="50"/>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="UI0-uh-SSE">
+                        <rect key="frame" x="19" y="8" width="26" height="27"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="50" id="1E3-FX-DgY"/>
-                            <constraint firstAttribute="width" constant="50" id="RC7-ST-Fh7"/>
+                            <constraint firstAttribute="height" constant="27" id="qJH-TE-Eb5"/>
+                            <constraint firstAttribute="width" constant="26" id="uDp-5G-0sW"/>
                         </constraints>
                     </imageView>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="新申请的成员" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="j8U-ag-ntN">
-                        <rect key="frame" x="78" y="24" width="106" height="21"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                        <nil key="highlightedColor"/>
-                    </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="GaI-qm-gkC">
-                        <rect key="frame" x="181" y="24" width="6" height="6"/>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GaI-qm-gkC">
+                        <rect key="frame" x="161" y="11" width="6" height="6"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="6" id="ePu-oL-C9e"/>
                             <constraint firstAttribute="width" constant="6" id="zED-pB-mY2"/>
                         </constraints>
                     </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="新申请的成员" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="j8U-ag-ntN">
+                        <rect key="frame" x="60" y="12" width="96" height="19.5"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="GaI-qm-gkC" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="16" id="AVM-NK-NbV"/>
-                    <constraint firstAttribute="centerY" secondItem="UI0-uh-SSE" secondAttribute="centerY" constant="0.75" id="Dxq-nV-zWL"/>
-                    <constraint firstItem="GaI-qm-gkC" firstAttribute="leading" secondItem="UI0-uh-SSE" secondAttribute="trailing" constant="116" id="cRr-0i-3tD"/>
-                    <constraint firstItem="UI0-uh-SSE" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="7" id="jpt-in-v8K"/>
-                    <constraint firstAttribute="centerY" secondItem="j8U-ag-ntN" secondAttribute="centerY" constant="0.25" id="wBy-qd-p99"/>
-                    <constraint firstItem="j8U-ag-ntN" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="70" id="wiP-8u-Qdk"/>
+                    <constraint firstAttribute="centerY" secondItem="j8U-ag-ntN" secondAttribute="centerY" constant="0.25" id="1le-Gb-Fnw"/>
+                    <constraint firstItem="j8U-ag-ntN" firstAttribute="leading" secondItem="UI0-uh-SSE" secondAttribute="trailing" constant="15" id="GZB-Un-y0m"/>
+                    <constraint firstAttribute="centerY" secondItem="UI0-uh-SSE" secondAttribute="centerY" constant="-0.25" id="MJe-Pm-Bxp"/>
+                    <constraint firstItem="UI0-uh-SSE" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="11" id="SCn-f3-JsD"/>
+                    <constraint firstItem="GaI-qm-gkC" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="153" id="eJ9-tA-Q0x"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
@@ -50,7 +49,7 @@
                 <outlet property="rePointImageView" destination="GaI-qm-gkC" id="7Vl-Kv-VTl"/>
                 <outlet property="titleLable" destination="j8U-ag-ntN" id="A5V-Mn-h1A"/>
             </connections>
-            <point key="canvasLocation" x="399" y="176"/>
+            <point key="canvasLocation" x="152" y="133"/>
         </tableViewCell>
     </objects>
 </document>

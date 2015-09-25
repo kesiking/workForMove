@@ -10,6 +10,10 @@
 
 @interface XHVoiceRecordHUD ()
 
+@property (strong, nonatomic) UILabel *centerLabel;
+@property (nonatomic, strong) UILabel *titleLabel;
+@property (strong, nonatomic) NSTimer *timer;
+
 @property (nonatomic, weak) UILabel *remindLabel;
 @property (nonatomic, weak) UIImageView *microPhoneImageView;
 @property (nonatomic, weak) UIImageView *cancelRecordImageView;
@@ -50,6 +54,7 @@
     self.center = center;
     [view addSubview:self];
     [self configRecoding:YES];
+    [self timer];
 }
 
 - (void)pauseRecord {
@@ -114,13 +119,40 @@
     [self configRecordingHUDImageWithPeakPower:peakPower];
 }
 
+- (UILabel *)centerLabel{
+    if (!_centerLabel) {
+        _centerLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, self.titleLabel.bottom + 3, self.width, 30)];
+        _centerLabel.backgroundColor = [UIColor clearColor];
+        _centerLabel.text = @"10";
+        _centerLabel.textAlignment = NSTextAlignmentCenter;
+        _centerLabel.font = [UIFont systemFontOfSize:30];
+        _centerLabel.textColor = [UIColor yellowColor];
+        
+    }
+    return _centerLabel;
+}
+
+- (UILabel *)titleLabel{
+    if (!_titleLabel) {
+        _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.width, 20)];
+        _titleLabel.text = @"录音时间";
+        _titleLabel.textAlignment = NSTextAlignmentCenter;
+        _titleLabel.font = [UIFont boldSystemFontOfSize:18];
+        _titleLabel.textColor = [UIColor whiteColor];
+    }
+    return _titleLabel;
+}
+
 - (void)setup {
     self.backgroundColor = [UIColor blackColor];
     self.layer.masksToBounds = YES;
     self.layer.cornerRadius = 10;
     
+    [self addSubview:self.centerLabel];
+    [self addSubview:self.titleLabel];
+    
     if (!_remindLabel) {
-        UILabel *remindLabel= [[UILabel alloc] initWithFrame:CGRectMake(9.0, 114.0, 120.0, 21.0)];
+        UILabel *remindLabel= [[UILabel alloc] initWithFrame:CGRectMake(9.0, 114.0 + self.centerLabel.bottom, 120.0, 21.0)];
         remindLabel.textColor = [UIColor whiteColor];
         remindLabel.font = [UIFont systemFontOfSize:13];
         remindLabel.layer.masksToBounds = YES;
@@ -134,7 +166,7 @@
     }
     
     if (!_microPhoneImageView) {
-        UIImageView *microPhoneImageView = [[UIImageView alloc] initWithFrame:CGRectMake(27.0, 8.0, 50.0, 99.0)];
+        UIImageView *microPhoneImageView = [[UIImageView alloc] initWithFrame:CGRectMake(27.0, 8.0 + self.centerLabel.bottom, 50.0, 99.0)];
         microPhoneImageView.image = [UIImage imageNamed:@"RecordingBkg"];
         microPhoneImageView.autoresizingMask = UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
         microPhoneImageView.contentMode = UIViewContentModeScaleToFill;
@@ -143,7 +175,7 @@
     }
     
     if (!_recordingHUDImageView) {
-        UIImageView *recordHUDImageView = [[UIImageView alloc] initWithFrame:CGRectMake(82.0, 34.0, 18.0, 61.0)];
+        UIImageView *recordHUDImageView = [[UIImageView alloc] initWithFrame:CGRectMake(82.0, 34.0 + self.centerLabel.bottom, 18.0, 61.0)];
         recordHUDImageView.image = [UIImage imageNamed:@"RecordingSignal001"];
         recordHUDImageView.autoresizingMask = UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
         recordHUDImageView.contentMode = UIViewContentModeScaleToFill;
@@ -152,7 +184,7 @@
     }
     
     if (!_cancelRecordImageView) {
-        UIImageView *cancelRecordImageView = [[UIImageView alloc] initWithFrame:CGRectMake(19.0, 7.0, 100.0, 100.0)];
+        UIImageView *cancelRecordImageView = [[UIImageView alloc] initWithFrame:CGRectMake(19.0, 7.0 + self.centerLabel.bottom, 100.0, 100.0)];
         cancelRecordImageView.image = [UIImage imageNamed:@"RecordCancel"];
         cancelRecordImageView.hidden = YES;
         cancelRecordImageView.autoresizingMask = UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
@@ -169,6 +201,35 @@
         [self setup];
     }
     return self;
+}
+
+#pragma mark - Getters
+
+- (NSTimer *)timer{
+    if (_timer) {
+        [_timer invalidate];
+        _timer = nil;
+    }
+    _timer = [NSTimer scheduledTimerWithTimeInterval:0.1
+                                              target:self
+                                            selector:@selector(timerAction)
+                                            userInfo:nil
+                                             repeats:YES];
+    return _timer;
+}
+
+- (void)timerAction{
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:0.09];
+    UIView.AnimationRepeatAutoreverses = YES;
+    float second = [self.centerLabel.text floatValue];
+    if (second <= 3.0f) {
+        self.centerLabel.textColor = [UIColor redColor];
+    }else{
+        self.centerLabel.textColor = [UIColor yellowColor];
+    }
+    self.centerLabel.text = [NSString stringWithFormat:@"%.1f",second-0.1];
+    [UIView commitAnimations];
 }
 
 /*

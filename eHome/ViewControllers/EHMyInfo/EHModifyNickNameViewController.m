@@ -37,7 +37,9 @@
     [super viewDidLoad];
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc]initWithCustomView:[self sureBtn]];
     self.navigationItem.rightBarButtonItem = rightItem;
+    self.navigationItem.title = @"我的昵称";
     [self.view addSubview:[self nickNameField]];
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -111,6 +113,7 @@
 - (UITextField *)nickNameField{
     if (!_nickNameField) {
         _nickNameField = [[UITextField alloc]initWithFrame:CGRectMake(20, 40, CGRectGetWidth(self.view.frame) - 40, 50)];
+        _nickNameField.borderStyle = UITextBorderStyleRoundedRect;
         _nickNameField.placeholder = @"昵称";
         _nickNameField.text = _nickName;
         _nickNameField.returnKeyType = UIReturnKeyDone;
@@ -122,7 +125,7 @@
         _lineLayer.frame = CGRectMake(0, CGRectGetHeight(_nickNameField.frame) - 0.1, CGRectGetWidth(_nickNameField.frame), 0.1);
         _lineLayer.strokeColor = EH_linecor2.CGColor;
         
-        [_nickNameField.layer addSublayer:_lineLayer];
+//        [_nickNameField.layer addSublayer:_lineLayer];
     }
     return _nickNameField;
 }
@@ -130,8 +133,8 @@
 - (UIButton *)sureBtn{
     if (!_sureBtn) {
         _sureBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 60, 30)];
-        [_sureBtn setTitle:@"提交" forState:UIControlStateNormal];
-        [_sureBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [_sureBtn setTitle:@"确认" forState:UIControlStateNormal];
+        [_sureBtn setTitleColor:EHCor6 forState:UIControlStateNormal];
         [_sureBtn setTitleColor:UINEXTBUTTON_UNSELECT_COLOR forState:UIControlStateDisabled];
         [_sureBtn addTarget:self action:@selector(sureBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     }

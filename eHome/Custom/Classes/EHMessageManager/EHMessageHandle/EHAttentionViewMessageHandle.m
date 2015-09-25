@@ -35,7 +35,8 @@
     }
     EHMessageAttentionView *attentionView = (EHMessageAttentionView*)[self.sourceView viewWithTag:kAttentionViewTag];
     if (!attentionView) {
-        attentionView = [[EHMessageAttentionView alloc] initWithFrame:CGRectMake(0, 0, self.sourceView.width, 44)];
+        CGFloat width = self.sourceView.width > 0 ? self.sourceView.width : SCREEN_WIDTH;
+        attentionView = [[EHMessageAttentionView alloc] initWithFrame:CGRectMake(0, 0, width, 44)];
         attentionView.tag = kAttentionViewTag;
         [self.sourceView addSubview:attentionView];
     }

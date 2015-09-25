@@ -277,11 +277,12 @@
         /*[self.annotationArray indexOfObject:annotation] == self.annotationArray.count - 1*/){
             annotationView.calloutOffset = CGPointMake(0, 5);
             // 当前位置展示头像
-            if ([KSAuthenticationCenter isTestAccount]) {
+            /*if ([KSAuthenticationCenter isTestAccount]) {
                 [annotationView setAnnotationImage:self.default_baby_map_header_image];
                 [annotationView.annotationImageView setImage:self.default_baby_map_header_image];
                 annotationView.annotationImageView.hidden = NO;
-            }else{
+            }else*/
+            {
 
 #ifdef MAP_USE_WEB_HEADER_IMAGE
                 __typeof(annotationView) __weak __block weakAnnotationView = annotationView;
@@ -319,9 +320,10 @@
         }else if ([self.annotationArray indexOfObject:pointAnnotation] == 0) {
             annotationView.calloutOffset = CGPointMake(0, 0);
             // 第一个点展示为起始位置图标
-            if ([KSAuthenticationCenter isTestAccount]) {
+            /*if ([KSAuthenticationCenter isTestAccount]) {
                 [annotationView setAnnotationImage:self.footprint_initalpoint_boy];
-            }else{
+            }else*/
+            {
                 [annotationView setAnnotationImage:[self.babyUserInfo.babySex integerValue] == EHBabySexType_girl ? self.footprint_initalpoint_girl :self.footprint_initalpoint_boy];
             }
         }else if([pointAnnotation.position.locationType isEqualToString:SOS_LocationType]){
@@ -331,9 +333,10 @@
             annotationView.annotationImageView.hidden = NO;
         }else{
             // 默认为common足迹
-            if ([KSAuthenticationCenter isTestAccount]) {
+            /*if ([KSAuthenticationCenter isTestAccount]) {
                 [annotationView setAnnotationImage:self.footprint_common_boy];
-            }else{
+            }else*/
+            {
                 [annotationView setAnnotationImage:[self.babyUserInfo.babySex integerValue] == EHBabySexType_girl ? self.footprint_common_girl : self.footprint_common_boy];
             }
         }

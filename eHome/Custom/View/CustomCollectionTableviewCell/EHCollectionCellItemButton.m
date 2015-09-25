@@ -18,9 +18,9 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.imageView.contentMode = UIViewContentModeScaleAspectFit;
-        self.titleLabel.font = EH_font6;
+        self.titleLabel.font = EHFont5;
         self.titleLabel.textAlignment = NSTextAlignmentCenter;
-        [self setTitleColor:EH_cor3 forState:UIControlStateNormal];
+        [self setTitleColor:EHCor4 forState:UIControlStateNormal];
     }
     return self;
 }
