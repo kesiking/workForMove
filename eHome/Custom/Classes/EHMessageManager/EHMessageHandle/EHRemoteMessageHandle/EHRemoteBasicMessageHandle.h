@@ -27,4 +27,6 @@
 
 - (BOOL)isRemoteMessageTimeOverdue:(EHMessageInfoModel*)messageInfoModel;
 
+- (BOOL)isRemoteMessageLogical:(EHMessageInfoModel*)messageInfoModel;
+
 @end

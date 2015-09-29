@@ -26,4 +26,8 @@
     return [EHRemoteMessageTimeOverdueObject isRemoteMessageTimeOverdue:messageInfoModel];
 }
 
+- (BOOL)isRemoteMessageLogical:(EHMessageInfoModel*)messageInfoModel{
+    return [KSAuthenticationCenter isLogin];
+}
+
 @end

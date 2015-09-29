@@ -15,6 +15,10 @@
 
 -(void)remoteMessageHandle:(EHMessageInfoModel *)messageInfoModel{
     [super remoteMessageHandle:messageInfoModel];
+    // 判断是否合法，如果不合法则不再发送消息
+    if (![self isRemoteMessageLogical:messageInfoModel]) {
+        return;
+    }
     if (self.remoteMessageCategory == EHMessageInfoCatergoryType_Location) {
         // to do
         NSString* subMessageInfo = messageInfoModel.info;

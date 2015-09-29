@@ -90,6 +90,10 @@ static SystemSoundID EHWorningSoundID = 1005;
 
 -(void)remoteMessageHandle:(EHMessageInfoModel *)messageInfoModel{
     [super remoteMessageHandle:messageInfoModel];
+    // 判断是否合法，如果不合法则不再发送消息
+    if (![self isRemoteMessageLogical:messageInfoModel]) {
+        return;
+    }
     if (self.remoteMessageCategory == EHMessageInfoCatergoryType_SOS && !isSOSMessageOn) {
         isSOSMessageOn = YES;
         // to do 声音 震动
@@ -124,9 +128,9 @@ static SystemSoundID EHWorningSoundID = 1005;
             [[NSNotificationCenter defaultCenter] postNotificationName:EHBabySOSMessageNotification object:nil userInfo:userInfo];
             [self initAlertViewWithMessageInfo:messageInfo messageInfoModel:messageInfoModel];
 #endif
+            [self initTimer];
+            [self startWorning];
         }
-        [self initTimer];
-        [self startWorning];
     }
 }
 
