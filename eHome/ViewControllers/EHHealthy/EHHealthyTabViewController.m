@@ -324,8 +324,14 @@
         [NSString stringWithFormat:@"%ld", (long)self.dayVC.dayVCmodel.steps];
         sharedVC.babyTargetSteps.text = [NSString stringWithFormat:@"目标：%ld步",self.dayVC.dayVCmodel.target_steps];
         //距离
-        sharedVC.distanceDigitLabel.text =
-        [NSString stringWithFormat:@"%.0f千米", self.dayVC.dayVCmodel.mileage];
+        if(self.dayVC.dayVCmodel.mileage < 1000){
+            sharedVC.distanceDigitLabel.text =
+            [NSString stringWithFormat:@"%.3f米", self.dayVC.dayVCmodel.mileage];
+        }else{
+            sharedVC.distanceDigitLabel.text =
+            [NSString stringWithFormat:@"%.3f千米", self.dayVC.dayVCmodel.mileage/1000];
+        }
+
         //热量
         sharedVC.energyDigitLabel.text = [NSString
                                           stringWithFormat:@"%ld千卡", (long)self.dayVC.dayVCmodel.calorie];
@@ -347,9 +353,17 @@
         sharedVC.finishedSteps.text = [NSString
                                        stringWithFormat:@"%ld", (long)self.weekVC.weekVCmodel.steps];
         sharedVC.babyTargetSteps.text = [NSString stringWithFormat:@"目标：%ld步",self.weekVC.weekVCmodel.targetSteps];
+
         //距离
-        sharedVC.distanceDigitLabel.text = [NSString
-                                            stringWithFormat:@"%.0f千米", self.weekVC.weekVCmodel.mileage];
+        if(self.weekVC.weekVCmodel.mileage < 1000){
+            sharedVC.distanceDigitLabel.text =
+            [NSString stringWithFormat:@"%.3f米", self.weekVC.weekVCmodel.mileage];
+        }else{
+            sharedVC.distanceDigitLabel.text =
+            [NSString stringWithFormat:@"%.3f千米", self.weekVC.weekVCmodel.mileage/1000];
+        }
+        
+        
         //热量
         sharedVC.energyDigitLabel.text =
         [NSString stringWithFormat:@"%.0f卡", self.weekVC.weekVCmodel.calorie];

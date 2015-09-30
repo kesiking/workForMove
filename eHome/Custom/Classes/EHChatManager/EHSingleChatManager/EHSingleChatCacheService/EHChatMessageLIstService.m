@@ -16,6 +16,8 @@
     NSInteger       _count;
 }
 
+@property(nonatomic,assign) BOOL            isPageListFromCache;
+
 @end
 
 @implementation EHChatMessageLIstService
@@ -58,7 +60,9 @@
         if (componentItems && [componentItems count] > 0) {
             [strongSelf configPagelistWithCacheComponentItems:componentItems];
             [strongSelf.requestModel setModelWithAPIName:apiName params:params returnDataType:WeAppDataTypePagedList pagination:paginationItem version:nil];
+            strongSelf.isPageListFromCache = YES;
             [strongSelf modelDidFinishLoad:strongSelf.requestModel];
+            strongSelf.isPageListFromCache = NO;
             [strongSelf refreshPagedList];
         }else{
             [strongSelf loadPagedListWithAPIName:apiName params:params pagination:paginationItem version:nil];
@@ -79,7 +83,7 @@
     if (self.requestModel.pagedList == nil) {
         self.requestModel.pagedList = [[EHChatMessagePageList alloc] init];
         self.requestModel.pagedList.itemClass = [EHChatMessageinfoModel class];
-        [self.requestModel.pagedList setListPath:@"responseData"];
+        [self.requestModel.pagedList setListPath:@"smallVoiceCallMsgList"];
     }
     [self.requestModel.pagedList removeAllObjects];
     [self.requestModel.pagedList refresh];
@@ -96,8 +100,11 @@
     }
     if (self.pagedList.count > 0 && _count >= (NSInteger)self.pagedList.count) {
         WEAKSELF
-        [self.requestModel.pagedList nextPage];
-        if ([self hasMoreWithPagination:self.pagedList.pagination]) {
+        EHChatMessagePaginationItem* paginationItem = [EHChatMessagePaginationItem new];
+        [paginationItem setPagination:self.requestModel.pagedList.pagination];
+        [paginationItem paginationPlus];
+        if ([self hasMoreWithPagination:paginationItem]) {
+            [self.requestModel.pagedList nextPage];
             NSDictionary* fechtCondtionDict = [self getFetchDictionaryWithPagination:self.pagedList.pagination];
             [self getChatMessageListCacheWithAPIName:self.apiName params:self.requestModel.params pagination:self.requestModel.pagedList.pagination withFetchCondition:fechtCondtionDict readSuccess:^(NSMutableArray *componentItems) {
                 STRONGSELF
@@ -105,7 +112,9 @@
                     NSRange range = NSMakeRange(0, [componentItems count]);
                     [strongSelf.requestModel.pagedList insertObjects:componentItems atIndexes:[NSIndexSet indexSetWithIndexesInRange:range]];
                 }
+                strongSelf.isPageListFromCache = YES;
                 [strongSelf modelDidFinishLoad:self.requestModel];
+                strongSelf.isPageListFromCache = NO;
             }];
             return;
         }
@@ -139,6 +148,19 @@
         return @{@"orderBy":@"msgTimestamp asc",@"count":@(pageSize),@"offset":@(0)};
     }
     return @{@"orderBy":@"msgTimestamp asc",@"count":@(pagination.pageSize),@"offset":@(_count - pagination.pageSize * (pagination.curPage + 1))};
+}
+
+-(void)modelDidFinishLoad:(WeAppBasicRequestModel *)model{
+    if (!self.isPageListFromCache
+        && self.pagedList
+        && [self.pagedList isKindOfClass:[EHChatMessagePageList class]]
+        && ((EHChatMessagePageList*)self.pagedList).insertDataList
+        && ((EHChatMessagePageList*)self.pagedList).insertDataList.count > 0) {
+        [self.cacheService writeCacheWithApiName:self.requestModel.apiName withParam:self.requestModel.params componentItemArray:((EHChatMessagePageList*)self.pagedList).insertDataList writeSuccess:^(BOOL success) {
+            
+        }];
+    }
+    [super modelDidFinishLoad:model];
 }
 
 @end

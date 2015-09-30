@@ -52,11 +52,9 @@
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     self.mapView.delegate = self;
+    
 }
 
-/**
- *  初次setRegion显示时需要在viewDidAppear中进行操作，不然显示半径不正确
- */
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
@@ -64,11 +62,12 @@
     if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
         self.navigationController.interactivePopGestureRecognizer.enabled = NO;
     }
-    
     MACoordinateRegion region = MACoordinateRegionMakeWithDistance(self.geofenceCoordinate, self.radius * 2, self.radius * 2);
     region = [self.mapView regionThatFits:region];
     [self.mapView setRegion:region animated:YES];
+    _radiusUpdated = YES;
 }
+
 /**
  *  结束时要将代理设为nil，防止地图回调崩溃
  */
@@ -179,7 +178,7 @@
             }
         }
     };
-    
+
     //地图放大超界
     if (mapView.zoomLevel > self.neededZoomLevel) {
         _scaleTag = YES;
@@ -199,6 +198,9 @@
     }
     //地图无缩放（平移）
     else{
+        [UIView animateWithDuration:0.5 animations:^{
+            _overlayLayer.transform = CATransform3DIdentity;
+        }];
         returnCenterBlock();
         if (self.geofenceModifiedTag) {
             [self updateRightItemStatus];
@@ -243,7 +245,6 @@
  */
 - (void)configMapView{
     self.mapView.frame = self.view.bounds;
-    EHLogInfo(@"self.mapView = %@",self.mapView);
     self.mapView.delegate = self;
     self.mapView.showsUserLocation = NO;
     self.mapView.showsScale= YES;   //设置成NO表示不显示比例尺；YES表示显示比例尺
@@ -251,6 +252,8 @@
     self.mapView.touchPOIEnabled = NO;
     [self.view addSubview:self.mapView];
     
+
+
     _search = [[AMapSearchAPI alloc] initWithSearchKey:kMAMapAPIKey Delegate:self];
     
 }

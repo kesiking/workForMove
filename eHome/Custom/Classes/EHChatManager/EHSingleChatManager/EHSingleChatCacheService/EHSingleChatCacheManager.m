@@ -190,7 +190,20 @@
     if (componentItem == nil) {
         return;
     }
-    componentItem.babyChatMessage.db_tableName = [NSString stringWithFormat:@"XHBabyChatMessage_%@",[EHSingleChatCacheService getSingleChatCacheTableNameWithBabyID:babyID]];
+    [self.chatCacheService writeCacheWithApiName:KEHGetChatMessageListApiName withParam:@{@"baby_id":babyID} componentItem:componentItem writeSuccess:writeSuccessBlock];
+}
+
+-(void)updateBabyChatMessage:(XHBabyChatMessage *)message
+                writeSuccess:(WriteSuccessCacheBlock)writeSuccessBlock{
+    [self updateCacheWithBabyID:[NSString stringWithFormat:@"%@",message.recieverBabyID] componentItem:[EHChatMessageinfoModel makeMessage:message] writeSuccess:writeSuccessBlock];
+}
+
+-(void)updateCacheWithBabyID:(NSString*)babyID
+               componentItem:(EHChatMessageinfoModel*)componentItem
+                writeSuccess:(WriteSuccessCacheBlock)writeSuccessBlock{
+    if (componentItem == nil) {
+        return;
+    }
     [self.chatCacheService writeCacheWithApiName:KEHGetChatMessageListApiName withParam:@{@"baby_id":babyID} componentItem:componentItem writeSuccess:writeSuccessBlock];
 }
 
@@ -200,7 +213,6 @@
     if (componentItem == nil) {
         return;
     }
-    componentItem.babyChatMessage.db_tableName = [NSString stringWithFormat:@"XHBabyChatMessage_%@",[EHSingleChatCacheService getSingleChatCacheTableNameWithBabyID:babyID]];
     NSDictionary* fechtCondtionDict = @{@"where":[NSString stringWithFormat:@"msgId = '%ld'",componentItem.msgId]};
     [self.chatCacheService deleteCacheWithApiName:KEHGetChatMessageListApiName withParam:@{@"baby_id":babyID} withFetchCondition:fechtCondtionDict componentItem:componentItem writeSuccess:writeSuccessBlock];
 }

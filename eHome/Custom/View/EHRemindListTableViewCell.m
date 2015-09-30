@@ -67,12 +67,12 @@
     
     CGFloat cellHeight = CGRectGetHeight(self.frame);
     
-    CGFloat _subViewHeight = [@"text" sizeWithFontSize:EH_siz5 Width:MAXFLOAT].height;
+    CGFloat _subViewHeight = [@"text" sizeWithFontSize:EHSiz5 Width:MAXFLOAT].height;
     CGFloat _subViewY1 = (cellHeight - _subViewHeight * 2) / 3.0;
     CGFloat _subViewY2 = _subViewY1 * 2 + _subViewHeight;
 
     //时间
-    _timeLabelHeight = [@"text" sizeWithFontSize:EH_siz1 Width:MAXFLOAT].height;
+    _timeLabelHeight = [@"text" sizeWithFontSize:EHSiz1 Width:MAXFLOAT].height;
     _timeLabelY = (cellHeight - _timeLabelHeight) / 2.0;
     CGRect timeLabelFrame = CGRectMake(0, 0, 80, cellHeight);
 
@@ -80,11 +80,11 @@
     CGRect lineViewFrame = CGRectMake(CGRectGetMaxX(timeLabelFrame) - 0.5, 0, 0.5, CGRectGetHeight(self.frame));
     
     //一周
-    CGFloat workDataLabelWidth = [_workDataLabel.text sizeWithFontSize:EH_siz5 Width:MAXFLOAT].width;
+    CGFloat workDataLabelWidth = [_workDataLabel.text sizeWithFontSize:EHSiz5 Width:MAXFLOAT].width;
     CGRect workDataLabelFrame = CGRectMake(CGRectGetMaxX(timeLabelFrame) + kSpace, _subViewY1, workDataLabelWidth, _subViewHeight);
     
     //开关
-    CGRect isActiveSwitchFrame = CGRectMake(CGRectGetWidth(self.frame) - kSpace - 50, (cellHeight - 30) / 2.0, 50, 30);
+    CGRect isActiveSwitchFrame = CGRectMake(CGRectGetWidth(self.frame) - kSpace - 45, (cellHeight - 25) / 2.0, 45, 25);
 
     //重复、备注
     CGRect isRepeatLabelFrame;
@@ -112,7 +112,7 @@
     if (!_timeLabel) {
         _timeLabel = [[UILabel alloc]init];
         _timeLabel.textAlignment = NSTextAlignmentCenter;
-        _timeLabel.font = EH_font1;
+        _timeLabel.font = EHFont1;
         _timeLabel.textColor = EHCor5;
     }
     return _timeLabel;
@@ -130,7 +130,7 @@
     if (!_workDataLabel) {
         _workDataLabel = [[UILabel alloc]init];
         _workDataLabel.textAlignment = NSTextAlignmentLeft;
-        _workDataLabel.font = EH_font5;
+        _workDataLabel.font = EHFont5;
         _workDataLabel.textColor = EHCor4;
     }
     return _workDataLabel;
@@ -140,7 +140,7 @@
     if (!_isRepeatLabel) {
         _isRepeatLabel = [[UILabel alloc]init];
         _isRepeatLabel.textAlignment = NSTextAlignmentLeft;
-        _isRepeatLabel.font = EH_font5;
+        _isRepeatLabel.font = EHFont5;
         _isRepeatLabel.textColor = EHCor4;
     }
     return _isRepeatLabel;
@@ -150,7 +150,7 @@
     if (!_commentsLabel) {
         _commentsLabel = [[UILabel alloc]init];
         _commentsLabel.textAlignment = NSTextAlignmentLeft;
-        _commentsLabel.font = EH_font5;
+        _commentsLabel.font = EHFont5;
     }
     return _commentsLabel;
 }

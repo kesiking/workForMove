@@ -21,6 +21,12 @@
     return @"msgId";
 }
 
++(void)dbDidSeleted:(NSObject *)entity{
+    if (![entity isKindOfClass:[self class]]) {
+        return;
+    }
+}
+
 - (instancetype)init
 {
     self = [super init];

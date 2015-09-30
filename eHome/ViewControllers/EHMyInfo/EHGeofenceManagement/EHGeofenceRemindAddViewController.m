@@ -44,6 +44,7 @@
             [strongSelf hideLoadingView];
             [WeAppToast toast:@"添加成功"];
             [strongSelf.navigationController popViewControllerAnimated:YES];
+            strongSelf.remindModel.uuid = [service.requestModel.item.componentDict objectForKey:@"responseData"];
             !strongSelf.remindNeedAdd?:strongSelf.remindNeedAdd(strongSelf.remindModel);
 
         };

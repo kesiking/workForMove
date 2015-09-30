@@ -15,7 +15,7 @@
 #define view_width          (self.frame.size.width)
 
 #define text_smsCode_width  (160.0)
-#define btn_smsCode_width   (120.0)
+#define btn_smsCode_width   (70.0)
 
 #define text_height         (40.0)
 #define text_border         (10.0)

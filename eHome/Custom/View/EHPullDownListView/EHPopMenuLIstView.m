@@ -115,7 +115,7 @@
         //添加分割线
         _tableViewCtl.viewCellConfigBlock = ^(KSViewCell* viewCell, WeAppComponentBaseItem *componentItem, KSCellModelInfoItem* modelInfoItem, NSIndexPath* indexPath,KSDataSource* dataSource){
             if (indexPath.row != 0) {
-                UIView *separateView = [[UIView alloc]initWithFrame:CGRectMake(5, 0, viewCell.width - 10, 0.2)];
+                UIView *separateView = [[UIView alloc]initWithFrame:CGRectMake(5, 0, viewCell.width - 10, 0.5)];
                 separateView.backgroundColor = EHCor3;
                 [viewCell addSubview:separateView];
             }

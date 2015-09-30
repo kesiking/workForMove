@@ -15,9 +15,13 @@
 
 @implementation VoiceConverter
 
++(NSData*)DecodeAMRToWAVE:(NSData*)amrData{
+    NSData * wavData = DecodeAMRToWAVE(amrData);
+    return wavData;
+}
+
 //转换amr到wav
 + (int)ConvertAmrToWav:(NSString *)aAmrPath wavSavePath:(NSString *)aSavePath{
-    
     if (! DecodeAMRFileToWAVEFile([aAmrPath cStringUsingEncoding:NSASCIIStringEncoding], [aSavePath cStringUsingEncoding:NSASCIIStringEncoding]))
         return 0;
     

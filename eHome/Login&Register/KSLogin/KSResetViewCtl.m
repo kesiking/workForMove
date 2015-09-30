@@ -104,12 +104,14 @@
 {
     if(!_btn_nextStep)
     {
-        _btn_nextStep = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 60, 30)];
+        _btn_nextStep = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 60, 40)];
         [_btn_nextStep setTitle:@"下一步" forState:UIControlStateNormal];
         [_btn_nextStep.titleLabel setFont:[UIFont systemFontOfSize:16]];
-        [_btn_nextStep setTitleColor:EHCor6 forState:UIControlStateNormal];
+        [_btn_nextStep setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [_btn_nextStep setBackgroundImage:[UIImage imageNamed:@"btn_complete_n"] forState:UIControlStateNormal];
         [_btn_nextStep setTitleColor:UINEXTBUTTON_UNSELECT_COLOR forState:UIControlStateDisabled];
         [_btn_nextStep addTarget:self action:@selector(doNextStep) forControlEvents:UIControlEventTouchUpInside];
+        [self addSubview:_btn_nextStep];
     }
     
     return _btn_nextStep;
@@ -161,6 +163,13 @@
     [_btn_smsCode setFrame:CGRectMake(222*SCREEN_SCALE+35, 40,self.frame.size.width - 60 - (222*(SCREEN_SCALE)), _btn_smsCode.height)];
     
     [_btn_finish setFrame:CGRectMake(25, 170,  (self.frame.size.width - 50), text_height)];
+    
+    if (_text_smsCode) {
+        [_btn_nextStep setFrame:CGRectMake(_text_smsCode.left, _text_smsCode.bottom+40, _text_smsCode.width, 40)];
+    }else if(_text_newPwd)
+    {
+        [_btn_nextStep setFrame:CGRectMake(_text_newPwd.left, _text_newPwd.bottom+60, _text_newPwd.width, 40)];
+    }
     
 }
 

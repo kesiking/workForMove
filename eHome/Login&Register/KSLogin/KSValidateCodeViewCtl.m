@@ -49,9 +49,9 @@
 -(UILabel *)smsCodeLabel{
     if (!_smsCodeLabel) {
         _smsCodeLabel = [UILabel new];
-        _smsCodeLabel.font = [UIFont systemFontOfSize:11];
-        [_smsCodeLabel setTextColor:[UIColor colorWithWhite:0x66/255.0 alpha:1]];
-        _smsCodeLabel.frame = CGRectMake(kValidateCodeSpaceX, 10, validate_width, text_height);
+        _smsCodeLabel.font = EHFont5;
+        [_smsCodeLabel setTextColor:EHCor3];
+        _smsCodeLabel.frame = CGRectMake(kSpaceX+10, CGRectGetMaxY(_text_smsCode.frame)+12, validate_width, 15);
         [self addSubview:_smsCodeLabel];
     }
     return _smsCodeLabel;
@@ -61,7 +61,7 @@
     if (!_text_smsCode) {
         _text_smsCode = [WeAppBasicFieldView getCommonFieldView];
         _text_smsCode.textView.borderStyle = UITextBorderStyleRoundedRect;
-        _text_smsCode.frame = CGRectMake(_smsCodeLabel.frame.origin.x, CGRectGetMaxY(_smsCodeLabel.frame) + text_border, text_smsCode_width, text_height);
+        _text_smsCode.frame = CGRectMake(kSpaceX, 40, view_width-130, text_height);
         _text_smsCode.textView.placeholder = @"请输入验证码";
         [_text_smsCode setBackgroundColor:[UIColor clearColor]];
         [self addSubview:_text_smsCode];
@@ -135,7 +135,7 @@
     else
     {
         NSUInteger remainTime = [[userinfo objectForKey:@"remaintime"] unsignedIntegerValue];
-        NSString *strTime = [NSString stringWithFormat:@"重新获取（%lus）",(unsigned long)remainTime];
+        NSString *strTime = [NSString stringWithFormat:@"%lus",(unsigned long)remainTime];
         
         _btn_smsCode.enabled = NO;
         //设置界面的按钮显示

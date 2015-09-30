@@ -26,6 +26,7 @@
 
 -(void)setupView{
     [super setupView];
+    self.backgroundColor = RGB(245, 245, 249);
     [self initRegisterViewCtl];
     [self reloadData];
 }
@@ -33,6 +34,7 @@
 -(void)initRegisterViewCtl{
     self.registerViewCtl.text_phoneNum.hidden = NO;
     self.registerViewCtl.text_psw.hidden = NO;
+    self.registerViewCtl.btn_next.hidden = NO;
     
     WEAKSELF
     self.registerViewCtl.text_phoneNum.textValueDidChanged = ^(UITextField *textField){
@@ -56,18 +58,18 @@
     [self addSubview:self.registerViewCtl];
     
     _registerDescriptionLabel = [UILabel new];
-    _registerDescriptionLabel.font = [UIFont systemFontOfSize:11];
-    _registerDescriptionLabel.textColor = RGB(0xdc, 0xdc, 0xdc);
-    _registerDescriptionLabel.textAlignment = NSTextAlignmentRight;
-    _registerDescriptionLabel.text = @"请输入6-20位数字或字母";
-    _registerDescriptionLabel.frame = CGRectMake(self.width - text_label_width - kSpaceX, self.registerViewCtl.text_psw.bottom + 6, text_label_width, text_label_height);
+    _registerDescriptionLabel.font = EHFont5;
+    _registerDescriptionLabel.textColor = EHCor3;
+    _registerDescriptionLabel.textAlignment = NSTextAlignmentCenter;
+    _registerDescriptionLabel.text = @"请确保输入的密码为6-20位数字或字母组合";
+    _registerDescriptionLabel.frame = CGRectMake(kSpaceX, self.registerViewCtl.text_psw.bottom + 12, self.width - 2*kSpaceX, text_label_height);
     [self addSubview:_registerDescriptionLabel];
 
 }
 
 -(void)layoutSubviews{
     [super layoutSubviews];
-    _registerDescriptionLabel.frame = CGRectMake(self.width - text_label_width - kSpaceX, self.registerViewCtl.text_psw.bottom + 6, text_label_width, text_label_height);
+    _registerDescriptionLabel.frame = CGRectMake(kSpaceX, self.registerViewCtl.text_psw.bottom + 12, self.width - 2*kSpaceX, text_label_height);
 }
 
 -(void)reloadData{

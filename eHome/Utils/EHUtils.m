@@ -8,6 +8,7 @@
 
 #import "EHUtils.h"
 #import "EHUserDefaultData.h"
+#import "AFNetworkReachabilityManager.h"
 
 @implementation EHUtils
 
@@ -220,9 +221,58 @@
             
             [resultStr appendString:[resultStr isEqualToString:@""]?@"":@" "];
             [resultStr appendString:weekStrArr[i]];
+            
+            for (NSInteger j = (i + 1); j < num; j++) {
+                NSRange jRange = NSMakeRange(j, 1);
+                NSString *jStr = [weekStr substringWithRange:jRange];
+                
+                //工作日判断
+                if ((i == 0) && (j == (num - 2))) {
+                    resultStr = [NSMutableString stringWithString:@"工作日"];
+                    i = j-1;
+                    break;
+                }
+                
+                //直到遇到一个不为1的位置
+                if (![jStr isEqualToString:@"1"]) {
+                    //若只有连续2个为1，则往后加
+                    if ((j - i) == 2) {
+                        [resultStr appendString:@"  "];
+                        [resultStr appendString:weekStrArr[j-1]];
+                    }
+                    //若3个或3个以上为1，则进行缩略
+                    if ((j - i) > 2) {
+                        [resultStr appendString:@"至"];
+                        [resultStr appendString:weekStrArr[j-1]];
+                    }
+                    i = j;
+                    break;
+                }
+                //或者是最后一个位置为1
+                else if (j == (num - 1)) {
+                    //若只有连续2个为1，则往后加
+                    if ((j- i) == 1) {
+                        [resultStr appendString:@"  "];
+                        [resultStr appendString:weekStrArr[j]];
+                    }
+                    //若3个或3个以上为1，则进行缩略
+                    if ((j - i) > 1) {
+                        [resultStr appendString:@"-"];
+                        [resultStr appendString:weekStrArr[j]];
+                    }
+                    i = j;
+                    break;
+                }
+            }
+
         }
     }
     return (NSString *)resultStr;
+}
+
++ (BOOL)networkReachable
+{
+    return [[AFNetworkReachabilityManager sharedManager] isReachable];
 }
 
 @end

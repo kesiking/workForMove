@@ -72,4 +72,7 @@ int EncodeWAVEFileToAMRFile(const char* pchWAVEFilename, const char* pchAMRFileN
 // 将AMR文件解码成WAVE文件
 int DecodeAMRFileToWAVEFile(const char* pchAMRFileName, const char* pchWAVEFilename);
 
+NSData* DecodeAMRToWAVE(NSData* data);
+NSData* EncodeWAVEToAMR(NSData* data, int nChannels, int nBitsPerSample);
+
 #endif

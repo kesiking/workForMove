@@ -40,4 +40,5 @@
 
 + (NSString *)getWeekSelectedDaysStr:(NSString *)weekBinaryStr;
 
++ (BOOL)networkReachable;
 @end

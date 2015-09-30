@@ -26,7 +26,7 @@
         
         UILabel *dateLabel = [[UILabel alloc]initWithFrame:CGRectZero];
         dateLabel.tag = kSubViewTag;
-        dateLabel.font = EH_font2;
+        dateLabel.font = EHFont2;
         dateLabel.textColor = EHCor5;
         dateLabel.text = @"日期";
         dateLabel.textAlignment = NSTextAlignmentLeft;
@@ -38,7 +38,7 @@
             UIButton *btn = [[UIButton alloc]initWithFrame:CGRectZero];
             btn.tag = kSubViewTag +i;
             [btn setTitle:dateArray[i - 1] forState:UIControlStateNormal];
-            btn.titleLabel.font = EH_font2;
+            btn.titleLabel.font = EHFont2;
             [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
             [btn setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
             [btn setBackgroundImage:[UIImage imageNamed:@"bg_day_off"] forState:UIControlStateNormal];
@@ -81,7 +81,7 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    CGFloat labelHeight = [@"text" sizeWithFontSize:EH_siz2 Width:CGRectGetWidth(self.frame)].height;
+    CGFloat labelHeight = [@"text" sizeWithFontSize:EHSiz2 Width:CGRectGetWidth(self.frame)].height;
     UILabel *label = (UILabel *)[self.contentView viewWithTag:kSubViewTag];
     label.frame = CGRectMake(12, 15, CGRectGetWidth(self.frame), labelHeight);
     

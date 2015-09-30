@@ -13,7 +13,7 @@
 #define view_width      (self.frame.size.width)
 
 #define text_height     (40.0)
-#define text_border     (8.0)
+//#define text_border     (1.0)
 
 @interface KSRegisterViewCtl()<UITextFieldDelegate>
 
@@ -58,8 +58,8 @@
     if(!_text_phoneNum)
     {
         _text_phoneNum = [WeAppBasicFieldView getCommonFieldView];
-        _text_phoneNum.textView.placeholder = @"手机号码";
-        _text_phoneNum.textView.borderStyle = UITextBorderStyleNone;
+        _text_phoneNum.textView.placeholder = @"请输入手机号码";
+        _text_phoneNum.textView.borderStyle = UITextBorderStyleRoundedRect;
         [self addSubview:_text_phoneNum];
     }
     return _text_phoneNum;
@@ -70,8 +70,8 @@
     if(!_text_psw)
     {
         _text_psw = [WeAppBasicFieldView getSecurityFieldView];
-        _text_psw.textView.placeholder = @"密码";
-        _text_psw.textView.borderStyle = UITextBorderStyleNone;
+        _text_psw.textView.placeholder = @"请输入密码";
+        _text_psw.textView.borderStyle = UITextBorderStyleRoundedRect;
         [self addSubview:_text_psw];
     }
     return _text_psw;
@@ -125,9 +125,12 @@
         _btn_next = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 60, 30)];
         [_btn_next setTitle:@"下一步" forState:UIControlStateNormal];
         _btn_next.titleLabel.font = [UIFont boldSystemFontOfSize:16];
+        [_btn_next setBackgroundImage:[UIImage imageNamed:@"btn_complete_n"] forState:UIControlStateNormal];
         [_btn_next setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_btn_next setTitleColor:UINEXTBUTTON_UNSELECT_COLOR forState:UIControlStateDisabled];
         [_btn_next addTarget:self action:@selector(nextButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+        _btn_next.enabled = NO;
+        [self addSubview:_btn_next];
     }
     
     return _btn_next;
@@ -135,8 +138,9 @@
 
 -(void)layoutSubviews{
     [super layoutSubviews];
-    _text_phoneNum.frame = CGRectMake(kSpaceX, CGRectGetMaxY(_logo_imgView.frame) + 30, register_width, text_height);
+    _text_phoneNum.frame = CGRectMake(kSpaceX, CGRectGetMaxY(_logo_imgView.frame) + 40, register_width, text_height);
     _text_psw.frame = CGRectMake(kSpaceX, CGRectGetMaxY(_text_phoneNum.frame) + text_border, register_width, text_height);
+    _btn_next.frame = CGRectMake(kSpaceX, CGRectGetMaxY(_text_psw.frame) + 65, register_width, text_height);
     _text_inviteCode.frame = CGRectMake(kSpaceX, CGRectGetMaxY(_text_psw.frame) + text_border, register_width, text_height);
     _text_userName.frame = CGRectMake(kSpaceX, CGRectGetMaxY(_text_inviteCode.frame) + text_border, register_width, text_height);
     _smsCodeView.frame = CGRectMake(kSpaceX, CGRectGetMaxY(_text_psw.frame) + text_border, register_width, text_height);

@@ -116,7 +116,6 @@ typedef NS_ENUM(NSInteger, EHCollentionItemType) {
         [self.view addSubview:_tableView];
         
         [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.center.equalTo(self.view);
             make.edges.equalTo(self.view).with.insets(UIEdgeInsetsMake(0, 0, 49, 0));
         }];
     }
@@ -333,7 +332,7 @@ static NSString * kEHBabyDetailTableViewCellId = @"kEHBabyDetailTableViewCellId"
         else if (indexPath.section == 4)
         {
             if (indexPath.row == 0) {
-                [EHSocialShareHandle presentWithTypeArray:@[EHShareToWechatSession,EHShareToWechatTimeline,EHShareToQQ,EHShareToSina,EHShareToSms,EHShareToQRCode] Title:[NSString stringWithFormat:@"%@ %@",kEH_APP_NAME,kEH_WEBSITE_URL] Image:[UIImage imageNamed:kEH_LOGO_IMAGE_NAME] FromTarget:self];
+                [EHSocialShareHandle presentWithTypeArray:@[EHShareToWechatSession,EHShareToWechatTimeline,EHShareToSms,EHShareToQRCode] Title:[NSString stringWithFormat:@"%@ %@",kEH_APP_NAME,kEH_WEBSITE_URL] Image:[UIImage imageNamed:kEH_LOGO_IMAGE_NAME] FromTarget:self];
             }
             else {
                 EHAboutViewController *aboutViewController = [[EHAboutViewController alloc]init];

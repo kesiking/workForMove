@@ -20,8 +20,10 @@
 #import "EHMessageInfoListService.h"
 #endif
 
+#define rightOperationLayerView_Number          (4)
+
 #define rightOperationLayerView_width           (35.0)
-#define rightOperationLayerView_height          (rightOperationLayerView_width * 3 + 20 * 2)
+#define rightOperationLayerView_height          (rightOperationLayerView_width * rightOperationLayerView_Number + 20 * (rightOperationLayerView_Number - 1))
 #define rightOperationLayerView_rightBorder     (20.0)
 #define rightOperationLayerView_bottomBorder    (rightOperationLayerView_rightBorder)
 

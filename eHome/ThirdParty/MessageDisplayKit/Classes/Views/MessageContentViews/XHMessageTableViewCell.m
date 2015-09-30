@@ -176,9 +176,15 @@ static const CGFloat kXHUserNameLabelHeight = 20;
         } else if (dateComponents.year == yesterdayComponents.year && dateComponents.month == yesterdayComponents.month && dateComponents.day == yesterdayComponents.day) {
             dateText = NSLocalizedStringFromTable(@"Yesterday", @"MessageDisplayKitString", @"昨天");
         } else {
-            dateText = [NSDateFormatter localizedStringFromDate:message.timestamp dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterNoStyle];
+            dateText = [NSDateFormatter localizedStringFromDate:message.timestamp dateStyle:NSDateFormatterLongStyle timeStyle:NSDateFormatterNoStyle];
         }
-        timeText = [NSDateFormatter localizedStringFromDate:message.timestamp dateStyle:NSDateFormatterNoStyle timeStyle:NSDateFormatterShortStyle];
+        static NSDateFormatter *dataFormatter = nil;
+        if (dataFormatter == nil) {
+            dataFormatter = [[NSDateFormatter alloc] init];
+            [dataFormatter setDateFormat:@"HH:mm"];
+        }
+        timeText = [dataFormatter stringFromDate:message.timestamp];
+//        timeText = [NSDateFormatter localizedStringFromDate:message.timestamp dateStyle:NSDateFormatterNoStyle timeStyle:NSDateFormatterShortStyle];
         
         self.timestampLabel.text = [NSString stringWithFormat:@"%@ %@",dateText,timeText];
     }

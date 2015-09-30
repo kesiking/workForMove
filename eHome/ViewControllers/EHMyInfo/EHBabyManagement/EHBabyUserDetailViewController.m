@@ -278,8 +278,8 @@
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", [EHUtils isBoy:self.babyUser.babySex] ? @"男" : @"女"];
                 break;
             case 1:
-                cell.textLabel.text = @"年龄";
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld岁", (long)[self.babyUser.babyAge integerValue]];
+                cell.textLabel.text = @"生日";
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", [self.babyUser.babyBirthDay substringToIndex:10]];
                 break;
             case 2:
                 cell.textLabel.text = @"身高";
@@ -942,17 +942,12 @@ static BOOL kEHRightImageTableViewCellRegistered = NO;
     _updateBabyInfoService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
         EHLogInfo(@"更新宝贝成长信息成功");
         STRONGSELF
-        NSNumber*babyAge = [(EHBabyInfo*)service.item baby_age];
-        NSNumber*baby_height = [(EHBabyInfo*)service.item baby_height];
-        NSNumber*baby_weight = [(EHBabyInfo*)service.item baby_weight];
-        NSNumber*babySex = [(EHBabyInfo*)service.item baby_sex];
-        strongSelf.babyUser.babyBirthDay = [(EHBabyInfo*)service.item baby_birthDay];
-        
         [WeAppToast toast:@"更新宝贝成长信息成功"];
-        strongSelf.babyUser.babyAge = babyAge;
-        strongSelf.babyUser.babyHeight = baby_height;
-        strongSelf.babyUser.babyWeight = baby_weight;
-        strongSelf.babyUser.babySex= babySex;
+        strongSelf.babyUser.babyBirthDay = [(EHBabyInfo*)service.item baby_birthDay];
+        strongSelf.babyUser.babyAge = [(EHBabyInfo*)service.item baby_age];
+        strongSelf.babyUser.babyHeight = [(EHBabyInfo*)service.item baby_height];
+        strongSelf.babyUser.babyWeight = [(EHBabyInfo*)service.item baby_weight];
+        strongSelf.babyUser.babySex=  [(EHBabyInfo*)service.item baby_sex];
         [strongSelf.babyDetailTableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationNone];
         
         

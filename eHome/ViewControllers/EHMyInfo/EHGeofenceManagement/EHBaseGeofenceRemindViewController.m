@@ -89,8 +89,8 @@
         strongSelf.remindModel.is_repeat = @1;
         strongSelf.remindUpdated = YES;
 
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:1 inSection:0];
-        UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPath];
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:1 inSection:2];
+        UITableViewCell *cell = [strongSelf.tableView cellForRowAtIndexPath:indexPath];
         cell.detailTextLabel.text = @"重复";
     }];
     
@@ -101,23 +101,15 @@
         strongSelf.remindModel.is_repeat = @0;
         strongSelf.remindUpdated = YES;
 
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:1 inSection:0];
-        UITableViewCell *cell = [_tableView cellForRowAtIndexPath:indexPath];
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:1 inSection:2];
+        UITableViewCell *cell = [strongSelf.tableView cellForRowAtIndexPath:indexPath];
         cell.detailTextLabel.text = @"仅一次";
     }];
     
     onceAction.titleColor = EH_cor4;
     
-    RMAction *cancelAction = [RMAction actionWithTitle:@"取消" style:RMActionStyleCancel andHandler:^(RMActionController *controller) {
-        
-    }];
-    
-    cancelAction.titleColor = [UIColor blueColor];
-    cancelAction.titleFont = EH_font2;
-    
     [frequencyVC addAction:onceAction];
     [frequencyVC addAction:repeatAction];
-    [frequencyVC addAction:cancelAction];
 
     frequencyVC.seperatorViewColor = EH_linecor1;
     frequencyVC.contentView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -197,8 +189,8 @@
         
         UILabel *deleteLabel = [[UILabel alloc]initWithFrame:cell.bounds];
         deleteLabel.text = @"删除该提醒";
-        deleteLabel.font = EH_font2;
-        deleteLabel.textColor = RGB(0xff, 0x3e, 0x3e);
+        deleteLabel.font = EHFont2;
+        deleteLabel.textColor = EHCor22;
         deleteLabel.textAlignment = NSTextAlignmentCenter;
         
         [cell.contentView addSubview:deleteLabel];

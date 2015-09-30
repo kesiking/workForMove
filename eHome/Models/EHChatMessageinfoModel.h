@@ -27,6 +27,7 @@
 @property(nonatomic,strong) NSString *context_type;
 @property(nonatomic,strong) NSString *sender;
 @property(nonatomic,strong) NSNumber *call_duration;
+@property(nonatomic,strong) NSNumber *is_read;
 @property(nonatomic,strong) NSString *head_imag_small;
 @property(nonatomic,strong) NSString *user_nick_name;
 
@@ -46,6 +47,9 @@
 - (XHBabyChatMessage*)getBabyChatMessageWithMessageModel:(EHChatMessageinfoModel*)message;
 
 - (void)updateMessgeWithChatMessageinfoModel:(EHChatMessageinfoModel *)chatMessageinfoModel;
+
+// 平台将head_imag_small与user_nick_name数据作为公共数据返回，因此需要提取出来后赋值
+- (void)configHeadImagSmall:(NSString*)head_imag_small andUserNickName:(NSString*)user_nick_name;
 
 @end
 

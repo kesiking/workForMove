@@ -100,8 +100,9 @@ typedef NS_ENUM(NSInteger, kButtonTag) {
 - (void)showPhotos{
     EHUserPicFromPhotosViewController *pvc = [[EHUserPicFromPhotosViewController alloc]init];
     pvc.finishSelectedImageBlock = self.finishSelectedImageBlock;
-    UINavigationController *nvc = [[UINavigationController alloc]initWithRootViewController:pvc];
-    [_target presentViewController:nvc animated:YES completion:nil];
+    
+    UIViewController *vc = (UIViewController *)_target;
+    [vc.navigationController pushViewController:pvc animated:YES];
 }
 
 #pragma mark - Events Response

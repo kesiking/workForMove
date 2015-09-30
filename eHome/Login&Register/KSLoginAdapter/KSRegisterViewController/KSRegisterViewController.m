@@ -36,11 +36,11 @@
     
     self.title = @"注册";
     
-    UIBarButtonItem *rightButtonItem = [[UIBarButtonItem alloc]initWithCustomView:self.registerView.registerViewCtl.btn_next];
-    self.registerView.registerViewCtl.btn_next.enabled = NO;
-    self.navigationItem.rightBarButtonItem = rightButtonItem;
+//    UIBarButtonItem *rightButtonItem = [[UIBarButtonItem alloc]initWithCustomView:self.registerView.registerViewCtl.btn_next];
+//    self.registerView.registerViewCtl.btn_next.enabled = NO;
+//    self.navigationItem.rightBarButtonItem = rightButtonItem;
     
-    [self.view setBackgroundColor:[UIColor whiteColor]];
+    [self.view setBackgroundColor:RGB(245, 245, 249)];
     [self.view addSubview:self.registerView];
 
 }

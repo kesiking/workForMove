@@ -26,7 +26,7 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    CGSize size = [self.titleLabel.text sizeWithFontSize:EH_siz1 Width:MAXFLOAT];
+    CGSize size = [self.titleLabel.text sizeWithFontSize:EHSiz1 Width:MAXFLOAT];
     CGRect frame = CGRectMake(0, CGRectGetHeight(self.frame) - size.height, CGRectGetWidth(self.frame), size.height);
     self.titleLabel.frame = frame;
 }
@@ -34,7 +34,7 @@
 - (UILabel *)titleLabel {
     if (!_titleLabel) {
         _titleLabel = [[UILabel alloc]init];
-        _titleLabel.font = EH_font1;
+        _titleLabel.font = EHFont1;
         _titleLabel.textColor = EHCor4;
         _titleLabel.textAlignment = NSTextAlignmentCenter;
     }

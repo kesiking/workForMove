@@ -28,8 +28,13 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor blackColor];
     self.title = @"头像设置";
+    
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
+    self.navigationItem.backBarButtonItem = item;
+
     UIBarButtonItem *sureItem = [[UIBarButtonItem alloc]initWithTitle:@"确定" style:UIBarButtonItemStylePlain target:self action:@selector(sureBtnClick:)];
     self.navigationItem.rightBarButtonItem = sureItem;
+    
     _isBarHidden = NO;
     
     [self.view addSubview:[self bgView]];

@@ -36,11 +36,11 @@
     [self addSubview:self.resetViewCtl];
     
     _doneResetDescriptionLabel = [UILabel new];
-    _doneResetDescriptionLabel.font = [UIFont systemFontOfSize:11];
-    _doneResetDescriptionLabel.textColor = RGB(0x66, 0x66, 0x66);
-    _doneResetDescriptionLabel.textAlignment = NSTextAlignmentRight;
-    _doneResetDescriptionLabel.text = @"注：密码为6-20位数字或字母";
-    _doneResetDescriptionLabel.frame = CGRectMake(self.width - 200.0 - kSpaceX, self.resetViewCtl.text_newPwd.bottom + 6, 200.0, 15);
+    _doneResetDescriptionLabel.font = EHFont5;
+    _doneResetDescriptionLabel.textColor = EHCor3;
+    _doneResetDescriptionLabel.textAlignment = NSTextAlignmentLeft;
+    _doneResetDescriptionLabel.text = @"注：请确保输入的密码为6-20位数字或字母组合";
+    _doneResetDescriptionLabel.frame = CGRectMake(kSpaceX+10, self.resetViewCtl.text_newPwd.bottom + 12, self.width-2*kSpaceX, 15);
     [self addSubview:_doneResetDescriptionLabel];
 }
 
@@ -50,7 +50,7 @@
 
 -(void)layoutSubviews{
     [super layoutSubviews];
-    _doneResetDescriptionLabel.frame = CGRectMake(self.width - 200.0 - kSpaceX, self.resetViewCtl.text_newPwd.bottom + 6, 200.0, 15);
+    _doneResetDescriptionLabel.frame = CGRectMake(kSpaceX+10, self.resetViewCtl.text_newPwd.bottom + 12, self.width-2*kSpaceX, 15);;
 }
 
 -(void)setService:(KSLoginService *)service{

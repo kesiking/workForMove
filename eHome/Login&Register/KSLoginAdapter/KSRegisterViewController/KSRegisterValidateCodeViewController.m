@@ -45,9 +45,9 @@
     
     [self.view addSubview:self.registerView];
     
-    UIBarButtonItem *rightButtonItem = [[UIBarButtonItem alloc]initWithCustomView:self.registerView.btn_next];
-    self.registerView.btn_next.enabled = NO;
-    self.navigationItem.rightBarButtonItem = rightButtonItem;
+//    UIBarButtonItem *rightButtonItem = [[UIBarButtonItem alloc]initWithCustomView:self.registerView.btn_next];
+//    self.registerView.btn_next.enabled = NO;
+//    self.navigationItem.rightBarButtonItem = rightButtonItem;
     
 }
 
