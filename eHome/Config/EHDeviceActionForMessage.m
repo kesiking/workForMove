@@ -33,6 +33,10 @@
     if ([EHRemoteMessageTimeOverdueObject isRemoteMessageTimeOverdue:messageModel.remoteMessageInfo]) {
         return;
     }
+    [self sendDeviceAction];
+}
+
++(void)sendDeviceAction{
     // 设备响应
     BOOL neednNoticeNotice = [[EHDeviceStatusCenter sharedCenter] neednNoticeNotice];
     if (!neednNoticeNotice) {

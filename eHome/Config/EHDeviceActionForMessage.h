@@ -15,4 +15,6 @@
 
 +(void)sendDeviceActionForMessage:(EHRemoteMessageModel*)messageModel;
 
++(void)sendDeviceAction;
+
 @end

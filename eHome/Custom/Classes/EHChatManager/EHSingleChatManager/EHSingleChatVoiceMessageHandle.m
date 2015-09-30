@@ -9,6 +9,7 @@
 #import "EHSingleChatVoiceMessageHandle.h"
 #import "MessageModel+EHMessageParse.h"
 #import "EHChatMessageinfoModel.h"
+#import "EHDeviceActionForMessage.h"
 #import "EHSingleChatCacheManager.h"
 
 @implementation EHSingleChatVoiceMessageHandle
@@ -45,7 +46,7 @@
     
     EHChatMessageinfoModel* chatMessageModel = [EHChatMessageinfoModel modelWithJSON:[(NSDictionary*)responseObject objectForKey:@"message"]];
     [[EHSingleChatCacheManager sharedCenter] recieveBabyChatMessage:chatMessageModel];
-    
+    [EHDeviceActionForMessage sendDeviceAction];
 }
 
 @end
