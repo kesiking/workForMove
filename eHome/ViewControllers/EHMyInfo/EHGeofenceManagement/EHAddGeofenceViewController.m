@@ -60,6 +60,7 @@
     EHLogInfo(@"self.geofenceCoordinate = %f",self.geofenceCoordinate.latitude);
     if (!self.geofenceCoordinate.latitude && !self.geofenceCoordinate.longitude) {
         self.mapView.showsUserLocation = YES;
+        [WeAppToast toast:@"正在定位..."];
     }
 }
 
@@ -99,9 +100,9 @@ updatingLocation:(BOOL)updatingLocation
 - (UIButton *)sureBtn{
     
     UIButton *sureBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 60, 30)];
-    [sureBtn setTitle:@"确认" forState:UIControlStateNormal];
-    [sureBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [sureBtn setTitleColor:UINEXTBUTTON_UNSELECT_COLOR forState:UIControlStateDisabled];
+    [sureBtn setTitle:@"完成" forState:UIControlStateNormal];
+    [sureBtn setTitleColor:EHCor6 forState:UIControlStateNormal];
+    [sureBtn setTitleColor:EHCor2 forState:UIControlStateDisabled];
     [sureBtn addTarget:self action:@selector(sureBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     sureBtn.enabled = NO;
     return sureBtn;

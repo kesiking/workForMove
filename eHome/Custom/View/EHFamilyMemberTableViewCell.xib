@@ -71,7 +71,7 @@
                 <outlet property="nameLabel" destination="xZm-zh-vIg" id="nu1-Bp-ZkA"/>
                 <outlet property="phoneLabel" destination="piv-VC-Usy" id="CTA-pc-URw"/>
             </connections>
-            <point key="canvasLocation" x="265" y="85.5"/>
+            <point key="canvasLocation" x="286" y="62.5"/>
         </tableViewCell>
     </objects>
 </document>

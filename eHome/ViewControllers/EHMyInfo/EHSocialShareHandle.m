@@ -9,9 +9,9 @@
 #import "EHSocialShareHandle.h"
 #import "NSString+StringSize.h"
 
-#define kColumn 3           //列数
-#define kSideSpaceX 75 / 2.0
-#define kViewSpaceX 120 / 2.0
+#define kColumn 4           //列数
+#define kSideSpaceX 40 / 2.0
+#define kViewSpaceX 27 / 2.0
 #define kViewSpaceY 75 / 2.0
 
 #define kViewTag 100
@@ -135,20 +135,19 @@
 
 
 #pragma mark - Events Response
-- (void)btnClick:(id)sender{
-    UIButton *btn = (UIButton *)sender;
+- (void)tap:(UITapGestureRecognizer *)tap{
+    UIImageView *imv = (UIImageView *)tap.view;
     if (self.finishSelectedBlock) {
         NSInteger delay =  self.finishSelectedBlock();
-        [self performSelector:@selector(selectTag:) withObject:@(btn.tag - kViewTag) afterDelay:delay];
+        [self performSelector:@selector(selectTag:) withObject:@(imv.tag - kViewTag) afterDelay:delay];
     }
     else {
-        [self performSelector:@selector(selectTag:) withObject:@(btn.tag - kViewTag) afterDelay:0];
+        [self performSelector:@selector(selectTag:) withObject:@(imv.tag - kViewTag) afterDelay:0];
     }
 
 }
 
 - (void)selectTag:(NSNumber *)tag{
-    NSLog(@"selectTag = %@",tag);
     [self.delegate shareWithType:[tag integerValue] Title:self.shareTitle Image:self.shareImage];
 }
 
@@ -158,9 +157,9 @@
     CGFloat imageHeight = imageWidth;
     
     CGFloat labelWidth = imageWidth;
-    CGFloat labelHeight = [self.titleArray[0] sizeWithFontSize:12.0f Width:imageWidth].height;
+    CGFloat labelHeight = [self.titleArray[0] sizeWithFontSize:EH_siz5 Width:imageWidth].height;
     
-    CGFloat selfHeight = (20 + imageWidth + 10 + labelHeight) * ((self.typeArray.count - 1) / kColumn + 1) + 20;
+    CGFloat selfHeight = (15 + imageWidth + 11 + labelHeight) * ((self.typeArray.count - 1) / kColumn + 1) + 15;
     
     self.frame = CGRectMake(0, CGRectGetHeight(self.superview.frame) - selfHeight, CGRectGetWidth(self.superview.frame), selfHeight);
     
@@ -169,17 +168,20 @@
         NSString *title = self.typeArray[i];
         NSInteger index = [self.titleArray indexOfObject:title];
         
-        UIButton *btn = [[UIButton alloc]initWithFrame:CGRectMake(kSideSpaceX + imageWidth *(i % kColumn) + kViewSpaceX * (i % kColumn), 20 + (imageHeight + 10 + labelHeight + 20) * (i/kColumn), imageWidth, imageHeight) ];
-        [btn setImage:self.imageArray[index] forState:UIControlStateNormal];
-        [btn addTarget:self action:@selector(btnClick:) forControlEvents:UIControlEventTouchUpInside];
-        btn.tag = kViewTag + index;
-        [self addSubview:btn];
+        UIImageView *imv = [[UIImageView alloc]initWithFrame:CGRectMake(kSideSpaceX + (imageWidth + kViewSpaceX)* (i % kColumn), 15 + (imageHeight + 11 + labelHeight + 15) * (i/kColumn), imageWidth, imageHeight) ];
+        imv.contentMode = UIViewContentModeScaleToFill;
+        [imv setImage:self.imageArray[index]];
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tap:)];
+        [imv addGestureRecognizer:tap];
+        imv.userInteractionEnabled = YES;
+        imv.tag = kViewTag + index;
+        [self addSubview:imv];
 
-        UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(btn.frame.origin.x, CGRectGetMaxY(btn.frame) + 10, labelWidth, labelHeight)];
+        UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(imv.frame.origin.x, CGRectGetMaxY(imv.frame) + 11, labelWidth, labelHeight)];
         label.text = title;
         label.textAlignment = NSTextAlignmentCenter;
-        label.font = [UIFont systemFontOfSize:12.0f];
-        label.textColor = RGB(0x66, 0x66, 0x66);
+        label.font = [UIFont systemFontOfSize:EH_siz5];
+        label.textColor = EHCor5;
         [self addSubview:label];
     }
 }
@@ -193,12 +195,12 @@
 
 - (NSArray *)imageArray{
     if (!_imageArray) {
-        UIImage *wechatSessionImage = [UIImage imageNamed:@"ico_share_wechat"];
-        UIImage *wechatTimelineImage = [UIImage imageNamed:@"ico_share_circleoffriends"];
-        UIImage *QQImage = [UIImage imageNamed:@"ico_share_QQ"];
+        UIImage *wechatSessionImage = [UIImage imageNamed:@"public_icon_share_wechat"];
+        UIImage *wechatTimelineImage = [UIImage imageNamed:@"public_icon_share_circleoffriends"];
+        UIImage *QQImage = [UIImage imageNamed:@"public_icon_share_QQ"];
         UIImage *sinaImage = [UIImage imageNamed:@"ico_share_sina"];
-        UIImage *smsImage = [UIImage imageNamed:@"ico_share_message"];
-        UIImage *QRCodeImage = [UIImage imageNamed:@"ico_share_twodimensioncode"];
+        UIImage *smsImage = [UIImage imageNamed:@"public_icon_share_message"];
+        UIImage *QRCodeImage = [UIImage imageNamed:@"public_icon_share_twodimensioncode"];
         _imageArray = @[wechatSessionImage,wechatTimelineImage,QQImage,sinaImage,smsImage,QRCodeImage];
     }
     return _imageArray;

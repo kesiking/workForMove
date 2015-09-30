@@ -22,9 +22,9 @@
     // Do any additional setup after loading the view.
     self.title = @"账号更改";
     
-    UIBarButtonItem *rightButtonItem = [[UIBarButtonItem alloc]initWithCustomView:self.modifyPhoneSecurityView.securityViewCtl.btn_nextStep];
+    //UIBarButtonItem *rightButtonItem = [[UIBarButtonItem alloc]initWithCustomView:self.modifyPhoneSecurityView.securityViewCtl.btn_nextStep];
     self.modifyPhoneSecurityView.securityViewCtl.btn_nextStep.enabled = NO;
-    self.navigationItem.rightBarButtonItem = rightButtonItem;
+    //self.navigationItem.rightBarButtonItem = rightButtonItem;
     
     [self.view addSubview:self.modifyPhoneSecurityView];
 }

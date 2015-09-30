@@ -12,12 +12,12 @@
 
 - (void)awakeFromNib {
     // Initialization code
-    self.nameLabel.textColor = EH_cor5;
-    self.nameLabel.font = EH_font2;
+    self.nameLabel.textColor = EHCor5;
+    self.nameLabel.font = EHFont2;
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     
-    self.phoneLabel.textColor = EH_cor4;
-    self.phoneLabel.font = EH_font5;
+    self.phoneLabel.textColor = EHCor4;
+    self.phoneLabel.font = EHFont5;
     
     
     

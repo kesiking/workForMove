@@ -269,7 +269,11 @@
     healthyView.sTargetStepsLabel.text = [NSString stringWithFormat:@"目标：%ld步",model.targetSteps];
     healthyView.finishSteps.text=[NSString stringWithFormat:@"%ld",(long)model.steps];
     //    NSLog(@"\nmodel.steps\n\n%ld",model.steps);
-    healthyView.distanceLabel.text=[NSString stringWithFormat:@"%.3f千米",model.mileage/1000.0];
+    if(model.mileage < 1000){
+        healthyView.distanceLabel.text=[NSString stringWithFormat:@"%.3f米",model.mileage];
+    }else{
+        healthyView.distanceLabel.text=[NSString stringWithFormat:@"%.3f千米",model.mileage/1000.0];
+    }
     healthyView.energyLabel.text=[NSString stringWithFormat:@"%.0f千卡",model.calorie];
     healthyView.ratioLabel.text=[NSString stringWithFormat:@"%@%%",model.percent];
     [healthyView.distanceChart updateChartByCurrent:[NSNumber numberWithInteger:[model.percent integerValue]]];

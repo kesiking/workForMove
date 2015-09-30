@@ -112,10 +112,10 @@
     
     CGFloat labelHeightsize5 = [@"text" sizeWithFontSize:EH_siz5 Width:CGRectGetWidth(_topView.frame)].height;
     UIImageView *horizentalImageView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_family_font"]];
-    NSString *number=@"0位家庭成员";
-    CGSize theStringSize =[number sizeWithAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:EH_siz5]}];
+    NSString *number=@"00位家庭成员";
+    CGSize theStringSize =[number sizeWithAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:EHSiz5]}];
     NSString *authority=@"管理员";
-    CGSize auStringSize =[authority sizeWithAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:EH_siz5]}];
+    CGSize auStringSize =[authority sizeWithAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:EHSiz5]}];
     [_topView addSubview:horizentalImageView];
     [horizentalImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(_topView.mas_centerX);
@@ -139,9 +139,9 @@
 
     _familyNumber=[[UILabel alloc]init];
     [_topView addSubview:_familyNumber];
-    _familyNumber.text=number;
-    _familyNumber.textColor=EH_cor1;
-    _familyNumber.font=[UIFont systemFontOfSize:EH_siz5];
+    _familyNumber.text=@"0位家庭成员";
+    _familyNumber.textColor=EHCor1;
+    _familyNumber.font=[UIFont systemFontOfSize:EHSiz5];
     [_familyNumber mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(horizentalImageView.mas_top).with.offset(7.5*SCREEN_SCALE);
         make.right.equalTo(_headImageView.mas_left).with.offset(-9*SCREEN_SCALE);
@@ -162,8 +162,8 @@
 
     _authorityLabel=[[UILabel alloc]init];
     _authorityLabel.text=authority;
-    _authorityLabel.textColor=EH_cor1;
-    _authorityLabel.font=[UIFont systemFontOfSize:EH_siz5];
+    _authorityLabel.textColor=EHCor1;
+    _authorityLabel.font=[UIFont systemFontOfSize:EHSiz5];
     [_topView addSubview:_authorityLabel];
     [_authorityLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(horizentalImageView.mas_top).with.offset(7.5*SCREEN_SCALE);
@@ -179,8 +179,8 @@
     _nameLable.text=[NSString stringWithFormat:@"%@的%@(我)", self.babyName,@"家人" ];
     
     
-    _nameLable.font= [UIFont systemFontOfSize:EH_siz2];
-    _nameLable.textColor=EH_cor1;
+    _nameLable.font= [UIFont systemFontOfSize:EHSiz2];
+    _nameLable.textColor=EHCor1;
     _nameLable.textAlignment=NSTextAlignmentCenter;
     [_topView addSubview:_nameLable];
     [_nameLable mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -193,8 +193,8 @@
     
     _phoneLable=[[UILabel alloc]init];
     _phoneLable.text=[KSAuthenticationCenter userPhone];
-    _phoneLable.textColor=EH_cor1;
-    _phoneLable.font=[UIFont systemFontOfSize:EH_siz5];
+    _phoneLable.textColor=EHCor1;
+    _phoneLable.font=[UIFont systemFontOfSize:EHSiz5];
     _phoneLable.textAlignment=NSTextAlignmentCenter;
     [_topView addSubview:_phoneLable];
     [_phoneLable mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -374,6 +374,7 @@
             }
         }
         _nameLable.text=self.relationship;
+        
         [self viewDidLayoutSubviews];
 
     }else{
@@ -387,6 +388,8 @@
             make.bottom.equalTo(self.view.mas_bottom);
             
         }];
+        
+        
         
     }
     
@@ -456,7 +459,7 @@ static BOOL kEHFamilyMemberFirstSectionCellRegistered=NO;
         cell = [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass([EHFamilyMemberTableViewCell class]) owner:self options:nil] firstObject];
     }
         
-        [cell.phoneLabel setHidden:NO];
+    [cell.phoneLabel setHidden:NO];
         EHBabyAttentionUser *attentionUser = (EHBabyAttentionUser *)[self.familyMemberList objectAtIndex:indexPath.row];
 //        if ([attentionUser.user.user_phone isEqualToString:[KSAuthenticationCenter userPhone]]) {
 //            cell.nameLabel.text = [NSString stringWithFormat:@"%@的%@(我)", self.babyName, [attentionUser relationship] ];
@@ -464,13 +467,47 @@ static BOOL kEHFamilyMemberFirstSectionCellRegistered=NO;
 //        }
 //        else
 //        {
-            cell.nameLabel.text = [NSString stringWithFormat:@"%@的%@",self.babyName, [attentionUser relationship] ];
+//            cell.nameLabel.text = [NSString stringWithFormat:@"%@的%@",self.babyName, [attentionUser relationship] ];
   //      }
+    
+  //  CGSize auStringSize =[attentionUser.user.nick_name sizeWithAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:EH_siz5]}];
+//    CGSize relationStringSize =[[attentionUser relationship] sizeWithAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:EH_siz5]}];
+    NSString *nick_name=attentionUser.user.nick_name;
+    NSString *relationship= [attentionUser relationship];
+    NSString *nameString=[NSString stringWithFormat:@"%@（%@）",nick_name,relationship];
+    CGSize auStringSize =[nameString sizeWithAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:EHSiz2]}];
+    if (auStringSize.width>CGRectGetWidth(cell.nameLabel.frame)) {
+        NSMutableString *name=[NSMutableString string];
         
+        if (nick_name.length>2) {
+            NSString *name1=[nameString substringToIndex:2];
+            [name appendString:name1];
+            [name appendString:@"..."];
+        }else{
+            [name appendString:nick_name];
+        }
+        if (relationship.length>2) {
+            NSString *name2=[relationship substringToIndex:2];
+            [name appendString:@"（"];
+            [name appendString:name2];
+            [name appendString:@"..."];
+            [name appendString:@"）"];
+        }else{
+            [name appendString:@"（"];
+            [name appendString:relationship];
+            [name appendString:@"）"];
+        }
+        cell.nameLabel.text = name;
         
-        cell.phoneLabel.text = attentionUser.user.user_phone;
+    }else{
+        cell.nameLabel.text =[NSString stringWithFormat:@"%@（%@）",nick_name,relationship];
+
+    }
+ //   cell.nameLabel.text = [NSString stringWithFormat:@"%@", attentionUser.user.nick_name];
+    
+    cell.phoneLabel.text = attentionUser.user.user_phone;
         
-        [cell.headImageView sd_setImageWithURL:[NSURL URLWithString:attentionUser.user.user_head_img_small] placeholderImage:[EHUtils getUserHeadPlaceHolderImage:attentionUser.user.user_id newPlaceHolderImagePath:attentionUser.user.user_head_img_small defaultHeadImage:[UIImage imageNamed:@"headportrait_80"]]];
+    [cell.headImageView sd_setImageWithURL:[NSURL URLWithString:attentionUser.user.user_head_img_small] placeholderImage:[EHUtils getUserHeadPlaceHolderImage:attentionUser.user.user_id newPlaceHolderImagePath:attentionUser.user.user_head_img_small defaultHeadImage:[UIImage imageNamed:@"headportrait_80"]]];
     
     if (self.isTransferManager) {
         cell.checkImageView.image = [UIImage imageNamed:@"btn_checkbox_normal"];
@@ -518,39 +555,39 @@ static BOOL kEHFamilyMemberFirstSectionCellRegistered=NO;
             
             [self.navigationController pushViewController:newApplyFamilyMember animated:YES];
             
-        }
-        
-        
-        
-        EHFamilyMemberTableViewCell *cell = nil;
-        if (self.isTransferManager) {
-            if (_currentSecectIndex) {
-                cell = (EHFamilyMemberTableViewCell *)[tableView cellForRowAtIndexPath:_currentSecectIndex];
-                cell.checkImageView.image = [UIImage imageNamed:@"public_radiobox_set_off"];
+        }else{
+            EHFamilyMemberTableViewCell *cell = nil;
+            if (self.isTransferManager) {
+                if (_currentSecectIndex) {
+                    cell = (EHFamilyMemberTableViewCell *)[tableView cellForRowAtIndexPath:_currentSecectIndex];
+                    cell.checkImageView.image = [UIImage imageNamed:@"public_radiobox_set_off"];
+                }
+                
+                _currentSecectIndex = indexPath;
+                
+                cell = (EHFamilyMemberTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+                cell.checkImageView.image = [UIImage imageNamed:@"btn_radiobutton_press"];
             }
             
-            _currentSecectIndex = indexPath;
             
-            cell = (EHFamilyMemberTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-            cell.checkImageView.image = [UIImage imageNamed:@"btn_radiobutton_press"];
+            if (self.isDeleteFamilyMember) {
+                if ([_currentSecectMembers  objectForKey:indexPath]) {
+                    cell = (EHFamilyMemberTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+                    cell.checkImageView.image = [UIImage imageNamed:@"public_radiobox_set_off"];
+                    
+                    [_currentSecectMembers removeObjectForKey:indexPath];
+                    
+                }
+                else
+                {
+                    cell = (EHFamilyMemberTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
+                    cell.checkImageView.image = [UIImage imageNamed:@"public_radiobox_set_on"];
+                    [_currentSecectMembers setObject:cell.phoneLabel.text forKey:indexPath];
+                }
+            }
+
         }
         
-        
-        if (self.isDeleteFamilyMember) {
-            if ([_currentSecectMembers  objectForKey:indexPath]) {
-                cell = (EHFamilyMemberTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-                cell.checkImageView.image = [UIImage imageNamed:@"public_radiobox_set_off"];
-                
-                [_currentSecectMembers removeObjectForKey:indexPath];
-                
-            }
-            else
-            {
-                cell = (EHFamilyMemberTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-                cell.checkImageView.image = [UIImage imageNamed:@"public_radiobox_set_on"];
-                [_currentSecectMembers setObject:cell.phoneLabel.text forKey:indexPath];
-            }
-        }
     }
    
     [tableView deselectRowAtIndexPath:indexPath animated:YES];

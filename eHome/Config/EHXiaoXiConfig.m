@@ -102,6 +102,10 @@
         if (!(model.fileType == EHMessageFileType_text)) {
             return;
         }
+        // 未登录不做操作
+        if (![KSAuthenticationCenter isLogin]) {
+            return;
+        }
         // 与安卓逻辑不同，IOS是通过外层的msgid判断是否为语音聊天的，语音聊天编号为1000506
         EHSingleChatMessageBasicHandle* chatMessageHandle = [EHSingleChatMessageHandleFactory getMessageHandleByType:[EHSingleChatMessageHandleFactory getMessageTypeWithEHMsgid:model.msgid]];
         [chatMessageHandle sendRemoteMessageWithMessage:[[EHSingleChatMessageModel alloc] initWithMessageModel:model]];

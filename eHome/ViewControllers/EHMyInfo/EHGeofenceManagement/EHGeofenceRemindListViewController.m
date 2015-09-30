@@ -15,7 +15,7 @@
 #import "EHRemindViewModel.h"
 #import "NSString+StringSize.h"
 
-static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如果在规定时间内，包别不在围栏范围内，则会向您发送提醒通知。";
+static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如果在规定时间内，宝贝不在围栏范围内，则会向您发送提醒通知。";
 
 @interface EHGeofenceRemindListViewController ()<UITableViewDataSource,UITableViewDelegate>
 
@@ -79,6 +79,7 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
         STRONGSELF
         strongSelf.needUpdateModel = remindModel;
         [strongSelf updateRemindList:EHRemindListStatusTypeAdd];
+        [self checkGeofenceRemindList];
     };
     [self.navigationController pushViewController:grdVC animated:YES];
 }
@@ -264,7 +265,7 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
         return 80;
     }
     else {
-        CGFloat labelHeight = [@"text" sizeWithFontSize:EH_siz5 Width:SCREEN_WIDTH].height;
+        CGFloat labelHeight = [@"text" sizeWithFontSize:EHSiz5 Width:SCREEN_WIDTH].height;
         return labelHeight * 2 + 24/2.0 + 31/2.0*2;
     }
 }
@@ -285,6 +286,9 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.section == 0) {
+        return;
+    }
     //提醒编辑
     EHGeofenceRemindEditViewController *greVC =[[EHGeofenceRemindEditViewController alloc] init];
     greVC.remindModel = self.geofenceRemindList[indexPath.row];

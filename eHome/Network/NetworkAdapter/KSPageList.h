@@ -23,4 +23,6 @@ typedef enum {
 
 @property(nonatomic, assign) KSInsertListType   insertListType;
 
+-(void)noDataPageListlogic;
+
 @end

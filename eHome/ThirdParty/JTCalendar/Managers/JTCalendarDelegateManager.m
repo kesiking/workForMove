@@ -45,6 +45,7 @@
         NSCalendar *calendar = _manager.dateHelper.calendar;
         NSDateComponents *comps = [calendar components:NSCalendarUnitYear|NSCalendarUnitMonth fromDate:date];
         NSInteger currentMonthIndex = comps.month;
+        NSInteger currentYear = comps.year;
         
         static NSDateFormatter *dateFormatter = nil;
         if(!dateFormatter){
@@ -103,10 +104,13 @@
             default:
                 break;
         }
-        text = monthString;
-        
+//        text = monthString;
+        text = [NSString stringWithFormat:@"%ld年%@",currentYear,monthString];
         
     }
+   
+    
+
     
     [(UILabel *)menuItemView setText:text];
 }

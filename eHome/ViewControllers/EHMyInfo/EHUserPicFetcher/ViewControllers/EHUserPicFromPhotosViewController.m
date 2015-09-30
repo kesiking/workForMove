@@ -23,7 +23,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self configNavigationBar];
-    
     _assetsLibrary = [[ALAssetsLibrary alloc]init];
     
     [self.view addSubview:[self tableView]];
@@ -65,19 +64,6 @@
 #pragma mark - Getters And Setters
 - (void)configNavigationBar{
     self.title = @"相册";
-    self.navigationController.navigationBar.barTintColor = UINAVIGATIONBAR_COLOR;
-    self.navigationController.navigationBar.tintColor  =   [UIColor whiteColor];
-    // 修改navbar title颜色
-    NSDictionary *navbarTitleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                                               [UIColor whiteColor], NSForegroundColorAttributeName,
-                                               [UIFont boldSystemFontOfSize:20], NSFontAttributeName,nil];
-    
-    [self.navigationController.navigationBar setTitleTextAttributes:navbarTitleTextAttributes];
-    
-//    UIBarButtonItem *backItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(backItemClcik:)];
-    UIBarButtonItem *backItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"public_arrow_tbar_back"] style:UIBarButtonItemStylePlain target:self action:@selector(backItemClcik:)];
-    self.navigationItem.leftBarButtonItem = backItem;
-
 
     UIBarButtonItem *returnButtonItem = [[UIBarButtonItem alloc] init];
     returnButtonItem.title = @"";

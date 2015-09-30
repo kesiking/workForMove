@@ -180,9 +180,18 @@
         _babyHorizontalListView.addBabyClickedBlock = ^(EHHomeBabyHorizontalListView* babyListView){
             STRONGSELF
             // to do add baby
+            BOOL isLogin = [KSAuthenticationCenter isLogin];
+            if (isLogin) {
+                TBOpenURLFromSourceAndParams(internalURL(kEHBabyAtteintion), strongSelf, nil);
+            }else{
+                [strongSelf alertCheckLoginWithCompleteBlock:nil];
+            }
+            /*
+             * 登录后直接进入添加页面
             [strongSelf alertCheckLoginWithCompleteBlock:^(){
                 TBOpenURLFromSourceAndParams(internalURL(kEHBabyAtteintion), strongSelf, nil);
             }];
+             */
             [strongSelf.navBarTitleView setButtonSelected:YES];
         };
         

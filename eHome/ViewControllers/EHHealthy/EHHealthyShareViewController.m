@@ -173,8 +173,10 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     [self.sharedBgView addSubview:self.dateLabel];
     
     //取消按钮
-    self.cancelButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, roundf(22*SCREEN_SCALE), roundf(22*SCREEN_SCALE))];
-    [self.cancelButton setBackgroundImage:[UIImage imageNamed:@"icon_close"] forState:UIControlStateNormal];
+    self.cancelButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, roundf(42*SCREEN_SCALE), roundf(42*SCREEN_SCALE))];
+    self.cancelButton.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    [self.cancelButton setImage:[UIImage imageNamed:@"icon_close"] forState:UIControlStateNormal];
+//    [self.cancelButton setBackgroundImage:[UIImage imageNamed:@"icon_close"] forState:UIControlStateNormal];
     [self.cancelButton addTarget:self action:@selector(cancelShareVC:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.cancelButton];
   
@@ -323,9 +325,9 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
 
     //创建取消按钮约束
     [self.cancelButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(superView.mas_top).with.offset(60*SCREEN_SCALE);
-        make.right.equalTo(superView.mas_right).with.offset(-12*SCREEN_SCALE);
-        make.size.mas_equalTo(CGSizeMake(22*SCREEN_SCALE, 22*SCREEN_SCALE));
+        make.top.equalTo(superView.mas_top).with.offset(50*SCREEN_SCALE);
+        make.right.equalTo(superView.mas_right).with.offset(-2*SCREEN_SCALE);
+        make.size.mas_equalTo(CGSizeMake(42*SCREEN_SCALE, 42*SCREEN_SCALE));
         
     }];
     
@@ -456,6 +458,7 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
 
 - (UIImage *)screenshotForCroppingRect:(CGRect)croppingRect
 {
+    croppingRect.size.height = croppingRect.size.height - 123*SCREEN_SCALE;
     UIGraphicsBeginImageContextWithOptions(croppingRect.size, NO, [UIScreen mainScreen].scale);
     // Create a graphics context and translate it the view we want to crop so
     // that even in grabbing (0,0), that origin point now represents the actual

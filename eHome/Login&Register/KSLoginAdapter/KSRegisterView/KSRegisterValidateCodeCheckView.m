@@ -15,7 +15,7 @@
 #define kRegisterSpaceX (15.0)
 
 #define text_height     (40.0)
-#define text_border     (8.0)
+//#define text_border     (8.0)
 
 @implementation KSRegisterValidateCodeCheckView
 
@@ -27,10 +27,10 @@
 
 -(void)initRegisterViewCtl{
     _validateCodeView = [[KSValidateCodeViewCtl alloc] initWithFrame:self.bounds];
-    _validateCodeView.smsCodeLabel.hidden = NO;
     _validateCodeView.text_smsCode.hidden = NO;
     _validateCodeView.btn_smsCode.hidden = NO;
     _validateCodeView.text_smsCode.textView.textEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0);
+    _validateCodeView.smsCodeLabel.hidden = NO;
     
     WEAKSELF
     _validateCodeView.getValidateColdBlock = ^(KSValidateCodeViewCtl* resetViewCtl){
@@ -55,12 +55,15 @@
     [self addSubview:_validateCodeView];
     
     _btn_next = [[UIButton alloc] init];
-    _btn_next.frame = CGRectMake(0, 0, 60, 30);
-    [_btn_next setTitle:@"下一步" forState:UIControlStateNormal];
+    _btn_next.frame = CGRectMake(kSpaceX, 150, view_width-2*kSpaceX, 40);
+    [_btn_next setTitle:@"完成" forState:UIControlStateNormal];
     _btn_next.titleLabel.font = [UIFont boldSystemFontOfSize:16];
+    [_btn_next setBackgroundImage:[UIImage imageNamed:@"btn_complete_n"] forState:UIControlStateNormal];
     [_btn_next setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [_btn_next setTitleColor:UINEXTBUTTON_UNSELECT_COLOR forState:UIControlStateDisabled];
     [_btn_next addTarget:self action:@selector(nextButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+    _btn_next.enabled = NO;
+    [self addSubview:_btn_next];
 }
 
 -(void)reloadData{
@@ -69,7 +72,7 @@
 
 -(void)setUser_phone:(NSString *)user_phone{
     _user_phone = user_phone;
-    _validateCodeView.smsCodeLabel.text = [NSString stringWithFormat:@"已向%@发送短信验证码",user_phone];
+    _validateCodeView.smsCodeLabel.text = [NSString stringWithFormat:@"已向手机%@发送短信验证码",user_phone];
     if([EHUtils isValidMobile:user_phone])
     {
         [self.validateCodeService sendValidateCodeWithAccountName:self.user_phone];

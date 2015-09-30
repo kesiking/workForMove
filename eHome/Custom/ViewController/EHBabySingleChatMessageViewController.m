@@ -236,7 +236,13 @@
             DLog(@"message : %@", message.voicePath);
             
             // Mark the voice as read and hide the red dot.
-            message.isRead = YES;
+            if ([message isKindOfClass:[XHBabyChatMessage class]]) {
+                message.isRead = YES;
+                [[EHSingleChatCacheManager sharedCenter] updateBabyChatMessage:(XHBabyChatMessage*)message writeSuccess:^(BOOL success) {
+                    EHLogInfo(@"-----> message 是否已读 设置成功");
+                }];
+            }
+            
             messageTableViewCell.messageBubbleView.voiceUnreadDotImageView.hidden = YES;
             
             [[XHAudioPlayerHelper shareInstance] setDelegate:(id<NSFileManagerDelegate>)self];

@@ -30,10 +30,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.title = @"找回密码";
-    UIBarButtonItem *rightButtonItem = [[UIBarButtonItem alloc]initWithCustomView:self.resetView.resetViewCtl.btn_nextStep];
+    self.title = @"忘记密码";
+    //UIBarButtonItem *rightButtonItem = [[UIBarButtonItem alloc]initWithCustomView:self.resetView.resetViewCtl.btn_nextStep];
     self.resetView.resetViewCtl.btn_nextStep.enabled = NO;
-    self.navigationItem.rightBarButtonItem = rightButtonItem;
+    //self.navigationItem.rightBarButtonItem = rightButtonItem;
     [self.view addSubview:self.resetView];
 }
 

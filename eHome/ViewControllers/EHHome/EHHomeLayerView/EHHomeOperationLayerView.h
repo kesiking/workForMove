@@ -19,6 +19,8 @@ typedef void(^EHHistoryTraceListBtnClickedBlock) (UIButton* historyListBtn);
 
 @property (nonatomic, strong) UIButton              *phoneBtn;
 
+@property (nonatomic, strong) UIButton              *chatBtn;
+
 @property (nonatomic, strong) EHGetBabyListRsp      *babyUserInfo;
 
 @property (nonatomic, copy)   EHHistoryTraceListBtnClickedBlock      historyTraceListBtnClickedBlock;

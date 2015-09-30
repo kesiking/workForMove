@@ -99,7 +99,7 @@
     CGFloat labelHeightsize = [@"text" sizeWithFontSize:EHSiz2 Width:CGRectGetWidth(_babyEquipmentLabel.frame)].height;
     [_backgroundView addSubview:_babyEquipmentLabel];
     [_babyEquipmentLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(_deviceCodeQRImageView.mas_bottom).with.offset(16*SCREEN_SCALE);
+    //    make.top.equalTo(_deviceCodeQRImageView.mas_bottom).with.offset(13*SCREEN_SCALE);
         make.centerX.equalTo(_backgroundView.mas_centerX);
         make.width.equalTo(_backgroundView.mas_width);
         make.height.mas_equalTo(labelHeightsize);
@@ -154,7 +154,7 @@
     
     [self.view addSubview:shareLabel];
     [shareLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(_backgroundView.mas_bottom).with.offset(33*SCREEN_SCALE);
+      //  make.top.equalTo(_backgroundView.mas_bottom).with.offset(33*SCREEN_SCALE);
         make.centerX.equalTo(_backgroundView.mas_centerX);
         make.width.equalTo(self.view.mas_width);
         make.height.mas_equalTo(shHeight);
@@ -271,6 +271,17 @@
             }];
         }
             break;
+            
+        case EHShareTypeQQ:
+        {
+            [[UMSocialDataService defaultDataService]  postSNSWithTypes:@[UMShareToQQ] content:@"test" image:[self screenshotForCroppingRect:CGRectMake(0, 0, SCREEN_WIDTH, 533)] location:nil urlResource:nil presentedController:self completion:^(UMSocialResponseEntity *response){
+                if (response.responseCode == UMSResponseCodeSuccess) {
+                    NSLog(@"QQ分享成功！");
+                }
+            }];
+        }
+            break;
+
         case EHShareTypeSms:
         {
             [[UMSocialDataService defaultDataService] postSNSWithTypes:@[UMShareToSms] content:@"test" image:[self screenshotForCroppingRect:CGRectMake(0, 0, SCREEN_WIDTH, 533)] location:nil urlResource:nil presentedController:self completion:^(UMSocialResponseEntity *response){

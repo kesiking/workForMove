@@ -12,6 +12,11 @@
 
 static NSDateFormatter *dateFormatter = nil;
 
++(TBJSONModelKeyMapper*)modelKeyMapper{
+    NSDictionary* dict = @{@"createTime":@"create_time"};
+    return [[TBJSONModelKeyMapper alloc] initWithDictionary:dict];
+}
+
 +(void)initialize{
     if(dateFormatter == nil){
         dateFormatter = [[NSDateFormatter alloc] init];
@@ -33,10 +38,10 @@ static NSDateFormatter *dateFormatter = nil;
         return;
     }
     EHChatMessageinfoModel* chatMessageInfoModel = (EHChatMessageinfoModel*)entity;
-    chatMessageInfoModel.head_imag_small = chatMessageInfoModel.userInfoModel.head_imag_small;
-    chatMessageInfoModel.user_nick_name = chatMessageInfoModel.userInfoModel.user_nick_name;
+    chatMessageInfoModel.head_imag_small = chatMessageInfoModel.userInfoModel.head_imag_small?:(chatMessageInfoModel.babyInfoModel.head_imag_small?:chatMessageInfoModel.head_imag_small);
+    chatMessageInfoModel.user_nick_name = chatMessageInfoModel.userInfoModel.user_nick_name?:(chatMessageInfoModel.babyInfoModel.user_nick_name?:chatMessageInfoModel.user_nick_name);
     
-    chatMessageInfoModel.babyChatMessage.avatarUrl = chatMessageInfoModel.head_imag_small;
+    chatMessageInfoModel.babyChatMessage.avatarUrl = chatMessageInfoModel.head_imag_small?:chatMessageInfoModel.babyChatMessage.avatarUrl;
 }
 
 -(void)setFromDictionary:(NSDictionary *)dict{
@@ -50,6 +55,18 @@ static NSDateFormatter *dateFormatter = nil;
     }
 }
 
+- (void)configHeadImagSmall:(NSString*)head_imag_small andUserNickName:(NSString*)user_nick_name{
+    self.user_nick_name = user_nick_name;
+    self.head_imag_small = head_imag_small;
+    self.babyInfoModel.head_imag_small = head_imag_small;
+    self.babyInfoModel.user_nick_name = user_nick_name;
+    self.userInfoModel.head_imag_small = head_imag_small;
+    self.userInfoModel.user_nick_name = user_nick_name;
+    self.babyChatMessage.avatarUrl = head_imag_small;
+    self.babyChatMessage.originPhotoUrl = head_imag_small;
+    self.babyChatMessage.user_nick_name = user_nick_name;
+}
+
 - (XHBabyChatMessage*)getBabyChatMessageWithMessageModel:(EHChatMessageinfoModel*)message{
     if (message == nil) {
         return nil;
@@ -58,11 +75,13 @@ static NSDateFormatter *dateFormatter = nil;
     NSDate* timestamp = [NSDate date];
     if (message.create_time) {
         timestamp = [dateFormatter dateFromString:message.create_time];
+    }else{
+        message.create_time = [dateFormatter stringFromDate:timestamp];
     }
     if ([message.context_type isEqualToString:CONTEXT_TYPE_TEXT]) {
          babyChatMessage = [[XHBabyChatMessage alloc] initWithText:message.context sender:message.user_phone timestamp:timestamp];
     }else if ([message.context_type isEqualToString:CONTEXT_TYPE_VOICE]) {
-        babyChatMessage = [[XHBabyChatMessage alloc] initWithVoicePath:nil voiceUrl:message.context voiceDuration:[NSString stringWithFormat:@"%@",message.call_duration] sender:message.user_phone timestamp:timestamp isRead:YES];
+        babyChatMessage = [[XHBabyChatMessage alloc] initWithVoicePath:nil voiceUrl:message.context voiceDuration:[NSString stringWithFormat:@"%@",message.call_duration] sender:message.user_phone timestamp:timestamp isRead:NO];
     }
     babyChatMessage.avatarUrl = message.head_imag_small;
     babyChatMessage.originPhotoUrl = message.head_imag_small;

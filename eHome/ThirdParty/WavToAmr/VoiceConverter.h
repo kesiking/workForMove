@@ -11,6 +11,7 @@
 
 @interface VoiceConverter : NSObject
 
++ (NSData*)DecodeAMRToWAVE:(NSData*)amrData;
 /**
  *  转换wav到amr
  *

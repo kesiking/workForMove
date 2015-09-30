@@ -11,8 +11,8 @@
 @implementation EHFamilyMemberFirstSectionTableViewCell
 
 - (void)awakeFromNib {
-    self.titleLable.textColor=EH_cor3;
-    self.titleLable.font=EH_font3;
+    self.titleLable.textColor=EHCor5;
+    self.titleLable.font=[UIFont systemFontOfSize:EHSiz2];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

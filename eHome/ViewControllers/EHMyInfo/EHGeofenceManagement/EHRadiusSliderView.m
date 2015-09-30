@@ -18,6 +18,10 @@
 
 @property (nonatomic, strong) UILabel *radiusLabel;
 
+@property (nonatomic, assign) NSInteger sliderValue;
+
+@property (nonatomic, assign) BOOL beginSliding;
+
 @end
 
 @implementation EHRadiusSliderView
@@ -26,8 +30,8 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.backgroundColor = [UIColor whiteColor];
-        _radius = 500;
-        
+        self.sliderValue = 500;
+        self.beginSliding = NO;
         [self addSubview:self.radiusSlider];
         [self addSubview:self.leftLabel];
         [self addSubview:self.rightLabel];
@@ -40,15 +44,31 @@
 
 #pragma mark - Events Response
 - (void)sliderValueChange:(id)sender{
+    if (!self.beginSliding) {
+        for (UITapGestureRecognizer *tap in [self gestureRecognizers]) {
+            [self removeGestureRecognizer:tap];
+        }
+    }
+    self.beginSliding = YES;
+    
     UISlider *slider = (UISlider *)sender;
-    
     NSInteger value = (int)slider.value - ((int)slider.value % 100);
-    [slider setValue:value animated:YES];
-    
-    self.radius = value;
-    
+    if (value != self.sliderValue) {
+        self.sliderValue = value;
+        [self reSetRadiusLabel:slider];
+    }
+}
+
+- (void)sliderTouchUpInside:(id)sender{
+    self.beginSliding = NO;
+    UISlider *slider = (UISlider *)sender;
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(sliderTap:)];
+    [self addGestureRecognizer:tap];
+
+    NSInteger value = (int)slider.value - ((int)slider.value % 100);
+    self.sliderValue = value;
     [self reSetRadiusLabel:slider];
-    
+
     !self.radiusChangedBlock?:self.radiusChangedBlock(value);
 }
 
@@ -56,34 +76,41 @@
     
     if (tap.state == UIGestureRecognizerStateEnded) {
         CGPoint location = [tap locationInView:self];
-        float x = location.x - 20;
+        float x = location.x - CGRectGetMinX(self.radiusSlider.frame);
         float r = x/CGRectGetWidth(self.radiusSlider.frame);
         float value = (self.radiusSlider.maximumValue-self.radiusSlider.minimumValue) * r + self.radiusSlider.minimumValue;
-        [self.radiusSlider setValue:value animated:NO];
-        [self performSelector:@selector(sliderValueChange:) withObject:self.radiusSlider afterDelay:0];
+        value = MAX(value, self.radiusSlider.minimumValue);
+        value = MIN(value, self.radiusSlider.maximumValue);
+        [self.radiusSlider setValue:value animated:YES];
+        
+        NSInteger radius = (int)value - ((int)value % 100);
+        self.sliderValue = radius;
+        [self reSetRadiusLabel:self.radiusSlider];
+        
+        !self.radiusChangedBlock?:self.radiusChangedBlock(radius);
+
     }
 }
 
 #pragma mark - Private Methods
 - (void)reSetRadiusLabel:(UISlider *)slider {
     
-    self.radiusLabel.text = [NSString stringWithFormat:@"%ldm",(NSInteger)slider.value];
+    self.radiusLabel.text = [NSString stringWithFormat:@"%ld米",self.sliderValue];
     
     CGRect frame = self.radiusLabel.frame;
-    frame.origin.x = (slider.value - slider.minimumValue) / (slider.maximumValue - slider.minimumValue) * CGRectGetWidth(slider.frame) + 20 - 50;
+    frame.origin.x = (self.sliderValue - slider.minimumValue) / (slider.maximumValue - slider.minimumValue) * CGRectGetWidth(slider.frame) + CGRectGetMinX(self.radiusSlider.frame) - CGRectGetWidth(self.radiusLabel.frame)/2.0 + 11;
     self.radiusLabel.textAlignment = NSTextAlignmentCenter;
     
-    if (slider.value == slider.minimumValue) {
-        frame.origin.x = 20;
-        self.radiusLabel.textAlignment = NSTextAlignmentLeft;
+    if (self.sliderValue == slider.minimumValue) {
+        frame.origin.x = 0;
     }
-    if (slider.value == slider.maximumValue) {
-        frame.origin.x = CGRectGetWidth(slider.superview.frame)- 20 - CGRectGetWidth(self.radiusLabel.frame);
-        self.radiusLabel.textAlignment = NSTextAlignmentRight;
+    if (self.sliderValue == slider.maximumValue) {
+        frame.origin.x = CGRectGetWidth(slider.superview.frame) - CGRectGetWidth(self.radiusLabel.frame);
     }
     
-    [UIView animateWithDuration:0.3 delay:0 usingSpringWithDamping:0.6 initialSpringVelocity:0.6 options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionBeginFromCurrentState animations:^{
+    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveLinear | UIViewAnimationOptionBeginFromCurrentState animations:^{
         self.radiusLabel.frame = frame;
+
     } completion:^(BOOL finished) {
     }];
 }
@@ -113,16 +140,19 @@
 
 - (UISlider *)radiusSlider {
     if (!_radiusSlider) {
-        _radiusSlider = [[UISlider alloc]initWithFrame:CGRectMake(20, 20, CGRectGetWidth(self.frame) - 40, 20)];
+        _radiusSlider = [[UISlider alloc]initWithFrame:CGRectMake(25, 20, CGRectGetWidth(self.frame) - 50, 20)];
         
         [_radiusSlider setThumbImage:[UIImage imageNamed:@"icon_drag"] forState:UIControlStateNormal];
-//        _radiusSlider.minimumTrackTintColor = RGB(90, 179, 59);
-//        _radiusSlider.maximumTrackTintColor = RGB(182, 182, 182);
+        _radiusSlider.minimumTrackTintColor = EHCor6;
+        _radiusSlider.maximumTrackTintColor = RGB(0x8e, 0x8e, 0x93);
+
         _radiusSlider.minimumValue = 300;
         _radiusSlider.maximumValue = 2000;
-        _radiusSlider.value = _radius;
-        [_radiusSlider setContinuous:NO];
-        [_radiusSlider addTarget:self action:@selector(sliderValueChange:) forControlEvents:UIControlEventValueChanged];
+        _radiusSlider.value = self.sliderValue;
+        
+        [_radiusSlider addTarget:self action:@selector(sliderValueChange:) forControlEvents:UIControlEventValueChanged];    //值发生改变
+        [_radiusSlider addTarget:self action:@selector(sliderTouchUpInside:) forControlEvents:UIControlEventTouchUpInside];   //值结束改变
+
     }
     return _radiusSlider;
 }
@@ -133,7 +163,7 @@
         _leftLabel.font = EH_font8;
         _leftLabel.textColor = EH_cor3;
         _leftLabel.textAlignment = NSTextAlignmentLeft;
-        _leftLabel.text = @"300m";
+        _leftLabel.text = @"300米";
     }
     return _leftLabel;
 }
@@ -144,7 +174,7 @@
         _rightLabel.font = EH_font8;
         _rightLabel.textColor = EH_cor3;
         _rightLabel.textAlignment = NSTextAlignmentRight;
-        _rightLabel.text = @"2000m";
+        _rightLabel.text = @"2000米";
     }
     return _rightLabel;
 }
@@ -152,13 +182,13 @@
 - (UILabel *)radiusLabel {
     if (!_radiusLabel) {
         
-        _radiusLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetWidth(self.frame) - 100 - 20, 9 - 5, 100, 20)];
+        _radiusLabel = [[UILabel alloc]initWithFrame:CGRectMake(CGRectGetWidth(self.frame) - 50 - 25, 0, 50, 20)];
         _radiusLabel.font = EH_font8;
         _radiusLabel.textColor = EH_cor3;
         _radiusLabel.textAlignment = NSTextAlignmentCenter;
-        _radiusLabel.text = [NSString stringWithFormat:@"%ldm",_radius];
+        _radiusLabel.text = [NSString stringWithFormat:@"%ld米",_radius];
         CGRect frame = self.radiusLabel.frame;
-        frame.origin.x = (self.radiusSlider.value - self.radiusSlider.minimumValue) / (self.radiusSlider.maximumValue - self.radiusSlider.minimumValue) * CGRectGetWidth(self.radiusSlider.frame) + 20 - 50;
+        frame.origin.x = (self.radiusSlider.value - self.radiusSlider.minimumValue) / (self.radiusSlider.maximumValue - self.radiusSlider.minimumValue) * CGRectGetWidth(self.radiusSlider.frame) + 25 - 25;
         _radiusLabel.frame = frame;
     }
     return _radiusLabel;

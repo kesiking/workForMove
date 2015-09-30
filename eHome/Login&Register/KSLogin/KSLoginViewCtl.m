@@ -10,9 +10,9 @@
 #import "KSLoginMaroc.h"
 #import "EHUtils.h"
 
-#define kLoginSpaceX  (0.0)
+#define kLoginSpaceX  (25.0)
 
-#define login_width (self.frame.size.width - kSpaceX * 2)
+#define login_width (self.frame.size.width - kLoginSpaceX * 2)
 #define view_width  (self.frame.size.width)
 
 #define text_label_width ((43.0))
@@ -20,6 +20,8 @@
 #define text_height     (49.0)
 #define text_border     (0.0)
 
+#define login_button_space_x    70
+#define login_button_width    (self.frame.size.width - login_button_space_x * 2)
 #define login_button_height     (44.0)
 
 #define account_label_description  @"账户"
@@ -58,13 +60,13 @@
     if (!_btn_register) {
         _btn_register = [UIButton buttonWithType:UIButtonTypeCustom];
         _btn_register.frame = CGRectMake(view_width - 50, 25, 80, 34);
-        _btn_register.titleLabel.textAlignment = NSTextAlignmentRight;
+        _btn_register.titleLabel.textAlignment = NSTextAlignmentLeft;
         _btn_register.layer.cornerRadius = 2;
         _btn_register.titleLabel.font = [UIFont systemFontOfSize:13];
         _btn_register.clipsToBounds = YES;
         _btn_register.userInteractionEnabled = YES;
         [_btn_register setTitle:@"用户注册" forState:UIControlStateNormal];
-        [_btn_register setTitleColor:[UIColor colorWithWhite:0x66/255.0 alpha:1] forState:UIControlStateNormal];
+        [_btn_register setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_btn_register addTarget:self action:@selector(doRegister) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:_btn_register];
     }
@@ -118,12 +120,13 @@
     if(!_text_phoneNum)
     {
         _text_phoneNum = [WeAppBasicFieldView getCommonFieldView];
-        _text_phoneNum.textView.placeholder = @"手机号码/用户名";
-        _text_phoneNum.textView.textEdgeInsets = UIEdgeInsetsMake(0, 15, 0, 0);
+        _text_phoneNum.textView.placeholder = @"输入用户名";
+        _text_phoneNum.textView.textEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0);
         _text_phoneNum.textView.colorWhileEditing = nil;
-        [_text_phoneNum.backgroundImage setImage:[UIImage imageNamed:@"input_login"]];
-        [_text_phoneNum.textView setValue:[UIColor whiteColor] forKeyPath:@"_placeholderLabel.textColor"];
-        [_text_phoneNum.textView setTextColor:[UIColor colorWithRed:0xff/255.0 green:0xe8/255.0 blue:0x66/255.0 alpha:1]];
+        _text_phoneNum.textView.borderStyle = UITextBorderStyleNone;
+        [_text_phoneNum.backgroundImage setImage:[UIImage imageNamed:@"btn_input"]];
+//        [_text_phoneNum.textView setValue:[UIColor whiteColor] forKeyPath:@"_placeholderLabel.textColor"];
+        [_text_phoneNum.textView setTextColor:EHCor5];
         _text_phoneNum.textView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
         _text_phoneNum.aDelegate = self;
         WEAKSELF
@@ -148,17 +151,17 @@
         account_label.tag = 1003;
 //        [leftView addSubview:account_label];
         
-        UIImageView* imageView = [[UIImageView alloc] initWithFrame:CGRectMake((leftView.frame.size.width - 15)/2, (leftView.frame.size.height - 15)/2, 15, 15)];
+        UIImageView* imageView = [[UIImageView alloc] initWithFrame:CGRectMake((leftView.frame.size.width - 20)/2, (leftView.frame.size.height - 20)/2, 20, 20)];
         imageView.tag = 1001;
         imageView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
-        [imageView setImage:[UIImage imageNamed:@"ico_login_user_normal"]];
+        [imageView setImage:[UIImage imageNamed:@"icon_user"]];
         [leftView addSubview:imageView];
 
-        UIView *line = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(leftView.frame) - 0.5, CGRectGetMinY(leftView.frame) + 0.5, 0.5, CGRectGetMaxY(leftView.frame) - 0.5)];
-        [line setBackgroundColor:[UIColor whiteColor]];
-        line.tag = 1002;
-        line.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
-        [leftView addSubview:line];
+//        UIView *line = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(leftView.frame) - 0.5, CGRectGetMinY(leftView.frame) + 0.5, 0.5, CGRectGetMaxY(leftView.frame) - 0.5)];
+//        [line setBackgroundColor:RGB(35, 116, 250)];
+//        line.tag = 1002;
+//        line.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
+//        [leftView addSubview:line];
         
         _text_phoneNum.textView.leftView = leftView;
         _text_phoneNum.textView.leftViewMode = UITextFieldViewModeAlways;
@@ -171,13 +174,14 @@
     if(!_text_psw)
     {
         _text_psw = [WeAppBasicFieldView getSecurityFieldView];
-        _text_psw.textView.placeholder = @"密码";
+        _text_psw.textView.placeholder = @"输入密码";
         _text_psw.textView.rightNormalImage = [UIImage imageNamed:@"ico_input_password_normal"];
-        _text_psw.textView.textEdgeInsets = UIEdgeInsetsMake(0, 15, 0, 0);
+        _text_psw.textView.textEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0);
         _text_psw.textView.colorWhileEditing = nil;
-        [_text_psw.backgroundImage setImage:[UIImage imageNamed:@"input_login"]];
-        [_text_psw.textView setValue:[UIColor whiteColor] forKeyPath:@"_placeholderLabel.textColor"];
-        [_text_psw.textView setTextColor:[UIColor colorWithRed:0xff/255.0 green:0xe8/255.0 blue:0x66/255.0 alpha:1]];
+        _text_psw.textView.borderStyle = UITextBorderStyleNone;
+        [_text_psw.backgroundImage setImage:[UIImage imageNamed:@"btn_input"]];
+//        [_text_psw.textView setValue:[UIColor whiteColor] forKeyPath:@"_placeholderLabel.textColor"];
+        [_text_psw.textView setTextColor:EHCor5];
         _text_psw.textView.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.0];
         _text_psw.aDelegate = self;
         WEAKSELF
@@ -203,17 +207,17 @@
         password_label.tag = 1003;
 //        [leftView addSubview:password_label];
         
-        UIImageView* imageView = [[UIImageView alloc] initWithFrame:CGRectMake((leftView.frame.size.width - 15)/2, (leftView.frame.size.height - 15)/2, 15, 15)];
+        UIImageView* imageView = [[UIImageView alloc] initWithFrame:CGRectMake((leftView.frame.size.width - 20)/2, (leftView.frame.size.height - 20)/2, 20, 20)];
         imageView.tag = 1001;
         imageView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
-        imageView.image = [UIImage imageNamed:@"ico_login_password_normal"];
+        imageView.image = [UIImage imageNamed:@"icon_password"];
         [leftView addSubview:imageView];
 
-        UIView *line = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(leftView.frame) - 0.5, CGRectGetMinY(leftView.frame) + 0.5, 0.5, CGRectGetMaxY(leftView.frame) - 0.5)];
-        [line setBackgroundColor:[UIColor whiteColor]];
-        line.tag = 1002;
-        line.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
-        [leftView addSubview:line];
+//        UIView *line = [[UIView alloc] initWithFrame:CGRectMake(CGRectGetMaxX(leftView.frame) - 0.5, CGRectGetMinY(leftView.frame) + 0.5, 0.5, CGRectGetMaxY(leftView.frame) - 0.5)];
+//        [line setBackgroundColor:RGB(35, 116, 250)];
+//        line.tag = 1002;
+//        line.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
+//        [leftView addSubview:line];
         
         _text_psw.textView.leftView = leftView;
         _text_psw.textView.leftViewMode = UITextFieldViewModeAlways;
@@ -227,10 +231,10 @@
     {
         _btn_forgetPwd = [[UIButton alloc]initWithFrame:CGRectMake(view_width-kSpaceX-80, CGRectGetMaxY(_text_psw.frame) + 15, 80, 15)];
         [_btn_forgetPwd setTitle:@"|    忘记密码" forState:UIControlStateNormal];
-        [_btn_forgetPwd setTitleColor:[UIColor colorWithWhite:0x66/255.0 alpha:1] forState:UIControlStateNormal];
+        [_btn_forgetPwd setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_btn_forgetPwd setTitleColor:[UIColor grayColor] forState:UIControlStateSelected];
         [_btn_forgetPwd.titleLabel setFont:[UIFont systemFontOfSize:13]];
-        _btn_forgetPwd.titleLabel.textAlignment = NSTextAlignmentCenter;
+        _btn_forgetPwd.titleLabel.textAlignment = NSTextAlignmentLeft;
         [_btn_forgetPwd addTarget:self action:@selector(doResetPwd) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:_btn_forgetPwd];
     }
@@ -246,9 +250,9 @@
 //        _btn_login.layer.cornerRadius = 5;
 //        _btn_login.layer.masksToBounds = YES;
 //        [_btn_login setBackgroundColor:UILOGINNAVIGATIONBAR_COLOR];
-        [_btn_login setBackgroundImage:[UIImage imageNamed:@"login_button_background"] forState:UIControlStateNormal];
-        [_btn_login setBackgroundImage:[UIImage imageNamed:@"login-button-normal"] forState:UIControlStateDisabled];
-        [_btn_login setTitle:@"登  录" forState:UIControlStateNormal];
+        [_btn_login setBackgroundImage:[UIImage imageNamed:@"btn_login_n"] forState:UIControlStateNormal];
+        [_btn_login setBackgroundImage:[UIImage imageNamed:@"btn_login_h"] forState:UIControlStateDisabled];
+        [_btn_login setTitle:@"登录" forState:UIControlStateNormal];
         [_btn_login.titleLabel setFont:[UIFont boldSystemFontOfSize:16]];
         _btn_login.titleLabel.textColor = [UIColor whiteColor];
         [_btn_login addTarget:self action:@selector(login) forControlEvents:UIControlEventTouchUpInside];
@@ -263,12 +267,12 @@
     [super layoutSubviews];
     _logo_imgView.frame = CGRectMake((view_width - caculateHeightNumber(147))/2, caculateHeightNumber(30), caculateHeightNumber(147), caculateHeightNumber(147));
     _description_logo_imgView.frame = CGRectMake((view_width - 88)/2, CGRectGetMaxY(_logo_imgView.frame) + 5, 88, 25);
-    _text_phoneNum.frame = CGRectMake(kLoginSpaceX, CGRectGetMaxY(_description_logo_imgView.frame) + caculateHeightNumber(40), view_width, caculateNumber(text_height));
-    _text_psw.frame = CGRectMake(kLoginSpaceX, CGRectGetMaxY(_text_phoneNum.frame) + text_border, view_width, caculateNumber(text_height));
-    _btn_login.frame = CGRectMake(kLoginSpaceX, CGRectGetMaxY(_text_psw.frame) + 30, view_width, login_button_height);
-    _btn_register.frame = CGRectMake(kLoginSpaceX + (view_width - 80 - 80)/2, CGRectGetMaxY(_btn_login.frame) + 15, 80, 15);
-    _btn_forgetPwd.frame = CGRectMake(CGRectGetMaxX(_btn_register.frame), CGRectGetMaxY(_btn_login.frame) + 15, 80, 15);
-    _btn_cancel.frame = CGRectMake(kLoginSpaceX + (view_width - 195)/2, self.height - _btn_cancel.height - caculateHeightNumber(35), 195, _btn_cancel.height);
+    _text_phoneNum.frame = CGRectMake(kLoginSpaceX, CGRectGetMaxY(_description_logo_imgView.frame) + caculateHeightNumber(40), login_width, caculateNumber(text_height));
+    _text_psw.frame = CGRectMake(kLoginSpaceX, CGRectGetMaxY(_text_phoneNum.frame) + 15, login_width, caculateNumber(text_height));
+    _btn_login.frame = CGRectMake(login_button_space_x, CGRectGetMaxY(_text_psw.frame) + 35, login_button_width, login_button_height);
+    _btn_register.frame = CGRectMake((view_width - 80 - 80 - 10)/2, CGRectGetMaxY(_btn_login.frame) + 20, 80, 15);
+    _btn_forgetPwd.frame = CGRectMake(CGRectGetMaxX(_btn_register.frame), CGRectGetMaxY(_btn_login.frame) + 20, 80, 15);
+    _btn_cancel.frame = CGRectMake((view_width - 195)/2, self.height - _btn_cancel.height - caculateHeightNumber(35), 195, _btn_cancel.height);
 }
 
 #pragma mark - UITextField check login button
@@ -283,7 +287,7 @@
 
 #pragma mark - UITextFieldDelegate
 -(void)textFieldDidBeginEditing:(UITextField *)textField{
-    [self setupLeftViewWithTextField:textField];
+    //[self setupLeftViewWithTextField:textField];
 }
 
 -(void)setupLeftViewWithTextField:(UITextField*)textField{
@@ -302,9 +306,9 @@
         UIImageView* imageView = (UIImageView*)[leftView viewWithTag:1001];
         if (imageView) {
             if (textField == self.text_psw.textView) {
-                [imageView setImage:[UIImage imageNamed:@"ico_login_password_press"]];
+                [imageView setImage:[UIImage imageNamed:@"icon_password"]];
             }else{
-                [imageView setImage:[UIImage imageNamed:@"ico_login_user_press"]];
+                [imageView setImage:[UIImage imageNamed:@"icon_user"]];
             }
         }
     }else{
@@ -320,9 +324,9 @@
         UIImageView* imageView = (UIImageView*)[leftView viewWithTag:1001];
         if (imageView) {
             if (textField == self.text_psw.textView) {
-                imageView.image = [UIImage imageNamed:@"ico_login_password_normal"];
+                imageView.image = [UIImage imageNamed:@"icon_password"];
             }else{
-                [imageView setImage:[UIImage imageNamed:@"ico_login_user_normal"]];
+                [imageView setImage:[UIImage imageNamed:@"icon_user"]];
             }
         }
     }
@@ -331,6 +335,10 @@
 #pragma mark - action method block callback
 - (void)login
 {
+    if (![EHUtils networkReachable]) {
+        [WeAppToast toast:@"当前网络不可用，请检查网络设置"];
+        return;
+    }
     if (self.loginBlock) {
         self.loginBlock(self);
     }
@@ -338,6 +346,10 @@
 
 - (void)doRegister
 {
+    if (![EHUtils networkReachable]) {
+        [WeAppToast toast:@"当前网络不可用，请检查网络设置"];
+        return;
+    }
     if (self.registerBlock) {
         self.registerBlock(self);
     }
@@ -345,6 +357,10 @@
 
 - (void)doResetPwd
 {
+    if (![EHUtils networkReachable]) {
+        [WeAppToast toast:@"当前网络不可用，请检查网络设置"];
+        return;
+    }
     if (self.resetPwdBlock) {
         self.resetPwdBlock(self);
     }
@@ -352,6 +368,11 @@
 
 - (void)cancelLogin
 {
+    if (![EHUtils networkReachable]) {
+        [WeAppToast toast:@"当前网络不可用，请检查网络设置"];
+        return;
+    }
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:kUserLoginCancelNotification object:nil userInfo:nil];
     if (self.cancelLoginBlock) {
         self.cancelLoginBlock(self);

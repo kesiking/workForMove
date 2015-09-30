@@ -81,6 +81,7 @@
         
         if (!healthyView.calendarVC) {
             healthyView.calendarVC = [CalendarViewController new];
+            healthyView.calendarVC.selectedDate = self.currentDate;
         }
         healthyView.calendarVC.babyStartDate = [[EHBabyListDataCenter sharedCenter] currentBabyUserInfo].babyDeviceStartUserDay;
         
@@ -106,7 +107,13 @@
             self.show = YES;
         }];
         if (!healthyView.bgView) {
-            healthyView.bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 60, window.bounds.size.width, window.bounds.size.height-60)];
+//            healthyView.bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 60, window.bounds.size.width, window.bounds.size.height-60)];
+            healthyView.bgView = [[UIView alloc]initWithFrame:window.bounds];
+////            _bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0];
+//            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tap:)];
+//            [_bgView addGestureRecognizer:tap];
+
+          
             
         }
         healthyView.bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0];
@@ -121,18 +128,26 @@
         [healthyView.calendarVC.view setFrame:CGRectMake(0, 0, self.view.width, 374.5*SCREEN_SCALE)];
         [healthyView.calendarView addSubview:canldara];
         
+        
         healthyView.calendarView.alpha = 0;
-        [self.view addSubview:healthyView.bgView];
-        [self.view addSubview:healthyView.calendarView];
+//        [self.view addSubview:healthyView.bgView];
+        [window addSubview:healthyView.bgView];
+//        [healthyView.bgView addSubview:healthyView.calendarView];
+        [window addSubview:healthyView.calendarView];
+
+
+//        [self.view addSubview:healthyView.calendarView];
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(hideCalendarView)];
         [healthyView.bgView addGestureRecognizer:tap];
+        
+        
         //
         CGRect rectBegin = healthyView.calendarView.frame;
-        rectBegin.origin.y = 60;
+        rectBegin.origin.y = 73*SCREEN_SCALE+64;
         [healthyView.calendarView setFrame:rectBegin];
         
         CGRect rect = healthyView.calendarView.frame;
-        rect.origin.y = 60;
+        rect.origin.y = 73*SCREEN_SCALE+64;
         [UIView animateKeyframesWithDuration:0.3 delay:0 options:UIViewKeyframeAnimationOptionLayoutSubviews animations:^{
             [healthyView.calendarView setFrame:rect];
             healthyView.calendarView.alpha = (NSUInteger)(1);
@@ -220,7 +235,12 @@
         }
         healthyView.sTargetStepsLabel.text = [NSString stringWithFormat:@"目标：%ld步",dayModel.target_steps];
         healthyView.finishSteps.text=[NSString stringWithFormat:@"%ld",(long)dayModel.steps];
-        healthyView.distanceLabel.text=[NSString stringWithFormat:@"%.3f千米",dayModel.mileage/1000.0];
+        if (dayModel.mileage<1000) {
+             healthyView.distanceLabel.text=[NSString stringWithFormat:@"%.3f米",dayModel.mileage];
+        }else{
+            healthyView.distanceLabel.text=[NSString stringWithFormat:@"%.3f千米",dayModel.mileage/1000.0];
+            
+        }
         healthyView.energyLabel.text=[NSString stringWithFormat:@"%ld千卡",dayModel.calorie];
         healthyView.ratioLabel.text=[NSString stringWithFormat:@"%@%%",dayModel.percent];
         [healthyView.distanceChart updateChartByCurrent:[NSNumber numberWithInteger:[dayModel.percent integerValue]]];
@@ -253,8 +273,8 @@
         }
         
         if (maxValue == 0) {
-            healthyView.maxYValueLabel.text = @"";
-            healthyView.middleValueLabel.text = @"";
+            healthyView.maxYValueLabel.text = [NSString stringWithFormat:@"%ld",dayModel.target_steps];
+            healthyView.middleValueLabel.text = [NSString stringWithFormat:@"%ld",dayModel.target_steps/2];
         }else{
             healthyView.maxYValueLabel.text = [NSString stringWithFormat:@"%ld",maxValue];
             healthyView.middleValueLabel.text = [NSString stringWithFormat:@"%ld",maxValue/2];
@@ -500,7 +520,6 @@
     
     //更新currentDate的值
     self.currentDate = [NSDate dateWithTimeInterval:carousel.currentItemIndex*24*60*60 sinceDate:self.startUserDay];
-    
     self.queryDataService.onlyUserCache=YES;
     [self.queryDataService queryBabyHealthyDataWithBabyId:[self.babyId integerValue] AndDate:[self.dateFormatter stringFromDate:self.currentDate]];
 }

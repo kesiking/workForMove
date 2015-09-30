@@ -35,11 +35,11 @@
 
 -(void)initLoginViewCtl{
     
-    [self.loginBackgroundView setImage:[UIImage imageNamed:@"bg_login"]];
+    [self.loginBackgroundView setImage:[UIImage imageNamed:@"img_login"]];
     [self addSubview:self.loginBackgroundView];
     
-    self.loginViewCtl.logo_imgView.hidden = NO;
-    self.loginViewCtl.description_logo_imgView.hidden = NO;
+    self.loginViewCtl.logo_imgView.hidden = YES;
+    self.loginViewCtl.description_logo_imgView.hidden = YES;
     self.loginViewCtl.text_phoneNum.hidden = NO;
     self.loginViewCtl.text_psw.hidden = NO;
     self.loginViewCtl.btn_forgetPwd.hidden = NO;
@@ -48,7 +48,7 @@
     self.loginViewCtl.btn_register.hidden = NO;
     [self addSubview:self.loginViewCtl];
     
-    [self addSubview:self.lineImageView];
+    //[self addSubview:self.lineImageView];
     
 }
 

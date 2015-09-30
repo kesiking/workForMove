@@ -25,9 +25,8 @@
     [super viewDidLoad];
     self.title = [self.group valueForProperty:ALAssetsGroupPropertyName];
     self.view.backgroundColor = [UIColor whiteColor];
-    UIBarButtonItem *returnButtonItem = [[UIBarButtonItem alloc] init];
-    returnButtonItem.title = @"";
-    self.navigationItem.backBarButtonItem = returnButtonItem;
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
+    self.navigationItem.backBarButtonItem = item;
     
     _scrollToEndTag = NO;
     _photoArray = [self photoArray];

@@ -36,6 +36,15 @@
     CGRect rect = _fencingBtn.bounds;
     rect.origin.y = _fencingBtn.bottom + button_border;
     
+    _chatBtn = [[UIButton alloc] initWithFrame:rect];
+    [_chatBtn setBackgroundImage:[UIImage imageNamed:@"ico_phone_normal"] forState:UIControlStateNormal];
+    [_chatBtn setBackgroundImage:[UIImage imageNamed:@"public_icon_phone_p"] forState:UIControlStateHighlighted];
+    [_chatBtn addTarget:self action:@selector(chatButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [self addSubview:_chatBtn];
+    
+    rect = _chatBtn.bounds;
+    rect.origin.y = _chatBtn.bottom + button_border;
+    
     _phoneBtn = [[UIButton alloc] initWithFrame:rect];
     [_phoneBtn setBackgroundImage:[UIImage imageNamed:@"ico_phone_normal"] forState:UIControlStateNormal];
     [_phoneBtn setBackgroundImage:[UIImage imageNamed:@"public_icon_phone_p"] forState:UIControlStateHighlighted];
@@ -49,14 +58,16 @@
     if (!_phoneBtn.hidden) {
         _historyListBtn.frame = CGRectMake(0, 0, self.width, self.width);
         _fencingBtn.frame = CGRectMake(0, _historyListBtn.bottom + button_border, self.width, self.width);
-        
-        CGRect rect = _fencingBtn.bounds;
-        rect.origin.y = _fencingBtn.bottom + button_border;
+        _chatBtn.frame = CGRectMake(0, _fencingBtn.bottom + button_border, self.width, self.width);
+
+        CGRect rect = _chatBtn.bounds;
+        rect.origin.y = _chatBtn.bottom + button_border;
         
         _phoneBtn.frame = rect;
     }else{
-        _historyListBtn.frame = CGRectMake(0, self.height - self.width * 2 - button_border, self.width, self.width);
-        _fencingBtn.frame = CGRectMake(0, self.height - self.width, self.width, self.width);
+        _historyListBtn.frame = CGRectMake(0, self.height - self.width * 3 - 2 * button_border, self.width, self.width);
+        _fencingBtn.frame = CGRectMake(0, _historyListBtn.bottom + button_border, self.width, self.width);
+        _chatBtn.frame = CGRectMake(0, _fencingBtn.bottom + button_border, self.width, self.width);
     }
 }
 
@@ -65,9 +76,11 @@
     if (babyUserInfo == nil) {
         _fencingBtn.hidden = YES;
         _historyListBtn.hidden = YES;
+        _chatBtn.hidden = YES;
     }else{
         _fencingBtn.hidden = NO;
         _historyListBtn.hidden = NO;
+        _chatBtn.hidden = NO;
     }
     if ([babyUserInfo isBabyInFamilyPhoneNumbers]) {
         _phoneBtn.hidden = NO;
@@ -100,13 +113,24 @@
     if (![self checkLoginWithCompleteBlock:nil]) {
         return;
     }
-    TBOpenURLFromSourceAndParams(internalURL(@"EHBabySingleChatMessageViewController"), self, @{@"babyId":[NSString stringWithFormat:@"%@",self.babyUserInfo.babyId]});
     // 打电话
     if (self.babyUserInfo
         && self.babyUserInfo.devicePhoneNumber
         && [self.babyUserInfo.devicePhoneNumber isKindOfClass:[NSString class]]
         && [EHUtils isValidMobile:self.babyUserInfo.devicePhoneNumber]) {
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"tel://%@",self.babyUserInfo.devicePhoneNumber]]];
+    }else{
+        [WeAppToast toast:@"宝贝未绑定号码"];
+    }
+}
+
+-(void)chatButtonClicked:(id)sender{
+    if (![self checkLoginWithCompleteBlock:nil]) {
+        return;
+    }
+    // 聊天
+    if (self.babyUserInfo) {
+        TBOpenURLFromSourceAndParams(internalURL(@"EHBabySingleChatMessageViewController"), self, @{@"babyId":[NSString stringWithFormat:@"%@",self.babyUserInfo.babyId]});
     }else{
         [WeAppToast toast:@"宝贝未绑定号码"];
     }

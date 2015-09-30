@@ -54,22 +54,30 @@
     
     [_calendarManager setMenuView:_calendarMenuView];
     [_calendarManager setContentView:_calendarContentView];
-    [_calendarManager setDate:_todayDate];
+    if (_selectedDate!=nil) {
+        [_calendarManager setDate:_selectedDate];
+    }else
+    {
+         [_calendarManager setDate:_todayDate];
+    }
+    [_calendarManager reload];
+   
 }
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
+    [self createMinAndMaxDate];
     NSDateFormatter *formater1=[[NSDateFormatter alloc]init];
     formater1.dateFormat=@"yyyy-MM-dd HH:mm:ss";
-    NSDate *myDate=[formater1 dateFromString:@"2015-06-14 11:07:16"];
     if (_selectedDate!=nil) {
-        [_calendarManager setDate:_selectedDate];
+        NSString *datestrSwitch=[formater1 stringFromDate:_selectedDate];
+        NSLog(@"%@",_selectedDate); //结果：2015-07-16 15:25:28
+        NSString *currentMonth = [datestrSwitch substringToIndex:7];
+        NSString *currentMonthDateString = [NSString stringWithFormat:@"%@%@",currentMonth,@"-01 00:00:00"];
+        NSDate *currentMonthDate=[formater1 dateFromString:currentMonthDateString];
+        [_calendarManager setDate:currentMonthDate];
         _dateSelected = _selectedDate;
     }
-   
-   
-  
-//    NSDate * curr = _dateSelected;
     [_calendarManager reload];
 
    
@@ -193,7 +201,7 @@
     _minDate = self.babyStartDate;
     // Max date will be 2 month after today
     //当前
-    _maxDate = [_calendarManager.dateHelper addToDate:_todayDate months:0];
+    _maxDate = _todayDate;
 
 }
 

@@ -10,6 +10,7 @@
 #import "RMActionController.h"
 #import "EHDeleteGeofenceRemindService.h"
 #import "EHUpdateGeofenceRemindService.h"
+#import "UIViewController+BackButtonHandler.h"
 
 @interface EHGeofenceRemindEditViewController ()
 
@@ -25,6 +26,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     _copyModel = [self.remindModel copy];
+}
+
+-(BOOL)navigationShouldPopOnBackButton {
+    [self resetRemindModel];
+    return YES;
 }
 
 #pragma mark - Events Response

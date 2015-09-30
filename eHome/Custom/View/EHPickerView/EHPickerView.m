@@ -103,11 +103,11 @@
     self.selectedRowArray = [[NSMutableArray alloc]init];
     self.rowHeightArray = [[NSMutableArray alloc]init];
     
-    self.titleSize = EH_siz1;
+    self.titleSize = EHSiz1;
     self.titleColor = EHCor4;
     self.selectedTitleSize = 21;
     self.selectedTitleColor = EHCor6;
-    self.unitTitleSize = EH_siz2;
+    self.unitTitleSize = EHSiz2;
     self.unitTitleColor = EHCor6;
     self.displayedRowsNumber = 3;
     self.rowHeight = 44;

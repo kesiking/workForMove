@@ -31,10 +31,12 @@
         NSString* pageSizeName =  [NSString stringWithFormat:@"result_num"];
         NSString* directionName = [NSString stringWithFormat:@"direction"];
         
-        if (self.beforTimestampStr && self.beforTimestampStr.length > 0) {
+        if (self.beforTimestampStr) {
             [dict setObject:self.beforTimestampStr forKey:((NSString*)timestampName)];
-        }else if(self.afterTimestampStr && self.afterTimestampStr.length > 0){
+        }else if(self.afterTimestampStr){
             [dict setObject:self.afterTimestampStr forKey:((NSString*)timestampName)];
+        }else{
+            [dict setObject:@"" forKey:((NSString*)timestampName)];
         }
         
         [dict setObject:@(self.pageSize) forKey:((NSString*)pageSizeName)];
