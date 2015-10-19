@@ -29,6 +29,7 @@
         self.date = [EHUtils getWeekSelectedDaysStr:babyAlarmModel.work_date];
         self.is_active = babyAlarmModel.is_active;
         self.is_repeat = babyAlarmModel.is_repeat;
+        self.context = babyAlarmModel.context;
     }
     return self;
 }

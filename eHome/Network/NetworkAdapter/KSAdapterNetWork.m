@@ -13,7 +13,7 @@
 
 #define DEFAULT_SCHEME @"http"
 #define DEFAULT_HOST @"112.54.207.8"
-//#define DEFAULT_HOST @"192.168.8.21"
+//#define DEFAULT_HOST @"192.168.8.29"
 
 #define DEFAULT_PORT @"8081"
 //#define DEFAULT_PORT @"8080"

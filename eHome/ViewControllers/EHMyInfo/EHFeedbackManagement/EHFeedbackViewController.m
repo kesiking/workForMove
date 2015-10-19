@@ -12,6 +12,7 @@
 #import "EHInsertSuggestionService.h"
 #import "EHGetQueryForFeedbackService.h"
 #import "MJRefresh.h"
+#import "IQKeyboardManager.h"
 
 #define kDefaultRows 20
 #define kCacheRows   20
@@ -44,12 +45,18 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"意见反馈";
-    self.view.backgroundColor = RGB(236, 236, 236);
+    self.view.backgroundColor = EHBgcor1;
     _modelArray = [[NSMutableArray alloc]init];
     _dataArray = [[NSMutableArray alloc]init];
     _textViewOffset = 0;
     _pageNum = 1;
     _sendCount = 0;
+    
+    IQKeyboardManager *manager = [IQKeyboardManager sharedManager];
+    manager.enable = NO;
+//    manager.shouldResignOnTouchOutside = YES;
+//    manager.shouldToolbarUsesTextFieldTintColor = YES;
+//    manager.enableAutoToolbar = NO;
     
     [self.view addSubview:self.tableView];
     [self.view addSubview:self.textView];
@@ -130,6 +137,12 @@
 
 //发送内容
 - (void)sendContent:(NSString *)content{
+    BOOL stringContainsEmoji = [EHUtils stringContainsEmoji:content];
+    if (stringContainsEmoji) {
+        [WeAppToast toast:@"暂时不支持表情符号哦"];
+        return;
+    }
+    
     [_insertSuggestionService insertSuggestionWithUserID:[[KSLoginComponentItem sharedInstance].userId intValue] sugContent:content];
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     self.content = content;
@@ -240,7 +253,6 @@
         cell = [[EHFeedbackTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
     }
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    cell.backgroundColor = RGB(236, 236, 236);
     EHFeedbackViewModel *viewModel = _dataArray[indexPath.row];
     [cell configWithViewModel:viewModel];
     return cell;
@@ -261,7 +273,7 @@
     if (!_tableView) {
         CGRect frame = CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame) - kTextViewHeight - 64);
         _tableView = [[UITableView alloc]initWithFrame:frame style:UITableViewStylePlain];
-        _tableView.backgroundColor = RGB(236, 236, 236);
+        _tableView.backgroundColor = EHBgcor1;
         _tableView.delegate = self;
         _tableView.dataSource = self;
         _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;

@@ -12,6 +12,8 @@
 #import "EHChatMessageinfoModel.h"
 #import "EHUtils.h"
 
+#define list_path_str @"responseData"
+
 @interface EHChatMessageLIstService(){
     NSInteger       _count;
 }
@@ -44,7 +46,7 @@
     NSDictionary* params = @{@"baby_id":babyId,@"userPhone":userPhone};
     
     self.jsonTopKey = nil;
-    self.listPath = @"responseData";
+    self.listPath = list_path_str;
     self.itemClass = [EHChatMessageinfoModel class];
     
     if (self.pagedList) {
@@ -83,7 +85,7 @@
     if (self.requestModel.pagedList == nil) {
         self.requestModel.pagedList = [[EHChatMessagePageList alloc] init];
         self.requestModel.pagedList.itemClass = [EHChatMessageinfoModel class];
-        [self.requestModel.pagedList setListPath:@"smallVoiceCallMsgList"];
+        [self.requestModel.pagedList setListPath:list_path_str];
     }
     [self.requestModel.pagedList removeAllObjects];
     [self.requestModel.pagedList refresh];

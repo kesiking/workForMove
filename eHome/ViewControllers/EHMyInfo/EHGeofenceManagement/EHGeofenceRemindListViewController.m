@@ -42,7 +42,7 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
     [super viewDidLoad];
     
     self.title = @"主动提醒";
-    self.view.backgroundColor = EH_bgcor1;
+    self.view.backgroundColor = EHBgcor1;
     
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"public_ico_tbar_add"] style:UIBarButtonItemStylePlain target:self action:@selector(rightItemClick:)];
     self.navigationItem.rightBarButtonItem = rightItem;
@@ -103,59 +103,64 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
 /**
  *  数据源重排序
  */
-- (NSMutableArray *)remindListSorted:(NSArray *)remindList {
-    NSMutableArray *resultArray = [[NSMutableArray alloc]init];
-    NSMutableArray *onArray = [[NSMutableArray alloc]init];
-    NSMutableArray *offArray = [[NSMutableArray alloc]init];
-    for (EHGeofenceRemindModel *model in remindList) {
-        if ([model.is_active boolValue]) {
-            [onArray addObject:model];
-        }
-        else {
-            [offArray addObject:model];
-        }
-    }
-    if (onArray.count > 1) {
-        onArray = [self remindListSortedByTime:onArray];
-    }
-    if (offArray.count > 1) {
-        offArray = [self remindListSortedByTime:offArray];
-    }
-    
-    if (onArray.count != 0) {
-        for (EHGeofenceRemindModel *model in onArray) {
-            [resultArray addObject:model];
-        }
-    }
-    if (offArray.count != 0) {
-        for (EHGeofenceRemindModel *model in offArray) {
-            [resultArray addObject:model];
-        }
-    }
-    return resultArray;
-}
+//按照开关状态排序（EHOMEIOS-327 Bug修复，去除该方法）
+//- (NSMutableArray *)remindListSorted:(NSArray *)remindList {
+//    NSMutableArray *resultArray = [[NSMutableArray alloc]init];
+//    NSMutableArray *onArray = [[NSMutableArray alloc]init];
+//    NSMutableArray *offArray = [[NSMutableArray alloc]init];
+//    for (EHGeofenceRemindModel *model in remindList) {
+//        if ([model.is_active boolValue]) {
+//            [onArray addObject:model];
+//        }
+//        else {
+//            [offArray addObject:model];
+//        }
+//    }
+//    if (onArray.count > 1) {
+//        onArray = [self remindListSortedByTime:onArray];
+//    }
+//    if (offArray.count > 1) {
+//        offArray = [self remindListSortedByTime:offArray];
+//    }
+//    
+//    if (onArray.count != 0) {
+//        for (EHGeofenceRemindModel *model in onArray) {
+//            [resultArray addObject:model];
+//        }
+//    }
+//    if (offArray.count != 0) {
+//        for (EHGeofenceRemindModel *model in offArray) {
+//            [resultArray addObject:model];
+//        }
+//    }
+//    return resultArray;
+//}
 
 /**
  *  按时间进行排序
  */
-- (NSMutableArray *)remindListSortedByTime:(NSMutableArray *)array {
-    for (NSInteger i = 0; i < (array.count - 1); i++) {
-        for (NSInteger j = 0; j < (array.count - 1) - i; j++) {
-            EHGeofenceRemindModel *currentModel = array[j];
-            EHGeofenceRemindModel *nextModel = array[j + 1];
+- (NSMutableArray *)remindListSortedByTime:(NSArray *)array {
+    if (array == nil) {
+        return nil;
+    }
+    NSMutableArray *mArray = [array mutableCopy];
+    for (NSInteger i = 0; i < (mArray.count - 1); i++) {
+        for (NSInteger j = 0; j < (mArray.count - 1) - i; j++) {
+            EHGeofenceRemindModel *currentModel = mArray[j];
+            EHGeofenceRemindModel *nextModel = mArray[j + 1];
             //比较时的大小
             if([[currentModel.time substringToIndex:2] integerValue] > [[nextModel.time substringToIndex:2] integerValue]){
-                [array exchangeObjectAtIndex:j withObjectAtIndex:(j + 1)];
+                [mArray exchangeObjectAtIndex:j withObjectAtIndex:(j + 1)];
             }
             //如果时一样，比较分的大小
             else if ([[currentModel.time substringToIndex:2] integerValue] == [[nextModel.time substringToIndex:2] integerValue]) {
                 if ([[currentModel.time substringFromIndex:3] integerValue] > [[nextModel.time substringFromIndex:3] integerValue]) {
-                    [array exchangeObjectAtIndex:j withObjectAtIndex:(j + 1)];
+                    [mArray exchangeObjectAtIndex:j withObjectAtIndex:(j + 1)];
                 }
             }
         }
     }
-    return array;
+    return mArray;
 }
 
 /**
@@ -166,7 +171,7 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
             
         case EHRemindListStatusTypeAdd: {
             [self.geofenceRemindList addObject:self.needUpdateModel];
-            self.geofenceRemindList = [self remindListSorted:self.geofenceRemindList];
+            self.geofenceRemindList = [self remindListSortedByTime:self.geofenceRemindList];
             NSInteger updatedRow = [self.geofenceRemindList indexOfObject:self.needUpdateModel];
             NSIndexPath *updatedIndexPath = [NSIndexPath indexPathForRow:updatedRow inSection:1];
         
@@ -182,7 +187,7 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
             EHRemindListTableViewCell *cell = [self.tableView cellForRowAtIndexPath:needUpdateIndexPath];
             [cell configWithRemindModel:viewModel RemindType:EHRemindTypeGeofence];
                                      
-            self.geofenceRemindList = [self remindListSorted:self.geofenceRemindList];
+            self.geofenceRemindList = [self remindListSortedByTime:self.geofenceRemindList];
             NSInteger updatedRow = [self.geofenceRemindList indexOfObject:self.needUpdateModel];
             NSIndexPath *updatedIndexPath = [NSIndexPath indexPathForRow:updatedRow inSection:1];
             
@@ -327,7 +332,7 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
         WEAKSELF
         _getRemindService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
             STRONGSELF
-            strongSelf.geofenceRemindList = [strongSelf remindListSorted:service.dataList];
+            strongSelf.geofenceRemindList = [strongSelf remindListSortedByTime:service.dataList];
             [strongSelf reloadData];
             [strongSelf hideLoadingView];
         };

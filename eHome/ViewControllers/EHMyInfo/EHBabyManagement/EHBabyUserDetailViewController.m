@@ -105,8 +105,8 @@
     _babyDetailTableView.delegate = self;
     _babyDetailTableView.dataSource = self;
     _babyDetailTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
-    self.view.backgroundColor = _babyDetailTableView.backgroundColor;
+    _babyDetailTableView.backgroundColor=EHBgcor1;
+    self.view.backgroundColor = EHBgcor1;
     [self.view addSubview:_babyDetailTableView];
     
 //    if ([_babyDetailTableView respondsToSelector:@selector(setSeparatorInset:)]) {
@@ -122,6 +122,11 @@
     [_babyDetailTableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.view).with.insets(UIEdgeInsetsMake(0, 10, 0, 10));
     }];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 12;
 }
 
 
@@ -180,6 +185,8 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kEHBabyDetailCellID];
     if(cell == nil){
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:kEHBabyDetailCellID];
+        cell.textLabel.font = EHFont2;
+        cell.detailTextLabel.font = EHFont2;
     }
     
     if (indexPath.section == 0) {
@@ -578,6 +585,7 @@ static BOOL kEHRightImageTableViewCellRegistered = NO;
     }
     
     cell.textLabel.text = text;
+    cell.textLabel.font = EHFont2;
     if ([image isKindOfClass:[UIImage class]]) {
         cell.rightImageView.image = image;
     }

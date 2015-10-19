@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "EHFeedbackMacro.h"
 
-#define kTextViewHeight 51
+#define kTextViewHeight 44
 
 typedef void (^FrameChangedBlock) (CGFloat offset);
 typedef void (^SendBlock) (NSString *content);

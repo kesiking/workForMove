@@ -139,6 +139,7 @@
         if (service.item && [service.item isKindOfClass:[EHChatMessageinfoModel class]]) {
             EHChatMessageinfoModel* chatMessage = (EHChatMessageinfoModel*)service.item;
             [nativeChatMessage updateMessgeWithChatMessageinfoModel:chatMessage];
+            nativeChatMessage.call_duration = chatMessage.call_duration?:nativeChatMessage.call_duration;
             if (sendSuccessBlock) {
                 sendSuccessBlock(YES, chatMessage.babyChatMessage);
             }
@@ -193,9 +194,9 @@
     [self.chatCacheService writeCacheWithApiName:KEHGetChatMessageListApiName withParam:@{@"baby_id":babyID} componentItem:componentItem writeSuccess:writeSuccessBlock];
 }
 
--(void)updateBabyChatMessage:(XHBabyChatMessage *)message
+-(void)updateBabyChatMessage:(EHChatMessageinfoModel *)message
                 writeSuccess:(WriteSuccessCacheBlock)writeSuccessBlock{
-    [self updateCacheWithBabyID:[NSString stringWithFormat:@"%@",message.recieverBabyID] componentItem:[EHChatMessageinfoModel makeMessage:message] writeSuccess:writeSuccessBlock];
+    [self updateCacheWithBabyID:[NSString stringWithFormat:@"%@",message.baby_id] componentItem:message writeSuccess:writeSuccessBlock];
 }
 
 -(void)updateCacheWithBabyID:(NSString*)babyID

@@ -36,7 +36,7 @@
 }
 
 + (NSString*)getMessageTypeWithEHMsgid:(NSString*)msgid{
-    if ([msgid isEqualToString:@"1000506"]) {
+    if (msgid && [msgid isEqualToString:@"1000506"]) {
         return [self getMessageTypeWithEHMessageFileType:EHMessageFileType_voice];
     }
     return [self getMessageTypeWithEHMessageFileType:EHMessageFileType_text];

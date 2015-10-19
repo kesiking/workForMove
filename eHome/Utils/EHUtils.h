@@ -40,5 +40,7 @@
 
 + (NSString *)getWeekSelectedDaysStr:(NSString *)weekBinaryStr;
 
++ (BOOL)stringContainsEmoji:(NSString *)string;
+
 + (BOOL)networkReachable;
 @end

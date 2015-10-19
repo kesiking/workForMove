@@ -65,7 +65,7 @@
     UIBarButtonItem* confirmBtn = [[UIBarButtonItem alloc] initWithTitle:@"确认" style:UIBarButtonItemStylePlain target:self action:@selector(confirmClicked:)];
     self.navigationItem.rightBarButtonItem = confirmBtn;
     
-    self.view.backgroundColor = EH_bgcor1;
+    self.view.backgroundColor = EHBgcor1;
     
     [self setupCustomTextfield];
     [self setupShotcutPromptLabel];

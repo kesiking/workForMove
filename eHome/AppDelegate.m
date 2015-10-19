@@ -12,7 +12,7 @@
 #import "EHMessageManager.h"
 #import "EHRemoteMessageModel.h"
 #import "EHXiaoXiConfig.h"
-
+#import "IQKeyboardManager.h"
 @interface AppDelegate ()
 
 @property (nonatomic, assign)  BOOL    isNotNeedPushNotificationMessage;
@@ -30,11 +30,18 @@
     [self configRemoteNotificationWithApplication:application launchingWithOptions:launchOptions];
     [self configUIContent];
     [self configApplication];
+    [self configIQKeyboardManager];
     [EHSocializedShareConfig config];
     
     return YES;
 }
 
+-(void)configIQKeyboardManager{
+    
+    IQKeyboardManager *manager = [IQKeyboardManager sharedManager];
+    manager.enable = NO;
+    manager.enableAutoToolbar = NO;
+}
 -(void)configApplication{
     // 配置小溪
     [EHXiaoXiConfig configXiaoXi];
@@ -127,6 +134,7 @@
     EHLogInfo(@"---Token--%@", token);
 }
 
+//不管APP是否在线，只要有推送消息都会调用该方法
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
     EHLogInfo(@"userInfo == %@",userInfo);
     // 防止小溪抽风一直走离线推送，导致不断消息页面进栈
@@ -189,7 +197,7 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma Remote Message Action method
+#pragma mark - Remote Message Action method
 - (void)sendRemoteMessageWithMessageWithMessageText:(NSString*)messageText{
     [[EHXiaoXiConfig sharedCenter] sendRemoteMessageWithMessage:messageText];
 }
@@ -206,11 +214,17 @@
 
 - (void)openNativeViewControllerWithMessageText:(NSString*)messageText{
     
-    if ([messageText hasPrefix:@"用户关注"]) {
-        NSArray *array = [messageText componentsSeparatedByString:@"("];
-        NSString *subMessage=[array objectAtIndex:1];
-        NSArray *subarray = [subMessage componentsSeparatedByString:@")"];
-        NSString*babyId=[subarray objectAtIndex:0];
+    if ([messageText hasPrefix:@"语音通话"]) {
+        NSString* babyId = [self getBabyIdStringFromMessageText:messageText];
+        if (babyId == nil) {
+            return;
+        }
+        TBOpenURLFromTargetWithNativeParams(internalURL(@"EHBabySingleChatMessageViewController"), self.window.rootViewController, @{ACTION_ANIMATION_KEY:@(false)} ,@{@"babyId":[NSNumber numberWithInteger:[babyId integerValue]]});
+    }else if ([messageText hasPrefix:@"用户关注"]) {
+        NSString* babyId = [self getBabyIdStringFromMessageText:messageText];
+        if (babyId == nil) {
+            return;
+        }
         TBOpenURLFromTargetWithNativeParams(internalURL(@"EHNewApplyFamilyMemberViewController"), self.window.rootViewController, @{ACTION_ANIMATION_KEY:@(false)} ,@{@"babyId":[NSNumber numberWithInteger:[babyId integerValue]]});
     }else{
         NSMutableDictionary* params = [NSMutableDictionary dictionary];
@@ -220,6 +234,20 @@
         TBOpenURLFromTargetWithNativeParams(internalURL(@"EHMessageInfoViewController"), self.window.rootViewController, @{ACTION_ANIMATION_KEY:@(false)} ,params);
     }
    
+}
+
+-(NSString*)getBabyIdStringFromMessageText:(NSString*)messageText{
+    NSArray *array = [messageText componentsSeparatedByString:@"("];
+    if ([array count] <= 1) {
+        return nil;
+    }
+    NSString *subMessage = [array objectAtIndex:1];
+    NSArray *subarray = [subMessage componentsSeparatedByString:@")"];
+    if ([array count] <= 1) {
+        return nil;
+    }
+    NSString* babyId = [subarray objectAtIndex:0];
+    return babyId;
 }
 
 @end

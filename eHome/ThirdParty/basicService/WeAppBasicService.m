@@ -81,6 +81,8 @@
 #pragma mark -
 #pragma mark Load Item
 -(void)loadItemWithAPIName:(NSString *)apiName params:(NSDictionary *)params version:(NSString *)version{
+    EHLogInfo(@"apiName = %@", apiName);
+    EHLogInfo(@"params = %@", params);
     self.apiName = apiName;
     self.version = version;
     
@@ -88,12 +90,15 @@
 }
 
 -(void)loadItemWithURL:(NSString *)urlStr params:(NSDictionary *)params version:(NSString *)version {
+    EHLogInfo(@"urlStr = %@", urlStr);
+    EHLogInfo(@"params = %@", params);
     self.apiName = urlStr;
     self.version = version;
     [self.requestModel loadItemWithURL:urlStr params:params version:version];
 }
 
 -(void)loadItemWithParams:(NSDictionary *)params {
+    EHLogInfo(@"params = %@", params);
     [self.requestModel loadDataListWithParams:params];
 }
 
@@ -101,23 +106,30 @@
 #pragma mark -
 #pragma mark Load DataList
 -(void)loadDataListWithAPIName:(NSString *)apiName params:(NSDictionary *)params version:(NSString *)version{
+    EHLogInfo(@"apiName = %@", apiName);
+    EHLogInfo(@"params = %@", params);
     self.apiName = apiName;
     self.version = version;
     [self.requestModel loadDataListWithAPIName:apiName params:params version:version];
 }
 
 -(void)loadDataListWithURL:(NSString *)urlStr params:(NSDictionary *)params version:(NSString *)version {
+    EHLogInfo(@"urlStr = %@", urlStr);
+    EHLogInfo(@"params = %@", params);
     self.apiName = urlStr;
     self.version = version;
     [self.requestModel loadDataListWithURL:urlStr params:params version:version];
 }
 
 -(void)loadDataListWithParams:(NSDictionary *)params {
+    EHLogInfo(@"params = %@", params);
     [self.requestModel loadDataListWithParams:params];
 }
 
 - (void)uploadFileWithAPIName:(NSString*)apiName withFileName:(NSString*)fileName withFileContent:(NSData*)fileContent params:(NSDictionary *)params version:(NSString *)version
 {
+    EHLogInfo(@"apiName = %@", apiName);
+    EHLogInfo(@"params = %@", params);
     self.apiName = apiName;
     self.version = version;
     [self.requestModel uploadFileWithAPIName:apiName withFileName:fileName withFileContent:fileContent params:params version:version];

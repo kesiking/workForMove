@@ -74,6 +74,7 @@
 
 //解析调用
 -(void)parsePageListWithJsonValue:(NSDictionary*)jsonValue{
+    self.insertDataList = nil;
     if (jsonValue == nil || ![jsonValue isKindOfClass:[NSDictionary class]]) {
         self.newDataCount = 0;
         return;

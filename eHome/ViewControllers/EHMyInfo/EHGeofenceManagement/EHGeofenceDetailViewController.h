@@ -11,8 +11,6 @@
 
 @interface EHGeofenceDetailViewController : EHBaseGeofenceViewController
 
-@property (nonatomic, strong)EHGetGeofenceListRsp *geofenceInfo;    //围栏信息
-
-@property (nonatomic, strong)NSArray *existedNameArray;             //已经存在的围栏名字
+@property (nonatomic, strong)NSMutableArray *existedNameArray;             //已经存在的围栏名字
 
 @end

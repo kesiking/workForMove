@@ -69,7 +69,7 @@
         [self topView];
     }
     [self familyMemberTableView];
-    self.view.backgroundColor=self.familyMemberTableView.backgroundColor;
+    self.view.backgroundColor=EHBgcor1;
     
     self.bFamilyMemberDidChanged = NO;
     self.redPointIsShow=NO;
@@ -224,6 +224,7 @@
         _familyMemberTableView.dataSource = self;
         _familyMemberTableView.delegate = self;
         _familyMemberTableView.tableFooterView = [[UIView alloc] init];
+        _familyMemberTableView.backgroundColor=EHBgcor1;
         [self.view addSubview:_familyMemberTableView];
         if ([EHUtils isAuthority:self.authority]) {
             [_familyMemberTableView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -566,7 +567,7 @@ static BOOL kEHFamilyMemberFirstSectionCellRegistered=NO;
                 _currentSecectIndex = indexPath;
                 
                 cell = (EHFamilyMemberTableViewCell *)[tableView cellForRowAtIndexPath:indexPath];
-                cell.checkImageView.image = [UIImage imageNamed:@"btn_radiobutton_press"];
+                cell.checkImageView.image = [UIImage imageNamed:@"public_radiobox_set_on"];
             }
             
             

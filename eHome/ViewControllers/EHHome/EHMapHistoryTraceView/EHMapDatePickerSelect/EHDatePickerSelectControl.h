@@ -22,7 +22,7 @@ typedef void(^datePickerCancelBlock) (void);
 
 - (void)showDatePickerSelectViewWithDate:(NSDate*)date andTitle:(NSString *)selectTitle;
 
-@property (nonatomic, strong) UIViewController            *popViewController;
+@property (nonatomic, weak)   UIViewController            *popViewController;
 
 @property (nonatomic, copy)   datePickerSelectControlBlock datePickerSelectControlBlock;
 

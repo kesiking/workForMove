@@ -57,7 +57,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     
-    self.title = @"您与宝贝的关系";
+    self.title = @"我与宝贝的关系";
+    self.view.backgroundColor=EHBgcor1;
     _relationArray = @[@"爸爸", @"妈妈", @"爷爷", @"奶奶", @"叔叔", @"阿姨", @"哥哥", @"姐姐", @"家人"];
     
     UIBarButtonItem* confirmBtn = [[UIBarButtonItem alloc] initWithTitle:@"确认" style:UIBarButtonItemStylePlain target:self action:@selector(confirmClicked:)];

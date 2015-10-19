@@ -12,7 +12,12 @@
 
 @implementation EHRemoteMessageTimeOverdueObject
 
-+ (BOOL)isRemoteMessageTimeOverdue:(EHMessageInfoModel*)messageInfoModel{
++ (BOOL)isRemoteMessageTimeOverdue:(EHMessageInfoModel*)messageInfoModel {
+    
+    return [self isRemoteMessage:messageInfoModel timeOverdue:MINUTE_VALID_RANGE_NUMBER];
+}
+
++ (BOOL)isRemoteMessage:(EHMessageInfoModel*)messageInfoModel timeOverdue:(NSInteger)timeLength{
     static NSDateFormatter* inputFormatter = nil;
     
     if (messageInfoModel == nil) {
@@ -27,7 +32,7 @@
         NSDate* inputDate = [inputFormatter dateFromString:messageInfoModel.message_time];
         double minutesAgo = inputDate.minutesAgo;
         // 如果与当前时间相比大于10分钟则返回已过期
-        if (minutesAgo > MINUTE_VALID_RANGE_NUMBER) {
+        if (minutesAgo > timeLength) {
             return YES;
         }
     }

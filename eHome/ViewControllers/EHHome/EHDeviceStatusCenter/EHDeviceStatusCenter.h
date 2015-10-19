@@ -23,6 +23,8 @@ typedef void (^getDeviceStatusFailBlock)      (void);
 
 @property (nonatomic,copy  )  getDeviceStatusFailBlock getDeviceStatusFail;
 
+@property (nonatomic, strong) NSNumber *currentMessageType;
+
 + (instancetype)sharedCenter;
 
 - (BOOL)didGetCurrentLoaction;

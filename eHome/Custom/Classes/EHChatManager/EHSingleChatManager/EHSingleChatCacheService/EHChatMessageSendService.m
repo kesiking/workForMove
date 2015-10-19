@@ -16,6 +16,8 @@
 
 @property(nonatomic, strong)    NSString*          voiceCallName;
 
+@property(nonatomic, strong)    NSString*          voiceCallDuration;
+
 @end
 
 @implementation EHChatMessageVoiceDataResponseModel
@@ -104,6 +106,9 @@
            STRONGSELF
             if (service.item) {
                 EHChatMessageVoiceDataResponseModel* chatMessageVoiceDataResponseModel = (EHChatMessageVoiceDataResponseModel*)service.item;
+                if (chatMessageVoiceDataResponseModel.voiceCallDuration) {
+                    [params setObject:chatMessageVoiceDataResponseModel.voiceCallDuration forKey:@"callDuration"];
+                }
                 if (chatMessageVoiceDataResponseModel.voiceCallUrl) {
                     [params setObject:chatMessageVoiceDataResponseModel.voiceCallUrl forKey:@"context"];
                     [strongSelf loadItemWithAPIName:KEHSendChatMessageApiName params:params version:nil];
@@ -121,6 +126,9 @@
         
         EHGetBabyListRsp* babyInfo = [[EHBabyListDataCenter sharedCenter] getBabyListRspWithBabyId:babyId];
         [self.chatMessageVoiceDataUploadService uploadVoiceDataWithData:messageData userPhone:userPhone deviceCode:babyInfo.device_code];
+    }else{
+        NSError* error = [NSError errorWithDomain:@"数据格式不正确" code:400 userInfo:nil];
+        [self model:self.requestModel didFailLoadWithError:error];
     }
     
 }
@@ -129,8 +137,12 @@
     NSString* context_type = [model.params objectForKey:@"context_type"];
     if ([context_type isEqualToString:CONTEXT_TYPE_VOICE] && model.item && [model.item isKindOfClass:[EHChatMessageinfoModel class]]) {// 如果是文字直接发送
         NSString* voiceCallUrl = [model.params objectForKey:@"context"];
+        NSString* voiceCallDuration = [model.params objectForKey:@"callDuration"];
         EHChatMessageinfoModel* chatMessageinfoModel = (EHChatMessageinfoModel*)model.item;
         chatMessageinfoModel.context = voiceCallUrl;
+        if (voiceCallDuration) {
+            chatMessageinfoModel.call_duration = [NSNumber numberWithInteger:[voiceCallDuration integerValue]];
+        }
     }
     [super modelDidFinishLoad:model];
 }

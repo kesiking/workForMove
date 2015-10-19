@@ -161,7 +161,6 @@
 
 -(void)setup{
     self.msgTimestamp = [self.timestamp timeIntervalSince1970];
-    self.shouldShowUserName = YES;
 }
 
 -(void)configMessageID{

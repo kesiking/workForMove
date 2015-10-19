@@ -82,8 +82,8 @@
 
 -(void)setBtnTitle:(NSString*)title
 {
-    if (title.length > 10) {
-        title = [title substringToIndex:10];
+    if (title.length > 7) {
+        title = [title substringToIndex:7];
         title = [title stringByAppendingString:@"..."];
     }
     [_title setText:title];

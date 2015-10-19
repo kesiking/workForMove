@@ -30,7 +30,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     self.title = @"输入手表设备码";
-    self.view.backgroundColor = EH_bgcor1;
+    self.view.backgroundColor = EHBgcor1;
     
     self.deviceCodeTextField.placeholder = @"请输入宝贝手表的设备码";
     

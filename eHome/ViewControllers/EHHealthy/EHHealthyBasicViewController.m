@@ -15,14 +15,12 @@
 #import "iCarousel.h"
 
 @interface EHHealthyBasicViewController ()
-@property(strong,nonatomic)EHBabyHorizontalBasicListView* babyListView;
-@property(strong,nonatomic)UIView* bgView;
 
 @end
 
 @implementation EHHealthyBasicViewController
 
-
+#pragma mark - Life Circle
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -102,16 +100,13 @@
     }
 }
 -(void)setHeadImageUrl:(NSString*)imageUrl withSex:(NSUInteger)sex{
-    if ([KSAuthenticationCenter isTestAccount]) {
-        //        [self.healthyView.babyHeadBtn sd_setImageWithURL:[NSURL URLWithString:imageUrl] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"public_headportrait_map_dorpdown_testaccount_80"]];
-        [self.healthyView.babyHeadBtn setImage:[UIImage imageNamed:@"public_headportrait_map_dorpdown_boy_80"] forState:UIControlStateNormal];
+    //试用宝贝头像有数据
+    if (sex == EHBabySexType_girl) {
+        [self.healthyView.babyHeadBtn sd_setImageWithURL:[NSURL URLWithString:imageUrl] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"public_headportrait_map_dorpdown_girl_80"]];
     }else{
-        if (sex == EHBabySexType_girl) {
-            [self.healthyView.babyHeadBtn sd_setImageWithURL:[NSURL URLWithString:imageUrl] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"public_headportrait_map_dorpdown_girl_80"]];
-        }else{
-            [self.healthyView.babyHeadBtn sd_setImageWithURL:[NSURL URLWithString:imageUrl] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"public_headportrait_map_dorpdown_boy_80"]];
-        }
+        [self.healthyView.babyHeadBtn sd_setImageWithURL:[NSURL URLWithString:imageUrl] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"public_headportrait_map_dorpdown_boy_80"]];
     }
+
 }
 #pragma mark - 子类实现方法
 - (void)updateUIWithInit
@@ -130,37 +125,5 @@
 {
     //子类实现方法
     
-    
-    
 }
-//#pragma mark - getBabyDeviceStartUserService懒加载
-//-(EHGetBabyDeviceStartUserService *)getBabyDeviceStartUserService{
-//    if (_getBabyDeviceStartUserService == nil) {
-//        _getBabyDeviceStartUserService = [EHGetBabyDeviceStartUserService new];
-//        WEAKSELF
-//        _getBabyDeviceStartUserService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
-//            STRONGSELF
-//            if (service.objectValue && [service.objectValue isKindOfClass:[NSString class]]) {
-//                NSDateFormatter* inputFormatter = [[NSDateFormatter alloc] init];
-//                [inputFormatter setDateFormat:@"yyyy-MM-dd"];
-//                NSDate* inputDate = [inputFormatter dateFromString:service.objectValue];
-//                if (inputDate) {
-//                    [[EHBabyListDataCenter sharedCenter] currentBabyUserInfo].babyDeviceStartUserDay = inputDate;
-//                    strongSelf.startUserDay=inputDate;
-//                    NSDate *currentDate = strongSelf.startUserDay;
-//                    strongSelf.items = [[NSMutableArray alloc]init];
-//                    while ([currentDate isEarlierThan:[NSDate date]]) {
-//                        [strongSelf.items addObject:@(currentDate.day)];
-//                        currentDate = [NSDate dateWithTimeInterval:24*60*60 sinceDate:currentDate];
-//                    }
-//                    //    [self.items addObject:@([NSDate date].day)];
-////                    [strongSelf.healthyView.carousel reloadData];
-////                    [strongSelf.healthyView.carousel scrollToItemAtIndex:[self.items count]-1 animated:NO];
-//                }
-//            }
-//        };
-//    }
-//    return _getBabyDeviceStartUserService;
-//}
-
 @end

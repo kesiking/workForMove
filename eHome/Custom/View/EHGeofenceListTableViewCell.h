@@ -9,14 +9,15 @@
 #import <UIKit/UIKit.h>
 #import "EHGetGeofenceListRsp.h"
 #import "SevenSwitch.h"
+#import "EHSwitch.h"
 
-typedef void (^SwitchStatusChangeBlock)(BOOL isOn);
+typedef void (^SwitchChangedBlock)(BOOL isOn);
 
 @interface EHGeofenceListTableViewCell : UITableViewCell
 
-@property (nonatomic,strong) SwitchStatusChangeBlock switchStatusChangeBlock;
+@property (nonatomic,strong) SwitchChangedBlock switchChangedBlock;
 
-@property (nonatomic, strong) SevenSwitch *swit;
+@property (nonatomic, strong) EHSwitch *swit;
 
 - (void)configWithGeofence:(EHGetGeofenceListRsp *)geofence;
 

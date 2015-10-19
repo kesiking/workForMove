@@ -44,6 +44,8 @@
         return;
     }
 
+    self.remindModel.is_active = @1;    //每次修改状态之后都将开关打开
+    
     //修改围栏请求
     [self configUpdateRemindService];
     [_updateRemindService UpdateGeofenceRemind:self.remindModel];

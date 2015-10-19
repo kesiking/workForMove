@@ -48,11 +48,12 @@
     self.isRepeatLabel.text = [remindModel.is_repeat boolValue]?@"重复":@"仅一次";
     self.isActiveSwitch.on = [remindModel.is_active boolValue];
     
-    if (remindType == EHRemindTypeBaby) {
-        [self.commentsLabel removeFromSuperview];
-        [self.contentView addSubview:self.commentsLabel];
-        self.commentsLabel.text = remindModel.context;
-    }
+//    if (remindType == EHRemindTypeBaby) {
+//        [self.commentsLabel removeFromSuperview];
+//        [self.contentView addSubview:self.commentsLabel];
+//        self.commentsLabel.text = remindModel.context;
+//        self.commentsLabel.text= [remindModel.is_repeat boolValue]?@"重复":@"仅一次";
+//    }
 }
 
 #pragma mark - Events Response
@@ -89,22 +90,22 @@
     //重复、备注
     CGRect isRepeatLabelFrame;
     CGRect commentsLabelFrame;
-    if (_remindType == EHRemindTypeGeofence) {
+ //   if (_remindType == EHRemindTypeGeofence) {
         isRepeatLabelFrame = CGRectMake(CGRectGetMaxX(timeLabelFrame) + kSpace, _subViewY2, 60, _subViewHeight);
         commentsLabelFrame = CGRectZero;
-    }
-    else {
-        isRepeatLabelFrame = CGRectMake(CGRectGetMaxX(workDataLabelFrame) + kSpace, _subViewY1, 60, _subViewHeight);
-        CGFloat commentsLabelWidth =(CGRectGetWidth(self.frame) - CGRectGetWidth(timeLabelFrame) - CGRectGetWidth(isActiveSwitchFrame) - kSpace * 2);
-        commentsLabelFrame = CGRectMake(CGRectGetMaxX(timeLabelFrame) + kSpace, _subViewY2, commentsLabelWidth, _subViewHeight);
-    }
+//    }
+//    else {
+//        isRepeatLabelFrame = CGRectMake(CGRectGetMaxX(workDataLabelFrame) + kSpace, _subViewY1, 60, _subViewHeight);
+//        CGFloat commentsLabelWidth =(CGRectGetWidth(self.frame) - CGRectGetWidth(timeLabelFrame) - CGRectGetWidth(isActiveSwitchFrame) - kSpace * 2);
+//        commentsLabelFrame = CGRectMake(CGRectGetMaxX(timeLabelFrame) + kSpace, _subViewY2, commentsLabelWidth, _subViewHeight);
+//    }
     
     self.timeLabel.frame = timeLabelFrame;
     self.lineView.frame = lineViewFrame;
     self.workDataLabel.frame = workDataLabelFrame;
     self.isActiveSwitch.frame = isActiveSwitchFrame;
     self.isRepeatLabel.frame = isRepeatLabelFrame;
-    self.commentsLabel.frame = commentsLabelFrame;
+  //  self.commentsLabel.frame = commentsLabelFrame;
 }
 
 #pragma mark - Getters And Setters
@@ -151,6 +152,8 @@
         _commentsLabel = [[UILabel alloc]init];
         _commentsLabel.textAlignment = NSTextAlignmentLeft;
         _commentsLabel.font = EHFont5;
+        _commentsLabel.textColor = EHCor4;
+        
     }
     return _commentsLabel;
 }

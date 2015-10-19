@@ -45,8 +45,14 @@
     }
     
     EHChatMessageinfoModel* chatMessageModel = [EHChatMessageinfoModel modelWithJSON:[(NSDictionary*)responseObject objectForKey:@"message"]];
-    [[EHSingleChatCacheManager sharedCenter] recieveBabyChatMessage:chatMessageModel];
-    [EHDeviceActionForMessage sendDeviceAction];
+    
+    // 方案一  如果是当前聊天宝贝才接受insert否则都不更新数据库，避免漏掉聊天数据
+     NSString *currentChatBabyId = [[EHBabyListDataCenter sharedCenter] currentChatBabyId];
+    if (currentChatBabyId != nil && [currentChatBabyId integerValue] == [chatMessageModel.baby_id integerValue]) {
+        [[EHSingleChatCacheManager sharedCenter] recieveBabyChatMessage:chatMessageModel];
+    }else{
+        [EHDeviceActionForMessage sendDeviceAction];
+    }
 }
 
 @end

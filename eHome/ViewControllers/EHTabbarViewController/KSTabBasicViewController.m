@@ -8,6 +8,7 @@
 
 #import "KSTabBasicViewController.h"
 #import "EHAleatView.h"
+#import "EHDeviceStatusCenter.h"
 
 #define babyHorizontalListViewHeight (self.view.height)
 
@@ -139,7 +140,8 @@
 
 -(EHHomeNavBarRightView *)navBarRightView{
     if (_navBarRightView == nil) {
-        _navBarRightView = [[EHHomeNavBarRightView alloc] initWithFrame:CGRectMake(0, 0, 60, 44)];
+        _navBarRightView = [EHHomeNavBarRightView sharedCenter];
+//        _navBarRightView.frame = CGRectMake(0, 0, 60, 44);
         WEAKSELF
         _navBarRightView.buttonClickedBlock = ^(EHHomeNavBarRightView* navBarRightView){
             STRONGSELF
@@ -148,11 +150,35 @@
     }
     return _navBarRightView;
 }
-
--(void)navBarRightViewDidSelect:(EHHomeNavBarRightView*)navBarRightView{
-    TBOpenURLFromSourceAndParams(internalURL(@"EHMessageInfoViewController"), self, nil);
+//-(void)navBarRightViewDidSelect:(EHHomeNavBarRightView*)navBarRightView{
+//    TBOpenURLFromSourceAndParams(internalURL(@"EHMessageInfoViewController"), self, nil);
+//}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark - 消息响应 messageBtnClicked
+-(void)messageBtnClicked:(id)sender{
+    // goto 消息列表页面
+//    BOOL isLogin = [KSAuthenticationCenter isLogin];
+//    if (isLogin) {
+        NSMutableDictionary* params = [NSMutableDictionary dictionary];
+        //        if (self.babyHorizontalListView.babyListArray) {
+        //            [params setObject:self.babyHorizontalListView.babyListArray forKey:@"babyListArray"];
+        //        }
+        if ([[EHDeviceStatusCenter sharedCenter].currentMessageType integerValue] == EHCurrentMessageType_systemMessage) {
+            [params setObject:@(1) forKey:@"systemMessageType"];
+        }
+        TBOpenURLFromTargetWithNativeParams(internalURL(@"EHMessageInfoViewController"), self, @{ACTION_ANIMATION_KEY:@(true)} ,params);
+    
+        [EHDeviceStatusCenter sharedCenter].currentMessageType = [NSNumber numberWithLong:EHCurrentMessageType_babyMessage];
+    
+        //        TBOpenURLFromSourceAndParams(internalURL(@"EHMessageInfoViewController"), self, params);
+//    }else{
+//        [self alertCheckLoginWithCompleteBlock:nil];
+//    }
 }
 
+-(void)navBarRightViewDidSelect:(EHHomeNavBarRightView*)navBarRightView{
+    [self messageBtnClicked:navBarRightView];
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark - 懒加载  babyHorizontalListView（下拉宝贝列表）及动画操作
 -(EHHomeBabyHorizontalListView *)babyHorizontalListView{
@@ -251,8 +277,11 @@
 }
 
 -(void)doLoginWithCompleteBlock:(dispatch_block_t)completeBlock{
+    WEAKSELF
     void(^loginActionBlock)(BOOL loginSuccess) = ^(BOOL loginSuccess){
+        STRONGSELF
         // 如果登陆成功就跳转到当前
+        [strongSelf.rdv_tabBarController setSelectedIndex:EHTabBarViewControllerType_Home];
         if (completeBlock) {
             completeBlock();
         }

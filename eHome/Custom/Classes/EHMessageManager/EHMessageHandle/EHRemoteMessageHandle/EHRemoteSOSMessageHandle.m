@@ -10,6 +10,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import "EHSOSAlertView.h"
 #import "EHMessageOperationQueue.h"
+#import "EHRemoteMessageTimeOverdueObject.h"
 
 @interface EHRemoteSOSMessageHandle()
 
@@ -88,10 +89,19 @@ static SystemSoundID EHWorningSoundID = 1005;
     [self releaseTimer];
 }
 
+// 重载基类方法
+- (BOOL)isRemoteMessageTimeOverdue:(EHMessageInfoModel*)messageInfoModel{
+    return [EHRemoteMessageTimeOverdueObject isRemoteMessage:messageInfoModel timeOverdue:2];
+}
+
 -(void)remoteMessageHandle:(EHMessageInfoModel *)messageInfoModel{
     [super remoteMessageHandle:messageInfoModel];
     // 判断是否合法，如果不合法则不再发送消息
     if (![self isRemoteMessageLogical:messageInfoModel]) {
+        return;
+    }
+    // 判断是否过期，如果过期则不再发送消息
+    if ([self isRemoteMessageTimeOverdue:messageInfoModel]) {
         return;
     }
     if (self.remoteMessageCategory == EHMessageInfoCatergoryType_SOS && !isSOSMessageOn) {

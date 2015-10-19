@@ -14,7 +14,10 @@
     [super remoteMessageHandle:messageInfoModel];
     if (self.remoteMessageCategory == EHMessageInfoCatergoryType_Family) {
         // to do
-        [[NSNotificationCenter defaultCenter] postNotificationName:EHBabyInfoChangedNotification object:nil];
+        NSMutableDictionary* userInfo = [NSMutableDictionary dictionary];
+        [userInfo setObject:@YES forKey:EHFORCE_REFRESH_DATA];
+
+        [[NSNotificationCenter defaultCenter] postNotificationName:EHBabyInfoChangedNotification object:nil userInfo:userInfo];
     }
 }
 

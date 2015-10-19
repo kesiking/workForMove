@@ -29,6 +29,7 @@
     self.resetViewCtl.text_smsCode.hidden = NO;
     self.resetViewCtl.btn_smsCode.hidden = NO;
     self.resetViewCtl.btn_finish.hidden = NO;
+    self.resetViewCtl.btn_finish.enabled = NO;
     
     WEAKSELF
     self.resetViewCtl.text_phoneNum.textValueDidChanged = ^(UITextField* textView){
@@ -202,7 +203,7 @@
 #pragma mark - UITextField check next button
 -(void)checkNextBtnEnable{
     BOOL loginBtnEnable = [EHUtils isNotEmptyString:self.resetViewCtl.text_phoneNum.text] && [EHUtils isNotEmptyString:self.resetViewCtl.text_smsCode.text];
-    self.resetViewCtl.btn_nextStep.enabled = loginBtnEnable;
+    self.resetViewCtl.btn_finish.enabled = loginBtnEnable;
 }
 
 @end

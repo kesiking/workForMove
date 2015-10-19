@@ -25,7 +25,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"二维码";
-    self.view.backgroundColor = EH_bgcor1;
+    self.view.backgroundColor = EHBgcor1;
 
     [self.view addSubview:self.appQRImageView];
     [self.view addSubview:self.appNameLabel];

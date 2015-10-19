@@ -11,8 +11,8 @@
 
 @interface EHHealthyWeekViewController : EHHealthyBasicViewController
 @property (assign,nonatomic)NSInteger currentWeek;
-@property(strong,nonatomic)EHGetHealthyWeekInfoService* getWeekInfoList;
+@property(strong,nonatomic)EHGetHealthyWeekInfoService* queryWeekInfoListService;
 @property (strong, nonatomic) EHGetHealthyWeekInfoRsp *weekVCmodel;
 @property (strong, nonatomic) NSString *selectedWeek;
-//@property(assign,nonatomic) BOOL showSharePage;
+
 @end

@@ -65,7 +65,9 @@
     }
        _calendarVC.babyStartDate = [[EHBabyListDataCenter sharedCenter] currentBabyUserInfo].babyDeviceStartUserDay;
     
-    
+    if (date) {
+        _calendarVC.selectedDate = date;
+    }
   
     WEAKSELF
     [_calendarVC returnDateText:^(NSString *showSelectedDate){

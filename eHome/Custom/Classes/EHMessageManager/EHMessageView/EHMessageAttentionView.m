@@ -38,7 +38,7 @@
 //    _bgImageView = [[UIImageView alloc] initWithFrame:self.bounds];
 //    [self addSubview:_bgImageView];
     
-    _bgBtn = [[UIButton alloc] initWithFrame:self.bounds];
+    _bgBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, self.width-20-20-5, self.height)];
     [_bgBtn addTarget:self action:@selector(bgButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     [_bgBtn setBackgroundColor:[UIColor clearColor]];
     [self addSubview:_bgBtn];
@@ -104,7 +104,7 @@
     [self.messageLabel setOrigin:CGPointMake((self.width - self.messageLabel.width)/2, (self.height - self.messageLabel.height)/2)];
     [self.iconImageView setOrigin:CGPointMake(self.messageLabel.left - self.iconImageView.width - 5, (self.height - self.iconImageView.height)/2)];
     [self.closeBtn setOrigin:CGPointMake(self.width - self.closeBtn.width - 20, (self.height - self.closeBtn.height)/2)];
-    [self.bgBtn setFrame:self.bounds];
+    [self.bgBtn setFrame:CGRectMake(0, 0, self.width-20-20-5, self.height)];
 }
 
 @end

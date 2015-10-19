@@ -37,8 +37,8 @@
     rect.origin.y = _fencingBtn.bottom + button_border;
     
     _chatBtn = [[UIButton alloc] initWithFrame:rect];
-    [_chatBtn setBackgroundImage:[UIImage imageNamed:@"ico_phone_normal"] forState:UIControlStateNormal];
-    [_chatBtn setBackgroundImage:[UIImage imageNamed:@"public_icon_phone_p"] forState:UIControlStateHighlighted];
+    [_chatBtn setBackgroundImage:[UIImage imageNamed:@"public_icon_voice_n"] forState:UIControlStateNormal];
+    [_chatBtn setBackgroundImage:[UIImage imageNamed:@"public_icon_voice_p"] forState:UIControlStateHighlighted];
     [_chatBtn addTarget:self action:@selector(chatButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:_chatBtn];
     
@@ -84,8 +84,12 @@
     }
     if ([babyUserInfo isBabyInFamilyPhoneNumbers]) {
         _phoneBtn.hidden = NO;
+        [_phoneBtn setBackgroundImage:[UIImage imageNamed:@"ico_phone_normal"] forState:UIControlStateNormal];
+        
     }else{
-        _phoneBtn.hidden = YES;
+        _phoneBtn.hidden = NO;
+        [_phoneBtn setBackgroundImage:[UIImage imageNamed:@"public_icon_phone_d"] forState:UIControlStateNormal];
+        
     }
     [self setNeedsLayout];
 }
@@ -117,10 +121,18 @@
     if (self.babyUserInfo
         && self.babyUserInfo.devicePhoneNumber
         && [self.babyUserInfo.devicePhoneNumber isKindOfClass:[NSString class]]
-        && [EHUtils isValidMobile:self.babyUserInfo.devicePhoneNumber]) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"tel://%@",self.babyUserInfo.devicePhoneNumber]]];
+        && [EHUtils isValidMobile:self.babyUserInfo.devicePhoneNumber])
+    {
+        if ([self.babyUserInfo isBabyInFamilyPhoneNumbers]) {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"tel://%@",self.babyUserInfo.devicePhoneNumber]]];
+        }
+        else
+        {
+            [WeAppToast toast:@"您的账号不在宝贝的亲情电话列表内，请联系管理员获取通话权限"];
+        }
+        
     }else{
-        [WeAppToast toast:@"宝贝未绑定号码"];
+        [WeAppToast toast:@"宝贝手表不在线，请检查手表或sim卡"];
     }
 }
 
@@ -132,7 +144,7 @@
     if (self.babyUserInfo) {
         TBOpenURLFromSourceAndParams(internalURL(@"EHBabySingleChatMessageViewController"), self, @{@"babyId":[NSString stringWithFormat:@"%@",self.babyUserInfo.babyId]});
     }else{
-        [WeAppToast toast:@"宝贝未绑定号码"];
+        [WeAppToast toast:@"宝贝手表不在线，请检查手表或sim卡"];
     }
 }
 

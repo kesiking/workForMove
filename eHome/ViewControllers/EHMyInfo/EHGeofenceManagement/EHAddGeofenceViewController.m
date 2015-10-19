@@ -24,12 +24,13 @@
     [super viewDidLoad];
     [self configNavigationBar];
     [self checkCoordinate];
+    
 }
 
 #pragma mark - Events Response
 - (void)sureBtnClick:(id)sender{
-    NSLog(@"rightItemClick");
-    NSString *geofenceName = [EHUtils trimmingHeadAndTailSpaceInstring:self.topView.geofenceName];
+    NSString *geofenceName = [EHUtils trimmingHeadAndTailSpaceInstring:self.geofenceNameView.geofenceName];
+
     if (geofenceName.length > EHOtherNameLength) {
         [WeAppToast toast:@"围栏名字超过最大长度!"];
         return;
@@ -40,9 +41,8 @@
         return;
     }
     
-    self.topView.geofenceName = geofenceName;
-    
-    if ([self.existedNameArray containsObject:self.topView.geofenceName]) {
+    self.geofenceNameView.geofenceName = geofenceName;
+    if ([self.existedNameArray containsObject:self.geofenceNameView.geofenceName]) {
         [WeAppToast toast:@"该围栏名字已经存在"];
         return;
     }
@@ -74,9 +74,8 @@ updatingLocation:(BOOL)updatingLocation
         //取出当前位置的坐标
         NSLog(@"updatingLocation :latitude : %f,longitude: %f",userLocation.coordinate.latitude,userLocation.coordinate.longitude);
         self.geofenceCoordinate = CLLocationCoordinate2DMake(userLocation.coordinate.latitude,userLocation.coordinate.longitude);
-        MACoordinateRegion region = MACoordinateRegionMakeWithDistance(self.geofenceCoordinate, self.radius * 2, self.radius * 2);
+        MACoordinateRegion region = MACoordinateRegionMakeWithDistance(self.geofenceCoordinate, self.sliderView.radius * 2, self.sliderView.radius * 2);
         [self.mapView setRegion:region animated:YES];
-//        self.neededZoomLevel = 16.321259;       //默认500米半径的缩放级别
         self.mapView.showsUserLocation = NO;
     }
 }
@@ -112,13 +111,14 @@ updatingLocation:(BOOL)updatingLocation
  *  配置添加围栏请求服务
  */
 - (void)configInsertGeofenceService{
-    typeof(self) __weak weakself = self;
+    WEAKSELF
     if (!_service) {
         _service = [EHInsertGeofenceService new];
         _service.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
+            STRONGSELF
             [[NSNotificationCenter defaultCenter] postNotificationName:EHGeofenceChangeNotification object:nil];
             [WeAppToast toast:@"添加成功！"];
-            [weakself.navigationController popViewControllerAnimated:YES];
+            [strongSelf.navigationController popViewControllerAnimated:YES];
         };
         _service.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
             [WeAppToast toast:@"添加失败！"];
@@ -129,14 +129,13 @@ updatingLocation:(BOOL)updatingLocation
 - (EHInsertGeofenceReq *)getInsertGeofenceReq{
     EHInsertGeofenceReq *req = [[EHInsertGeofenceReq alloc]init];
     
-    req.geofence_name = self.topView.geofenceName;
-    
-    req.latitude = self.geofenceCoordinate.latitude;
-    req.longitude = self.geofenceCoordinate.longitude;
-    req.geofence_radius = (int)self.radius;
-    req.creator_id = [[KSLoginComponentItem sharedInstance].userId intValue];
-    req.baby_id = [self.babyUser.babyId intValue];
-    req.geofence_address = self.topView.address;
+    req.geofence_name    = self.geofenceNameView.geofenceName;
+    req.geofence_address = self.geofenceAddressView.address;
+    req.geofence_radius  = self.sliderView.radius;
+    req.latitude         = self.geofenceCoordinate.latitude;
+    req.longitude        = self.geofenceCoordinate.longitude;
+    req.creator_id       = [[KSLoginComponentItem sharedInstance].userId intValue];
+    req.baby_id          = [self.babyUser.babyId intValue];
     
     return req;
 }

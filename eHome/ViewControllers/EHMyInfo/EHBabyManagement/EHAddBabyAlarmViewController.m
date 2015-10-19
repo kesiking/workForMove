@@ -47,6 +47,8 @@
             STRONGSELF
             [strongSelf hideLoadingView];
             [WeAppToast toast:@"添加成功"];
+            EHBabyAlarmModel *item = (EHBabyAlarmModel *)service.item;
+            strongSelf.alarmModel.uuid = item.uuid;
             [strongSelf.navigationController popViewControllerAnimated:YES];
         };
         _addBabyAlarmService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){

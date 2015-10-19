@@ -14,6 +14,7 @@
 #import "EHGeofenceRemindView.h"
 #import "EHGeofenceRemindListViewController.h"
 #import "NSString+StringSize.h"
+#import "EHGeofenceAddressAndRadiusView.h"
 
 typedef NS_ENUM(NSInteger, EHGeofenceType){
     EHGeofenceTypeDetail = 0,   //围栏详情
@@ -22,9 +23,9 @@ typedef NS_ENUM(NSInteger, EHGeofenceType){
 
 @interface EHGeofenceDetailViewController ()
 
-@property (nonatomic, strong)UIView *topDetailView;     //顶部视图
-
 @property (nonatomic, strong)EHGeofenceRemindView *remindView;  //主动提醒视图
+
+@property (nonatomic, strong)EHGeofenceAddressAndRadiusView *addressAndRadiusView;  //底动中心点及半径视图
 
 @end
 
@@ -33,21 +34,19 @@ typedef NS_ENUM(NSInteger, EHGeofenceType){
     EHUpdateGeofenceService *_updateGeofenceService;    //更新接口
     EHDeleteGeofenceService *_deleteGeofenceService;    //删除接口
     NSString *_currentName;                             //当前围栏名称
+    NSString *_previousName;                            //更新之前的围栏名称
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.topView.hidden     = YES;
+    self.geofenceNameView.hidden = YES;
+    self.geofenceAddressView.hidden = YES;
     self.sliderView.hidden  = YES;
     self.geofenceModifiedTag = NO;
     
-    self.radius = self.geofenceInfo.geofence_radius;
-    self.topView.geofenceName = self.geofenceInfo.geofence_name;
-    self.geofenceCoordinate = CLLocationCoordinate2DMake(self.geofenceInfo.latitude, self.geofenceInfo.longitude);
-    //    [self.mapView setCenterCoordinate:self.geofenceCoordinate];
     [self configNavigationBar];
-    [self.view addSubview:self.topDetailView];
     [self.view addSubview:self.remindView];
+    [self.view addSubview:self.addressAndRadiusView];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -65,7 +64,6 @@ typedef NS_ENUM(NSInteger, EHGeofenceType){
  */
 - (void)moreItemButtonClick:(id)sender{
     [EHPopMenuLIstView showMenuViewWithTitleTextArray:@[@"编辑围栏",@"取消围栏"] menuSelectedBlock:^(NSUInteger index, EHPopMenuModel *selectItem) {
-        NSLog(@"index = %ld",index);
         if (index == 0) {
             [self changeGeofenceType:EHGeofenceTypeModify];
         }
@@ -76,22 +74,24 @@ typedef NS_ENUM(NSInteger, EHGeofenceType){
 }
 
 - (void)sureBtnClick:(id)sender{
-    NSLog(@"sureBtnClick");
-    NSString *geofenceName = [self.topView.geofenceName stringByTrimmingLeftCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    NSString *geofenceName = [self.geofenceNameView.geofenceName stringByTrimmingLeftCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     geofenceName = [geofenceName stringByTrimmingRightCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    self.topView.geofenceName = geofenceName;
+    self.geofenceNameView.geofenceName = geofenceName;
     
-    if ((![_currentName isEqualToString:self.topView.geofenceName]) && [self.existedNameArray containsObject:self.topView.geofenceName]) {
+    //保存围栏之前的值，之后在existedNameArray移除_previousName
+    _previousName = _currentName;
+    
+    if ((![_currentName isEqualToString:self.geofenceNameView.geofenceName]) && [self.existedNameArray containsObject:self.geofenceNameView.geofenceName]) {
         [WeAppToast toast:@"该围栏名字已经存在"];
         return;
     }
-    _currentName = self.topView.geofenceName;
+    _currentName = self.geofenceNameView.geofenceName;
     [self configUpdateGeofenceService];
     [_updateGeofenceService updateGeofence:[self getInsertGeofenceReq]];
 }
 
 /**
- *  更改围栏状态（详情|可更改）
+ *  更改围栏状态及视图UI显示情况（详情|可更改）
  */
 - (void)changeGeofenceType:(EHGeofenceType)geofencetype{
     
@@ -102,25 +102,31 @@ typedef NS_ENUM(NSInteger, EHGeofenceType){
             self.geofenceModifiedTag = YES;
             
             //视图显隐
-            self.topView.hidden = NO;
+            self.geofenceNameView.hidden = NO;
+            self.geofenceAddressView.hidden = NO;
             self.sliderView.hidden = NO;
-            _currentName = self.topView.geofenceName;
-            self.topView.alpha = 0;
+            self.geofenceNameView.alpha = 0;
+            self.geofenceAddressView.alpha = 0;
             self.sliderView.alpha = 0;
             [UIView animateWithDuration:0.5 animations:^{
-                self.topDetailView.alpha = 0;
-                self.topView.alpha = 1;
+                self.geofenceNameView.alpha = 1;
+                self.geofenceAddressView.alpha = 1;
                 self.sliderView.alpha = 1;
+                self.remindView.alpha = 0;
+                self.addressAndRadiusView.alpha = 0;
+
             } completion:^(BOOL finished) {
-                self.topDetailView.hidden = YES;
+                self.remindView.hidden = YES;
+                self.addressAndRadiusView.hidden = YES;
             }];
             
-            //顶部视图内容重定义
-            UILabel *label;
-            label = (UILabel *)([self.topDetailView viewWithTag:101]);
-            self.topView.address = label.text;
-            
+            _currentName = self.geofenceNameView.geofenceName;
+
+            //视图内容重定义
+            self.geofenceAddressView.address = self.geofenceInfo.geofence_address;
+            self.geofenceNameView.geofenceName = self.geofenceInfo.geofence_name;
             self.title = @"编辑围栏";
+            
             //导航栏右按钮
             self.rightItemButton = [self sureBtn];
             UIBarButtonItem *rigthItem = [[UIBarButtonItem alloc]initWithCustomView:self.rightItemButton];
@@ -133,32 +139,34 @@ typedef NS_ENUM(NSInteger, EHGeofenceType){
         {
             //地图状态标志
             self.geofenceModifiedTag = NO;
-            self.title = self.topView.geofenceName;
+            
             //视图显隐
-            self.topDetailView.hidden = NO;
-            self.topDetailView.alpha = 0;
+            self.remindView.hidden = NO;
+            self.remindView.alpha = 0;
+            self.addressAndRadiusView.hidden = NO;
+            self.addressAndRadiusView.alpha = 0;
             [UIView animateWithDuration:0.5 animations:^{
-                self.topDetailView.alpha = 1;
-                self.topView.alpha = 0;
+                self.remindView.alpha = 1;
+                self.addressAndRadiusView.alpha = 1;
+                self.geofenceNameView.alpha = 0;
+                self.geofenceAddressView.alpha = 0;
                 self.sliderView.alpha = 0;
             } completion:^(BOOL finished) {
-                self.topView.hidden = YES;
+                self.geofenceNameView.hidden = YES;
+                self.geofenceAddressView.hidden = YES;
                 self.sliderView.hidden = YES;
             }];
             
+            //视图内容重定义
+            self.addressAndRadiusView.address = self.geofenceInfo.geofence_address;
+            self.addressAndRadiusView.radius = self.geofenceInfo.geofence_radius;
+            self.title = self.geofenceInfo.geofence_name;
+
             //导航栏右按钮
             UIBarButtonItem *rightItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"public_ico_tbar_more"] style:UIBarButtonItemStylePlain target:self action:@selector(moreItemButtonClick:)];
             self.navigationItem.rightBarButtonItem = rightItem;
-            
-            //顶部视图内容重定义
-            UILabel *label;
-            label = (UILabel *)([self.topDetailView viewWithTag:101]);
-            label.text = self.topView.address;
-            label = (UILabel *)([self.topDetailView viewWithTag:102]);
-            label.text = [NSString stringWithFormat:@"%ld米",self.radius];
         }
             break;
-            
         default:
             break;
     }
@@ -209,7 +217,7 @@ typedef NS_ENUM(NSInteger, EHGeofenceType){
 
 - (void)deleteGeofence{
     [self configDeleteGeofenceService];
-    [_deleteGeofenceService deleteGeofenceByID:[NSNumber numberWithInt:self.geofenceInfo.geofence_id]];
+    [_deleteGeofenceService deleteGeofenceByID:[NSNumber numberWithInteger:self.geofenceInfo.geofence_id]];
 }
 
 #pragma mark - Getter And Setters
@@ -218,62 +226,6 @@ typedef NS_ENUM(NSInteger, EHGeofenceType){
     
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"public_ico_tbar_more"] style:UIBarButtonItemStylePlain target:self action:@selector(moreItemButtonClick:)];
     self.navigationItem.rightBarButtonItem = rightItem;
-}
-
-- (UIView *)topDetailView{
-    if (!_topDetailView) {
-        CGFloat topDetailViewHeight = 85;
-        _topDetailView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), topDetailViewHeight)];
-        _topDetailView.backgroundColor = [UIColor colorWithWhite:1 alpha:0.8];
-        
-        CGFloat labelHeight = [@"text" sizeWithFontSize:EH_siz5 Width:MAXFLOAT].height;
-        CGFloat upLabelY = ((topDetailViewHeight / 2.0) - labelHeight) / 2.0;
-        CGFloat bottomLabelY = ((topDetailViewHeight / 2.0) - labelHeight) / 2.0 + (topDetailViewHeight / 2.0);
-
-        
-        UILabel *centerLabel = [[UILabel alloc]initWithFrame:CGRectMake(20, upLabelY, 75, labelHeight)];
-        centerLabel.font = EH_font5;
-        centerLabel.textColor = EH_cor3;
-        centerLabel.textAlignment = NSTextAlignmentLeft;
-        centerLabel.text = @"中心点：";
-        
-        //地址视图
-        CGFloat addressLabelWidth = CGRectGetWidth(_topDetailView.frame) - 95 - 20;
-        UILabel *addressLabel = [[UILabel alloc]initWithFrame:CGRectMake(95, upLabelY, addressLabelWidth, labelHeight)];
-        addressLabel.font = EH_font5;
-        addressLabel.tag = 101;
-        addressLabel.textAlignment = NSTextAlignmentLeft;
-        addressLabel.text = self.geofenceInfo.geofence_address;
-        addressLabel.textColor = EH_cor4;
-        
-        UILabel *geofenceLabel = [[UILabel alloc]initWithFrame:CGRectMake(20, bottomLabelY, 75, labelHeight)];
-        geofenceLabel.font = EH_font5;
-        geofenceLabel.textColor = EH_cor3;
-        geofenceLabel.textAlignment = NSTextAlignmentLeft;
-        geofenceLabel.text = @"围栏半径：";
-        
-        //半径视图
-        UILabel *radiusLabel = [[UILabel alloc]initWithFrame:CGRectMake(95, bottomLabelY, CGRectGetWidth(addressLabel.frame), labelHeight)];
-        radiusLabel.font = EH_font5;
-        radiusLabel.textColor = EH_cor4;
-        radiusLabel.tag = 102;
-        radiusLabel.textAlignment = NSTextAlignmentLeft;
-        radiusLabel.text = [NSString stringWithFormat:@"%d米",self.geofenceInfo.geofence_radius];
-
-        UIView *lineView = [[UIView alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(_topDetailView.frame) / 2.0 - 0.5, CGRectGetWidth(_topDetailView.frame), 0.5)];
-        lineView.backgroundColor = EH_linecor1;
-        
-        UIView *lineView2 = [[UIView alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(_topDetailView.frame) - 0.5, CGRectGetWidth(_topDetailView.frame), 0.5)];
-        lineView2.backgroundColor = EH_linecor1;
-        
-        [_topDetailView addSubview:centerLabel];
-        [_topDetailView addSubview:addressLabel];
-        [_topDetailView addSubview:geofenceLabel];
-        [_topDetailView addSubview:radiusLabel];
-        [_topDetailView addSubview:lineView];
-        [_topDetailView addSubview:lineView2];
-    }
-    return _topDetailView;
 }
 
 - (UIButton *)sureBtn{
@@ -290,13 +242,18 @@ typedef NS_ENUM(NSInteger, EHGeofenceType){
  *  配置更新接口
  */
 - (void)configUpdateGeofenceService{
-    typeof(self) __weak weakSelf = self;
     if (!_updateGeofenceService) {
         _updateGeofenceService = [EHUpdateGeofenceService new];
+        WEAKSELF
         _updateGeofenceService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
+            STRONGSELF
             [[NSNotificationCenter defaultCenter] postNotificationName:EHGeofenceChangeNotification object:nil];
+            //更新existedNameArray
+            [strongSelf.existedNameArray removeObject: strongSelf->_previousName];
+            [strongSelf.existedNameArray addObject:strongSelf->_currentName];
             [WeAppToast toast:@"更新成功！"];
-            [weakSelf changeGeofenceType:EHGeofenceTypeDetail];
+            strongSelf.geofenceInfo = [strongSelf getInsertGeofenceReq];
+            [strongSelf changeGeofenceType:EHGeofenceTypeDetail];
         };
         _updateGeofenceService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
             [WeAppToast toast:@"更新失败！"];
@@ -325,18 +282,27 @@ typedef NS_ENUM(NSInteger, EHGeofenceType){
 
 - (EHGeofenceRemindView *)remindView{
     if (!_remindView) {
-        _remindView = [[EHGeofenceRemindView alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(self.topView.frame), CGRectGetWidth(self.topView.frame), CGRectGetHeight(self.topView.frame) / 2.0)];
+        _remindView = [[EHGeofenceRemindView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 43)];
         WEAKSELF
         _remindView.clickedBlock = ^(){
             STRONGSELF
             EHGeofenceRemindListViewController *grlVC = [[EHGeofenceRemindListViewController alloc]init];
             grlVC.babyUser = strongSelf.babyUser;
             grlVC.geofence_id = @(strongSelf.geofenceInfo.geofence_id);
-            grlVC.geofenceName = strongSelf.topView.geofenceName;
+            grlVC.geofenceName = strongSelf.geofenceInfo.geofence_name;
             [strongSelf.navigationController pushViewController:grlVC animated:YES];
         };
     }
     return _remindView;
+}
+
+- (EHGeofenceAddressAndRadiusView *)addressAndRadiusView{
+    if (!_addressAndRadiusView) {
+        _addressAndRadiusView = [[EHGeofenceAddressAndRadiusView alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(self.view.frame) - 60, CGRectGetWidth(self.view.frame), 60)];
+        _addressAndRadiusView.address = self.geofenceInfo.geofence_address;
+        _addressAndRadiusView.radius = self.geofenceInfo.geofence_radius;
+    }
+    return _addressAndRadiusView;
 }
 
 /**
@@ -345,12 +311,12 @@ typedef NS_ENUM(NSInteger, EHGeofenceType){
 - (EHGetGeofenceListRsp *)getInsertGeofenceReq{
     EHGetGeofenceListRsp *req = [[EHGetGeofenceListRsp alloc]init];
     
-    req.geofence_name = self.topView.geofenceName;
-    req.latitude = self.geofenceCoordinate.latitude;
-    req.longitude = self.geofenceCoordinate.longitude;
-    req.geofence_radius = (int)self.radius;
-    req.geofence_id = self.geofenceInfo.geofence_id;
-    req.geofence_address = self.topView.address;
+    req.geofence_name    = self.geofenceNameView.geofenceName;
+    req.geofence_radius  = self.sliderView.radius;
+    req.geofence_address = self.geofenceAddressView.address;
+    req.geofence_id      = self.geofenceInfo.geofence_id;
+    req.latitude         = self.geofenceCoordinate.latitude;
+    req.longitude        = self.geofenceCoordinate.longitude;
     
     return req;
 }

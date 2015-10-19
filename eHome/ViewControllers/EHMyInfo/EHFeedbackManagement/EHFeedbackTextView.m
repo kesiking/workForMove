@@ -6,8 +6,9 @@
 //  Copyright (c) 2015年 com.cmcc. All rights reserved.
 //
 
-#define kTextViewSpaceX 15
-#define kTextViewSpaceY 8
+#define kTextViewSpaceX 7
+#define kTextViewSpaceY 7
+#define kBtnWidth       135/2.0
 #define kMaxLineCount   5
 #define kMaxWordCount   280
 
@@ -17,36 +18,36 @@
 
 @property (nonatomic, strong)UITextView *textView;
 
-@property (nonatomic, strong)UIImageView *lineView;
-
 @property (nonatomic, strong)UIButton *sendButton;
 
 @end
 
 @implementation EHFeedbackTextView
 {
-    CGFloat _singleLineHeight;
-    CGFloat _textViewHeight;
-    CGFloat _minTextViewHeight;
-    NSInteger _lineNum;
-    CGRect _initFrame;
+    CGFloat _singleLineHeight;      //单行的高度
+    CGFloat _textViewHeight;        //textView的动态高度
+    CGFloat _minTextViewHeight;     //textView的最小高度
+    NSInteger _lineNum;             //动态行数
 }
 
 - (instancetype)initWithFrame:(CGRect)frame{
     self = [super initWithFrame:frame];
     if (self) {
-        _initFrame = frame;
         self.userInteractionEnabled = YES;
-        self.image = [UIImage imageNamed:@"input_feedback_send"];
+        self.backgroundColor = EHBgcor1;
         _singleLineHeight = [self singlLineHeight];
-        NSLog(@"_singleLineHeight = %f",_singleLineHeight);
-        _textViewHeight = kTextViewHeight - 1 - kTextViewSpaceY * 2;
+        _textViewHeight = kTextViewHeight - kTextViewSpaceY * 2;
         _minTextViewHeight = _textViewHeight;
         _lineNum = 1;
         
         [self addSubview:self.textView];
-        [self addSubview:self.lineView];
         [self addSubview:self.sendButton];
+        
+        CALayer *separatorLineLayer = [CALayer layer];
+        separatorLineLayer.frame = CGRectMake(0, 0, CGRectGetWidth(frame), 0.5);
+        separatorLineLayer.backgroundColor = EHLinecor1.CGColor;
+        [self.layer addSublayer:separatorLineLayer];
+        
         self.sendButton.enabled = NO;
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewTextChanged:) name:UITextViewTextDidChangeNotification object:nil];
@@ -129,26 +130,29 @@
 #pragma mark - Getters And Setters
 - (UITextView *)textView{
     if (!_textView) {
-        _textView = [[UITextView alloc]initWithFrame:CGRectMake(kTextViewSpaceX, 1 + kTextViewSpaceY, CGRectGetWidth(self.frame) - kTextViewHeight - kTextViewSpaceX * 2, _minTextViewHeight)];
+        _textView = [[UITextView alloc]initWithFrame:CGRectMake(kTextViewSpaceX, kTextViewSpaceY, CGRectGetWidth(self.frame) - kBtnWidth - kTextViewSpaceX * 3, CGRectGetHeight(self.frame) - kTextViewSpaceY * 2)];
         _textView.font = EH_font3;
         _textView.delegate = self;
         _textView.returnKeyType = UIReturnKeyDone;
+        _textView.backgroundColor = EHCor1;
+        _textView.layer.masksToBounds = YES;
+        _textView.layer.cornerRadius = 3;
+        _textView.layer.borderWidth = 0.5;
+        _textView.layer.borderColor = EHLinecor1.CGColor;
     }
     return _textView;
-}
-
-- (UIImageView *)lineView{
-    if (!_lineView) {
-        _lineView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"line_ico_feedback"]];
-    }
-    return _lineView;
 }
 
 - (UIButton *)sendButton{
     if (!_sendButton) {
         _sendButton = [[UIButton alloc]init];
-        [_sendButton setImage:[UIImage imageNamed:@"ico_feedback_send_press"] forState:UIControlStateNormal];
-        [_sendButton setImage:[UIImage imageNamed:@"ico_feedback_send_normal"] forState:UIControlStateDisabled];
+        [_sendButton setBackgroundImage:[UIImage imageNamed:@"btn_send_h"] forState:UIControlStateNormal];
+        [_sendButton setBackgroundImage:[UIImage imageNamed:@"btn_send_s"] forState:UIControlStateHighlighted];
+        [_sendButton setBackgroundImage:[UIImage imageNamed:@"btn_send_d"] forState:UIControlStateDisabled];
+        [_sendButton setTitle:@"发送" forState:UIControlStateNormal];
+        _sendButton.titleLabel.font = EHFont2;
+        [_sendButton setTitleColor:EHCor1 forState:UIControlStateNormal];
+        [_sendButton setTitleColor:EHCor5 forState:UIControlStateDisabled];
         [_sendButton addTarget:self action:@selector(sendButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _sendButton;
@@ -163,9 +167,9 @@
 #pragma mark - Common Methods
 - (void)layoutSubviews{
     [super layoutSubviews];
-    _textView.frame = CGRectMake(kTextViewSpaceX, 1 + kTextViewSpaceY, CGRectGetWidth(self.frame) - kTextViewHeight - kTextViewSpaceX * 2, CGRectGetHeight(self.frame) - 1 - kTextViewSpaceY * 2);
-    _lineView.frame = CGRectMake(CGRectGetWidth(self.frame) - 51, (CGRectGetHeight(self.frame) - kTextViewHeight) / 2.0, 1, kTextViewHeight);
-    _sendButton.frame = CGRectMake(CGRectGetWidth(self.frame) - 50, (CGRectGetHeight(self.frame) - kTextViewHeight) / 2.0, kTextViewHeight - 1, kTextViewHeight -1);
+    _textView.frame = CGRectMake(kTextViewSpaceX, kTextViewSpaceY, CGRectGetWidth(self.frame) - kBtnWidth - kTextViewSpaceX * 3, CGRectGetHeight(self.frame) - kTextViewSpaceY * 2);
+    CGFloat btnHeight = kTextViewHeight - kTextViewSpaceY * 2;
+    _sendButton.frame = CGRectMake(CGRectGetWidth(self.frame) - kTextViewSpaceX - kBtnWidth, CGRectGetHeight(self.frame) - btnHeight - kTextViewSpaceY, kBtnWidth, btnHeight);
 }
 
 - (void)dealloc{

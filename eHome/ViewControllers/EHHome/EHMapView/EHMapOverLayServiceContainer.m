@@ -265,7 +265,7 @@
             annotationView = [[MAAnnotationView alloc] initWithAnnotation:annotation
                                                           reuseIdentifier:overLayCenterPointReuseIndetifier];
         }
-        annotationView.image = [UIImage imageNamed:@"footpoint_crawl"];
+        annotationView.image = [UIImage imageNamed:@"public_icon_point_fence"];
         annotationView.enabled = NO;
         return annotationView;
     }

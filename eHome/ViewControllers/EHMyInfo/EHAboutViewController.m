@@ -12,7 +12,7 @@
 #import "EHSocializedSharedMacro.h"
 #import "EHFeedbackViewController.h"
 
-#define kHeaderViewHeight   340
+#define kHeaderViewHeight   270
 #define kCellHeight         50
 
 @interface EHAboutViewController()<UITableViewDataSource,UITableViewDelegate>
@@ -29,7 +29,7 @@
 - (void)viewDidLoad{
     [super viewDidLoad];
     self.title = @"关于";
-    self.view.backgroundColor = [UIColor colorWithRed:236/255.0 green:236/255.0 blue:236/255.0 alpha:1];
+    self.view.backgroundColor =EHBgcor1;
     [self.view addSubview:[self headView]];
     [self initTableView];
 }
@@ -47,6 +47,7 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
     }
+    cell.textLabel.font = EHFont2;
     cell.textLabel.text = titleArray[indexPath.row];
     return cell;
 }
@@ -75,7 +76,8 @@
     if (!_tableView) {
         _tableView = [[GroupedTableView alloc]initWithFrame:CGRectMake(10, kHeaderViewHeight, CGRectGetWidth(self.view.frame)-20, CGRectGetHeight(self.view.frame) - kHeaderViewHeight) style:UITableViewStylePlain];
         EHLogInfo(@"table height = %f",_tableView.frame.size.height);
-        _tableView.backgroundColor = [UIColor colorWithRed:236/255.0 green:236/255.0 blue:236/255.0 alpha:1];
+     //   _tableView.backgroundColor = [UIColor colorWithRed:245/255.0 green:245/255.0 blue:249/255.0 alpha:1];
+        _tableView.backgroundColor=EHBgcor1;
         _tableView.dataSource = self;
         _tableView.delegate = self;
         CGFloat height = CGRectGetHeight(_tableView.frame) / 2.0 < kCellHeight?CGRectGetHeight(_tableView.frame) / 2.0:kCellHeight;
@@ -92,17 +94,18 @@
 - (UIView *)headView{
     _headView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), kHeaderViewHeight)];
     
-    UIImageView *logoImageView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"logo_about"]];
-    logoImageView.frame = CGRectMake(CGRectGetWidth(_headView.frame) / 2.0 - 120 /2.0, 50, 120, 120);
+    UIImageView *logoImageView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"logo"]];
+    logoImageView.center = CGPointMake(SCREEN_WIDTH/2, 100);
     
     UILabel *descriptionLogoLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(logoImageView.frame) + 15, CGRectGetWidth(_headView.frame), 20)];
-    descriptionLogoLabel.text = @"贯众·爱家";
-    descriptionLogoLabel.font = EH_font1;
+    descriptionLogoLabel.text = @"贯众爱家";
+    descriptionLogoLabel.font = EHFont5;
+    descriptionLogoLabel.textColor = EHCor5;
     descriptionLogoLabel.textAlignment = NSTextAlignmentCenter;
     
-    UILabel *versionLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(descriptionLogoLabel.frame) + 5, CGRectGetWidth(_headView.frame), 15)];
-    versionLabel.textColor = EH_cor5;
-    versionLabel.font = EH_font6;
+    UILabel *versionLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, CGRectGetMaxY(descriptionLogoLabel.frame) + 10, CGRectGetWidth(_headView.frame), 15)];
+    versionLabel.textColor = EHCor5;
+    versionLabel.font = EHFont5;
     versionLabel.textAlignment = NSTextAlignmentCenter;
     [versionLabel sizeToFit];
     NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
@@ -115,10 +118,10 @@
     [versionLabel sizeToFit];
     versionLabel.center = CGPointMake(CGRectGetWidth(_headView.frame) / 2.0, CGRectGetMaxY(descriptionLogoLabel.frame) + 5 + CGRectGetHeight(versionLabel.frame) / 2.0);
     
-    UILabel *descriptionCmpLabel = [[UILabel alloc]initWithFrame:CGRectMake(kSpaceX * 3, CGRectGetMaxY(versionLabel.frame) + 15, CGRectGetWidth(_headView.frame) - kSpaceX * 6, 40)];
+    UILabel *descriptionCmpLabel = [[UILabel alloc]initWithFrame:CGRectMake(kSpaceX * 3, CGRectGetMaxY(versionLabel.frame) + 10, CGRectGetWidth(_headView.frame) - kSpaceX * 6, 40)];
     descriptionCmpLabel.text = @"中移（杭州）信息技术有限公司";
-    descriptionCmpLabel.textColor = EH_cor5;
-    descriptionCmpLabel.font = EH_font5;
+    descriptionCmpLabel.textColor = EHCor5;
+    descriptionCmpLabel.font = EHFont5;
     descriptionCmpLabel.lineBreakMode = NSLineBreakByWordWrapping;
     descriptionCmpLabel.numberOfLines = 0;
     descriptionCmpLabel.textAlignment = NSTextAlignmentCenter;

@@ -92,7 +92,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    return 15;
+    return 12;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
@@ -276,7 +276,8 @@
     _tableView.rowHeight = kCellHeight;
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    self.view.backgroundColor = _tableView.backgroundColor;
+    _tableView.backgroundColor=EHBgcor1;
+    self.view.backgroundColor = EHBgcor1;
     [self.view addSubview:_tableView];
     
     [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {

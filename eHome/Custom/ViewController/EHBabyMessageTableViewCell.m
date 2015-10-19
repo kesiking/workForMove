@@ -49,7 +49,7 @@
             
             [faileSendButton setFrame:frame];
             faileSendButton.hidden = YES;
-            [faileSendButton setImage:[UIImage imageNamed:@"ico_dropdown_cautionpoint"] forState:UIControlStateNormal];
+            [faileSendButton setImage:[UIImage imageNamed:@"icon_messagefail"] forState:UIControlStateNormal];
             [faileSendButton setImageEdgeInsets:UIEdgeInsetsMake((faileSendButton.height - 14)/2, (faileSendButton.width - 14)/2, (faileSendButton.height - 14)/2, (faileSendButton.width - 14)/2)];
             [faileSendButton addTarget:self action:@selector(faileSendButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
             [self.contentView addSubview:faileSendButton];
@@ -80,7 +80,7 @@
         return;
     }
     CGFloat border = self.messageBubbleView.voiceDurationLabel.hidden ? 0 : self.messageBubbleView.voiceDurationLabel.width;
-    CGRect activityIndicatorViewFrame = CGRectMake(bubbleFrame.origin.x - self.activityIndicatorView.width - border,
+    CGRect activityIndicatorViewFrame = CGRectMake(bubbleFrame.origin.x - self.activityIndicatorView.width - border - 5,
                                                    bubbleImageViewFrame.origin.y + (bubbleImageViewFrame.size.height - self.activityIndicatorView.height)/2,
                                                    self.activityIndicatorView.width,
                                                    self.activityIndicatorView.height);

@@ -10,22 +10,23 @@
 #import "EHBabyAlarmModel.h"
 
 /**
- *  围栏状态类型
+ *  闹钟状态类型
  */
-typedef NS_ENUM(NSInteger, EHGeofenceStatusType){
+typedef NS_ENUM(NSInteger, EHBabyAlarmStatusType){
     /**
-     *  围栏添加状态
+     *  闹钟添加状态
      */
-    EHGeofenceStatusTypeAdd = 0,
+    EHBabyAlarmStatusTypeAdd = 0,
     /**
-     *  围栏详情状态
+     *  闹钟详情状态
      */
-    EHGeofenceStatusTypeDetail,
+    EHBabyAlarmStatusTypeDetail,
 };
 
 @interface EHBaseBabyAlarmViewController : KSViewController
 
 @property (strong,nonatomic) EHGetBabyListRsp *babyUser;
 @property (strong,nonatomic) EHBabyAlarmModel *alarmModel;
+@property (assign,nonatomic) EHBabyAlarmStatusType alarmStatusType;
 
 @end

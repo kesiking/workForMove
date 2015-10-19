@@ -12,5 +12,5 @@
 @interface EHRemoteMessageTimeOverdueObject : NSObject
 
 + (BOOL)isRemoteMessageTimeOverdue:(EHMessageInfoModel*)messageInfoModel;
-
++ (BOOL)isRemoteMessage:(EHMessageInfoModel*)messageInfoModel timeOverdue:(NSInteger)timeLength;
 @end

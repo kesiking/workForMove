@@ -14,7 +14,7 @@
 - (instancetype)initWithModel:(EHFeedbackModel *)feedbackModel PreviousTime:(NSString *)previosTime UserHeadImageName:(NSString *)userHeadImageName{
     self = [super init];
     if (self) {
-        self.cellHeight = 15;
+        self.cellHeight = kSpaceY_CellTop_SubTop;
         
         self.showedContent = feedbackModel.content;
         
@@ -39,14 +39,13 @@
         self.timeLabelFrame = CGRectZero;
     }
     else {
-        CGSize size = [@"text" sizeWithFontSize:EH_siz4 Width:kTimeWidth];
-        CGRect frame = CGRectMake(kSpaceX_CellSide, kSpaceY_CellTop_SubTop, kTimeWidth, size.height);
-        self.cellHeight += size.height + kSpaceX_Image_Bubble;
+        CGRect frame = CGRectMake(kSpaceX_CellSide, kSpaceY_CellTop_SubTop, kTimeWidth, kTimeHeight);
+        self.cellHeight = kSpaceY_Time_Content * 2 + kTimeHeight;
         self.timeLabelFrame = frame;
     }
     
     //self.headImageFrame、self.contentLabelFrame、self.bubbleImageFrame、self.bubbleImage
-    CGSize contentSize = [self.showedContent sizeWithFontSize:EH_siz3 Width:kLabelMaxWidth];
+    CGSize contentSize = [self.showedContent sizeWithFontSize:EHSiz2 Width:kLabelMaxWidth];
     CGFloat contentLabelWidth = MIN(contentSize.width,kLabelMaxWidth);
     
     if (self.showedType == EHContentTypeSuggestion){
@@ -55,7 +54,7 @@
         self.contentLabelFrame = CGRectMake(SCREEN_WIDTH - (kSpaceX_Bubble_CellSide + kSpaceX_Bubble_Content_Side + contentLabelWidth), self.cellHeight + kSpaceY_Bubble_Content, contentLabelWidth, contentSize.height);
         
         self.bubbleImageFrame = CGRectMake(SCREEN_WIDTH - (kSpaceX_Bubble_CellSide + kSpaceX_Bubble_Content_Side + kSpaceX_Bubble_Content_Middle + contentLabelWidth), self.cellHeight, contentLabelWidth + kSpaceX_Bubble_Content_Side + kSpaceX_Bubble_Content_Middle, contentSize.height + kSpaceY_Bubble_Content * 2);
-        self.bubbleImageName = @"chat_me";
+        self.bubbleImageName = kChatMe;
         self.userHeadImageName = userHeadImageName;
         self.contentColor = [UIColor whiteColor];
     }
@@ -65,7 +64,7 @@
         self.contentLabelFrame = CGRectMake(kSpaceX_Bubble_CellSide + kSpaceX_Bubble_Content_Side, self.cellHeight + kSpaceY_Bubble_Content, contentLabelWidth, contentSize.height);
         
         self.bubbleImageFrame = CGRectMake(kSpaceX_Bubble_CellSide, self.cellHeight, contentLabelWidth + kSpaceX_Bubble_Content_Side + kSpaceX_Bubble_Content_Middle, contentSize.height + kSpaceY_Bubble_Content * 2);
-        self.bubbleImageName = @"chat_other";
+        self.bubbleImageName = kChatOther;
         self.userHeadImageName = kHeadportrait_administrator;
         self.contentColor = EH_cor3;
     }

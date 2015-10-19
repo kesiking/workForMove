@@ -22,7 +22,9 @@
 // 当前选中宝贝的设备状态
 @property (nonatomic, strong) EHBabyDeviceStatus  *   currentBabyDeviceStatus;
 // 当前选中的宝贝id
-@property (nonatomic,strong)  NSString            *   currentBabyId;
+@property (nonatomic, strong) NSString            *   currentBabyId;
+// 当前聊天中的宝贝id，如果没有聊天则为nil
+@property (nonatomic, strong) NSString            *   currentChatBabyId;
 
 @property (nonatomic, assign) BOOL                    isServiceFailed;
 

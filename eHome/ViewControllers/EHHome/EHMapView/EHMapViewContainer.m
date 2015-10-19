@@ -45,7 +45,7 @@
     _mapView.pausesLocationUpdatesAutomatically = YES;      //是否自动暂停位置更新
     _mapView.customizeUserLocationAccuracyCircleRepresentation = YES;
 
-    _mapView.showsLabels = NO;
+    _mapView.showsLabels = YES;
     
     _mapView.showsCompass = NO;
     _mapView.showsScale = YES;

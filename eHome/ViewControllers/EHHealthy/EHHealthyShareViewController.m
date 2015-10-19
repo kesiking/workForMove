@@ -42,6 +42,7 @@
 
 @implementation EHHealthyShareViewController
 
+#pragma mark - Life Circle
 - (void)viewDidLoad {
     [super viewDidLoad];
 //    UIView *sharedBackgroundView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, self.view.size.height - 70*SCREEN_SCALE)];
@@ -111,7 +112,6 @@
 
 }
 
-
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -131,6 +131,8 @@
     }
 }
 
+
+#pragma mark - 私有方法
 - (void)addSubViews
 {
     //宝贝头像
@@ -149,15 +151,12 @@
     self.nameLabel.textColor=EH_cor1;
     self.nameLabel.font=EHFont2;
     
-    NSLog(@"self.nameLabel.size.width = %f",self.nameLabel.size.width);
     [self.nameLabel sizeToFit];
-    NSLog(@"2self.nameLabel.size.width = %f",self.nameLabel.size.width);
     if (self.nameLabel.size.width>self.view.size.width - 180*SCREEN_SCALE) {
         CGRect frame = self.nameLabel.frame;
         frame.size.width = self.view.size.width - 180*SCREEN_SCALE;
         self.nameLabel.frame = frame;
     }
-NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     
     [self.sharedBgView addSubview:_nameLabel];
     self.view.backgroundColor = [UIColor whiteColor];
@@ -180,8 +179,6 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     [self.cancelButton addTarget:self action:@selector(cancelShareVC:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.cancelButton];
   
-    NSNumber *finishedRate = [NSNumber numberWithFloat:[self.finishDigitRateLabel.text floatValue]];
-    
     //计步标签
     self.finishedSteps.textColor= EHCor12;
     self.finishedSteps.font = EHFont8;
@@ -192,7 +189,6 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     ////////完成步数
     [self.sharedBgView addSubview:self.finishedSteps];
     
-    
     self.step=[[UILabel alloc]initWithFrame:CGRectZero];
     self.step.text=@"步";
     self.step.font=[UIFont systemFontOfSize:EHSiz1];
@@ -200,10 +196,6 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     [self.step sizeToFit];
     [self.sharedBgView addSubview:self.step];
   
-
-    
-    
-    
     //目标步数
     //计步标签
     self.babyTargetSteps.textColor=EHCor7;
@@ -212,13 +204,12 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     NSDictionary *attributes12 = [NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:EHSiz2]forKey:NSFontAttributeName];
     CGSize labelSize12=[self.babyTargetSteps.text boundingRectWithSize:CGSizeMake(160, 36) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes12 context:nil].size;
     self.babyTargetSteps.size=labelSize12;
-    ////////完成步数
+    //完成步数
     [self.sharedBgView addSubview:self.babyTargetSteps];
 
     NSLog(@"\nbaby%@",self.babyTargetSteps);
     
     NSDictionary *attributes3 = [NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:EHSiz2]forKey:NSFontAttributeName];
-    NSDictionary *attributes4 = [NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:EH_siz8]forKey:NSFontAttributeName];
 
     CGSize sizeForLabel = [self.distanceLabel.text boundingRectWithSize:CGSizeMake(80, 21) options:NSStringDrawingUsesLineFragmentOrigin  attributes:attributes3 context:nil].size;
     
@@ -475,6 +466,7 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     return screenshotImage;
 }
 
+#pragma mark - Getters And Setters
 -(UIImageView *)babyHeadImageView{
     if (!_babyHeadImageView) {
         _babyHeadImageView = [[UIImageView alloc]init];
@@ -502,8 +494,6 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     }
     return _finishedSteps;
 }
-
-
 
 -(UILabel *)babyTargetSteps{
     if (!_babyTargetSteps) {
@@ -553,14 +543,5 @@ NSLog(@"3self.nameLabel.size.width = %f",self.nameLabel.size.width);
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

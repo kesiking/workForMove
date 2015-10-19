@@ -101,8 +101,24 @@ typedef NS_ENUM(NSInteger, kButtonTag) {
     EHUserPicFromPhotosViewController *pvc = [[EHUserPicFromPhotosViewController alloc]init];
     pvc.finishSelectedImageBlock = self.finishSelectedImageBlock;
     
-    UIViewController *vc = (UIViewController *)_target;
-    [vc.navigationController pushViewController:pvc animated:YES];
+    UINavigationController *nvc = [[UINavigationController alloc]initWithRootViewController:pvc];
+    nvc.navigationBar.translucent = NO;
+    if([nvc.navigationBar respondsToSelector:@selector(barTintColor)]){
+        nvc.navigationBar.barTintColor = UINAVIGATIONBAR_COLOR;
+    }
+    if([nvc.navigationBar respondsToSelector:@selector(tintColor)]){
+        nvc.navigationBar.tintColor  =   UINAVIGATIONBAR_TITLE_COLOR;
+    }
+    [nvc.navigationBar setBackgroundImage:[[UIImage alloc] init] forBarMetrics:UIBarMetricsDefault];
+    nvc.navigationBar.shadowImage = [[UIImage alloc]init];
+    // 修改navbar title颜色
+    NSDictionary *navbarTitleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                               UINAVIGATIONBAR_TITLE_COLOR, NSForegroundColorAttributeName,
+                                               [UIFont boldSystemFontOfSize:18], NSFontAttributeName,nil];
+    
+    [nvc.navigationBar setTitleTextAttributes:navbarTitleTextAttributes];
+    
+    [_target presentViewController:nvc animated:YES completion:nil];
 }
 
 #pragma mark - Events Response

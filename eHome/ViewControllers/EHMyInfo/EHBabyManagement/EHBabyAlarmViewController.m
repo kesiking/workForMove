@@ -25,10 +25,7 @@ static NSString * const kEHBabyAlarmStr = @"开启主动提醒状态，如果在
     
 }
 
-//@property (strong,nonatomic) UITableView *tableView;
 @property (strong,nonatomic) GroupedTableView *tableView;
-@property (strong,nonatomic) UILabel *babyNameLabel;
-@property (strong,nonatomic) UIImageView *babyHeadImageView;
 @property (strong,nonatomic) UIImageView *alarmImageView;
 @property (strong,nonatomic) UILabel *remindLabel;
 @property (strong,nonatomic) NSIndexPath *activeChangedIndexPath;
@@ -44,8 +41,9 @@ static NSString * const kEHBabyAlarmStr = @"开启主动提醒状态，如果在
     self.title = @"宝贝闹钟";
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addBabyAlarmBtn)];
     [self.navigationItem setRightBarButtonItem:rightItem];
-    
-    self.activeChangedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    self.view.backgroundColor=EHBgcor1;
+//    self.activeChangedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    [self updateAlarmList];
     
     [self.view addSubview:self.tableView];
     [self.view addSubview:self.alarmImageView];
@@ -96,16 +94,20 @@ static NSString * const kEHBabyAlarmStr = @"开启主动提醒状态，如果在
         return;
     }
 
-    EHAddBabyAlarmViewController *addBabyAlarmVC = [[EHAddBabyAlarmViewController alloc]init];
+    EHBabyAlarmAddViewController *addBabyAlarmVC = [[EHBabyAlarmAddViewController alloc]init];
     addBabyAlarmVC.babyUser = self.babyUser;
     addBabyAlarmVC.babyAlarmList = self.babyAlarmList;
     WEAKSELF
     addBabyAlarmVC.addBlock = ^(EHBabyAlarmModel *alarmModel){
         STRONGSELF
         EHLogInfo(@"addBlock - self.babyAlarmList = \n%@",strongSelf.babyAlarmList);
-        [strongSelf.babyAlarmList addObject:alarmModel];
-        strongSelf.babyAlarmList = [strongSelf remindsArraySorted:strongSelf.babyAlarmList];
+        strongSelf.needUpdateModel = alarmModel;
+        [strongSelf updateBabyAlarmList:EHAlarmListStatusTypeAdd];
         [strongSelf updateAlarmList];
+
+//        [strongSelf.babyAlarmList addObject:alarmModel];
+//        strongSelf.babyAlarmList = [strongSelf remindsArraySorted:strongSelf.babyAlarmList];
+//        [strongSelf updateAlarmList];
     };
 
     [self.navigationController pushViewController:addBabyAlarmVC animated:YES ];
@@ -163,21 +165,68 @@ static NSString * const kEHBabyAlarmStr = @"开启主动提醒状态，如果在
     return array;
 }
 
+///**
+// *  对开关状态更改过的数据源进行更新，并动画移动重排序后的位置
+// */
+//- (void)updateBabyAlarmList {
+//    
+//    NSInteger needUpdateRow = [self.babyAlarmList indexOfObject:self.needUpdateModel];
+//    NSIndexPath *needUpdateIndexPath = [NSIndexPath indexPathForRow:needUpdateRow inSection:1];
+//    
+//    self.babyAlarmList = [self remindsArraySorted:self.babyAlarmList];
+//    NSInteger updatedRow = [self.babyAlarmList indexOfObject:self.needUpdateModel];
+//    NSIndexPath *updatedIndexPath = [NSIndexPath indexPathForRow:updatedRow inSection:1];
+//    
+//    [self.tableView moveRowAtIndexPath:needUpdateIndexPath toIndexPath:updatedIndexPath];
+//}
+
 /**
- *  对开关状态更改过的数据源进行更新，并动画移动重排序后的位置
+ *  对编辑过的数据源进行更新，并动画移动重排序后的位置
  */
-- (void)updateBabyAlarmList {
-    self.needUpdateModel.is_active = @(!([self.needUpdateModel.is_active boolValue]));
+- (void)updateBabyAlarmList:(EHAlarmListStatusType)alarmListStatusType {
+    switch (alarmListStatusType) {
+            
+        case EHAlarmListStatusTypeAdd: {
+            [self.babyAlarmList addObject:self.needUpdateModel];
+            self.babyAlarmList = [self remindsArraySorted:self.babyAlarmList];
+            NSInteger updatedRow = [self.babyAlarmList indexOfObject:self.needUpdateModel];
+            NSIndexPath *updatedIndexPath = [NSIndexPath indexPathForRow:updatedRow inSection:1];
+            
+            [self.tableView insertRowsAtIndexPaths:@[updatedIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+        }
+            break;
+            
+        case EHAlarmListStatusTypeUpdate: {
+            NSInteger needUpdateRow = [self.babyAlarmList indexOfObject:self.needUpdateModel];
+            NSIndexPath *needUpdateIndexPath = [NSIndexPath indexPathForRow:needUpdateRow inSection:1];
+            EHBabyAlarmModel *model = self.babyAlarmList[needUpdateRow];
+            EHRemindViewModel *viewModel = [[EHRemindViewModel alloc]initWithBabyAlarmModel:model];
+            EHRemindListTableViewCell *cell = [self.tableView cellForRowAtIndexPath:needUpdateIndexPath];
+            [cell configWithRemindModel:viewModel RemindType:EHRemindTypeBaby];
+            
+            self.babyAlarmList = [self remindsArraySorted:self.babyAlarmList];
+            NSInteger updatedRow = [self.babyAlarmList indexOfObject:self.needUpdateModel];
+            NSIndexPath *updatedIndexPath = [NSIndexPath indexPathForRow:updatedRow inSection:1];
+            
+            [self.tableView moveRowAtIndexPath:needUpdateIndexPath toIndexPath:updatedIndexPath];
+        }
+            break;
+            
+        case EHAlarmListStatusTypeDelete: {
+            NSInteger index = [self.babyAlarmList indexOfObject:self.needUpdateModel];
+            [self.babyAlarmList removeObjectAtIndex:index];
+            
+            NSIndexPath *updatedIndexPath = [NSIndexPath indexPathForRow:index inSection:1];
+            [self.tableView deleteRowsAtIndexPaths:@[updatedIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+        }
+            break;
+            
+        default:
+            break;
+    }
     
-    NSInteger needUpdateRow = [self.babyAlarmList indexOfObject:self.needUpdateModel];
-    NSIndexPath *needUpdateIndexPath = [NSIndexPath indexPathForRow:needUpdateRow inSection:1];
-    
-    self.babyAlarmList = [self remindsArraySorted:self.babyAlarmList];
-    NSInteger updatedRow = [self.babyAlarmList indexOfObject:self.needUpdateModel];
-    NSIndexPath *updatedIndexPath = [NSIndexPath indexPathForRow:updatedRow inSection:1];
-    
-    [self.tableView moveRowAtIndexPath:needUpdateIndexPath toIndexPath:updatedIndexPath];
 }
+
 
 
 
@@ -222,14 +271,10 @@ static NSString * const kEHBabyAlarmStr = @"开启主动提醒状态，如果在
         WEAKSELF
         cell.activeStatusChangeBlock = ^(BOOL isOn){
             STRONGSELF
-            //model.is_active = @((NSInteger)isOn);
+            model.is_active = @((NSInteger)isOn);
             
             strongSelf.needUpdateModel = model;
-
-            //strongSelf.activeChangedIndexPath = indexPath;
-            
-            //strongSelf.babyAlarmList = [strongSelf remindsArraySorted:strongSelf.babyAlarmList];
-            //[strongSelf updateAlarmList];
+//            strongSelf.needUpdateModel.is_active = @(!([strongSelf.needUpdateModel.is_active boolValue]));
             [strongSelf configUpdateAlarmService];
             [_editBabyAlarmService editBabyAlarm:model];
             EHLogInfo(@"isOn = %d",isOn);
@@ -269,22 +314,26 @@ static NSString * const kEHBabyAlarmStr = @"开启主动提醒状态，如果在
         return;
     }
     else{
-        EHEditBabyAlarmViewController *editAlarmVC = [[EHEditBabyAlarmViewController alloc]init];
+        EHBabyAlarmEditViewController *editAlarmVC = [[EHBabyAlarmEditViewController alloc]init];
         editAlarmVC.alarmModel = self.babyAlarmList[indexPath.row];
         editAlarmVC.babyUser = self.babyUser;
+
         WEAKSELF
         editAlarmVC.editBlock = ^(EHBabyAlarmModel *alarmModel){
             STRONGSELF
-            strongSelf.babyAlarmList[indexPath.row] = alarmModel;
-            strongSelf.babyAlarmList = [strongSelf remindsArraySorted:strongSelf.babyAlarmList];
-            [strongSelf updateAlarmList];
-            EHLogInfo(@"editBlock - self.babyalarmlist = \n%@",strongSelf.babyAlarmList);
+            strongSelf.needUpdateModel = alarmModel;
+            [strongSelf updateBabyAlarmList:EHAlarmListStatusTypeUpdate];
+    
         };
         
         editAlarmVC.deleteBlock = ^(EHBabyAlarmModel *alarmModel){
             STRONGSELF
-            [strongSelf.babyAlarmList removeObjectAtIndex:indexPath.row];
-            EHLogInfo(@"deleteBlock - self.babyalarmlist = \n%@",strongSelf.babyAlarmList);
+//            [strongSelf.babyAlarmList removeObjectAtIndex:indexPath.row];
+//            EHLogInfo(@"deleteBlock - self.babyalarmlist = \n%@",strongSelf.babyAlarmList);
+            strongSelf.needUpdateModel = alarmModel;
+            [strongSelf updateBabyAlarmList:EHAlarmListStatusTypeDelete];
+            [self updateAlarmList];
+            
         };
         
         [self.navigationController pushViewController:editAlarmVC animated:YES];
@@ -334,14 +383,15 @@ static NSString * const kEHBabyAlarmStr = @"开启主动提醒状态，如果在
             STRONGSELF
             [strongSelf hideLoadingView];
             [WeAppToast toast:@"更新成功"];
-            strongSelf.babyAlarmList = [strongSelf remindsArraySorted:strongSelf.babyAlarmList];
-            [strongSelf updateBabyAlarmList];
+//            strongSelf.babyAlarmList = [strongSelf remindsArraySorted:strongSelf.babyAlarmList];
+            [strongSelf updateBabyAlarmList:EHAlarmListStatusTypeUpdate];
         };
         _editBabyAlarmService.serviceDidFailLoadBlock = ^(WeAppBasicService *service, NSError *error){
             STRONGSELF
             [strongSelf hideLoadingView];
             [WeAppToast toast:@"更新失败"];
             
+            strongSelf.needUpdateModel.is_active = @(!([strongSelf.needUpdateModel.is_active boolValue]));
             NSInteger row = [strongSelf.babyAlarmList
                              indexOfObject:strongSelf.needUpdateModel];
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:1];
@@ -376,7 +426,7 @@ static NSString * const kEHBabyAlarmStr = @"开启主动提醒状态，如果在
 - (UITableView *)tableView{
     if (!_tableView){
         _tableView = [[GroupedTableView alloc]initWithFrame:CGRectMake(8, 0, CGRectGetWidth(self.view.frame)-16, CGRectGetHeight(self.view.frame)-12) style:UITableViewStyleGrouped];
-        _tableView.backgroundColor = [UIColor clearColor];
+        _tableView.backgroundColor =EHBgcor1;
         _tableView.dataSource = self;
         _tableView.delegate = self;
     }

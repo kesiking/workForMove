@@ -57,8 +57,8 @@
                   symbolName = "-[EHAudioDataCache clearDiskOnCompletion:]"
                   moduleName = "eHome"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/mengxixi/Desktop/kesiking/work/smartHomeCode/trunk/Client/iOS/eHome/eHome/Custom/Classes/EHAudioPlayDownload/EHAudioDataCache.m"
-                  timestampString = "465268856.257712"
+                  urlString = "file:///Users/mengxixi/workForMove/eHome/Custom/Classes/EHAudioPlayDownload/EHAudioDataCache.m"
+                  timestampString = "466939225.726488"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "250"
@@ -72,8 +72,8 @@
                   symbolName = "__42-[EHAudioDataCache clearDiskOnCompletion:]_block_invoke"
                   moduleName = "eHome"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/mengxixi/Desktop/kesiking/work/smartHomeCode/trunk/Client/iOS/eHome/eHome/Custom/Classes/EHAudioPlayDownload/EHAudioDataCache.m"
-                  timestampString = "465268856.258065"
+                  urlString = "file:///Users/mengxixi/workForMove/eHome/Custom/Classes/EHAudioPlayDownload/EHAudioDataCache.m"
+                  timestampString = "466939225.726722"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "250"
@@ -96,6 +96,38 @@
             startingLineNumber = "190"
             endingLineNumber = "190"
             landmarkName = "-nextPage"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "eHome/ThirdParty/MessageDisplayKit/Classes/Common/XHMessageBubbleHelper.m"
+            timestampString = "465282327.780188"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "47"
+            endingLineNumber = "47"
+            landmarkName = "-setDataDetectorsAttributedAttributedString:atText:withRegularExpression:attributes:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "eHome/Custom/Classes/EHChatManager/EHSingleChatManager/EHSingleChatCacheService/EHSingleChatCacheManager.m"
+            timestampString = "466051608.120195"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "142"
+            endingLineNumber = "142"
+            landmarkName = "-sendBabyChatMessageWithNetwork:sendSuccess:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

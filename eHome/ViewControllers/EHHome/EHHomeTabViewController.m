@@ -187,7 +187,14 @@
 }
 
 -(void)configStatusCenter{
-    [[EHDeviceStatusCenter sharedCenter] setupDeviceCenterWithBabyId:[NSString stringWithFormat:@"%@",self.currentBabyUserInfo.babyId]];
+    if ([EHBabyListDataCenter sharedCenter].currentBabyUserInfo.babyId) {
+        [[EHDeviceStatusCenter sharedCenter] setupDeviceCenterWithBabyId:[NSString stringWithFormat:@"%@",[EHBabyListDataCenter sharedCenter].currentBabyUserInfo.babyId]];
+    }
+    else
+    {
+        [[EHDeviceStatusCenter sharedCenter] setupDeviceCenterWithBabyId:nil];
+    }
+    
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -295,27 +302,6 @@
 }
 #endif
 
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark - 消息响应 messageBtnClicked
--(void)messageBtnClicked:(id)sender{
-    // goto 消息列表页面
-    BOOL isLogin = [KSAuthenticationCenter isLogin];
-    if (isLogin) {
-        NSMutableDictionary* params = [NSMutableDictionary dictionary];
-        if (self.babyHorizontalListView.babyListArray) {
-            [params setObject:self.babyHorizontalListView.babyListArray forKey:@"babyListArray"];
-        }
-        TBOpenURLFromSourceAndParams(internalURL(@"EHMessageInfoViewController"), self, params);
-    }else{
-        [self alertCheckLoginWithCompleteBlock:nil];
-    }
-}
-
--(void)navBarRightViewDidSelect:(EHHomeNavBarRightView*)navBarRightView{
-    [self messageBtnClicked:navBarRightView];
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark - 操作图层  rightOperationLayerView（电子围栏、电话）、leftRefreshLocationLayerView(刷新按钮)
 -(EHHomeOperationLayerView *)rightOperationLayerView{
@@ -413,12 +399,22 @@
         if (!hasBabyData) {
             [strongSelf.navBarTitleView setBtnTitle:@"暂无用户"];
             [strongSelf.mapView resetMapAnnotation];
+            [strongSelf.mapView resetMapGeoFenceOverLay];
             [strongSelf.rightOperationLayerView setBabyUserInfo:nil];
             [strongSelf.leftRefreshLocationLayerView setHidden:YES];
             // 更新宝贝数据中心的数据
             [[EHBabyListDataCenter sharedCenter] setCurrentBabyUserInfo:nil];
             [[EHBabyListDataCenter sharedCenter] setCurrentBabyId:nil];
             [[EHBabyListDataCenter sharedCenter] setBabyList:nil];
+            strongSelf.currentBabyUserInfo = nil;
+            // 重置设备状态管理中心
+            [strongSelf configStatusCenter];
+            
+            // 重置message展示
+            EHNoneMessageModel* messageModel = [EHNoneMessageModel new];
+            [[EHMessageManager sharedManager] sendMessage:messageModel];
+            // 重置消息提示小红点
+            [[NSNotificationCenter defaultCenter] postNotificationName:EHClearRemoteMessageAttentionNotification object:nil userInfo:nil];
             // to do show 未绑定 提醒
             if (!strongSelf.didSendDeviceBindingMessage) {
                 strongSelf.didSendDeviceBindingMessage = YES;

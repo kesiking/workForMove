@@ -22,4 +22,6 @@ typedef void (^doNavBarRightButtonClicedBlock)        (EHHomeNavBarRightView* EH
 
 -(void)setupPointImageStatusWithNumber:(NSNumber*)number;
 
++ (instancetype)sharedCenter;
+
 @end

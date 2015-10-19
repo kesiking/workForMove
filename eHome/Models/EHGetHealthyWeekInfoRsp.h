@@ -19,8 +19,8 @@
 
 @property(nonatomic,strong)NSString* percent;
 @property(nonatomic,strong)NSString* encourage;
-@property(assign,nonatomic)double calorie;
-@property(assign,nonatomic)double mileage;
+@property(assign,nonatomic)NSInteger calorie;
+@property(assign,nonatomic)NSInteger mileage;
 @property(assign,nonatomic)NSInteger steps;
 
 @end

@@ -13,7 +13,7 @@
 static NSDateFormatter *dateFormatter = nil;
 
 +(TBJSONModelKeyMapper*)modelKeyMapper{
-    NSDictionary* dict = @{@"createTime":@"create_time"};
+    NSDictionary* dict = @{@"createTime":@"create_time",@"userPhone":@"user_phone"};
     return [[TBJSONModelKeyMapper alloc] initWithDictionary:dict];
 }
 
@@ -74,21 +74,34 @@ static NSDateFormatter *dateFormatter = nil;
     XHBabyChatMessage *babyChatMessage = nil;
     NSDate* timestamp = [NSDate date];
     if (message.create_time) {
-        timestamp = [dateFormatter dateFromString:message.create_time];
+        timestamp = [dateFormatter dateFromString:message.create_time]?:timestamp;
     }else{
         message.create_time = [dateFormatter stringFromDate:timestamp];
     }
     if ([message.context_type isEqualToString:CONTEXT_TYPE_TEXT]) {
-         babyChatMessage = [[XHBabyChatMessage alloc] initWithText:message.context sender:message.user_phone timestamp:timestamp];
+        if (message.context == nil) {
+            message.context = @"";
+        }
+        message.context = [message.context stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        babyChatMessage = [[XHBabyChatMessage alloc] initWithText:message.context sender:message.user_phone timestamp:timestamp];
     }else if ([message.context_type isEqualToString:CONTEXT_TYPE_VOICE]) {
         babyChatMessage = [[XHBabyChatMessage alloc] initWithVoicePath:nil voiceUrl:message.context voiceDuration:[NSString stringWithFormat:@"%@",message.call_duration] sender:message.user_phone timestamp:timestamp isRead:NO];
+    }else{
+        babyChatMessage = [[XHBabyChatMessage alloc] initWithText:message.context?:@"" sender:message.user_phone timestamp:timestamp];
     }
     babyChatMessage.avatarUrl = message.head_imag_small;
     babyChatMessage.originPhotoUrl = message.head_imag_small;
     babyChatMessage.recieverBabyID = message.baby_id;
     babyChatMessage.user_nick_name = message.user_nick_name;
     babyChatMessage.messageIsFromBaby = [message.sender boolValue];
-    babyChatMessage.bubbleMessageType = XHBubbleMessageTypeReceiving;
+    if (!babyChatMessage.messageIsFromBaby && message.user_phone && [message.user_phone isEqualToString:[KSAuthenticationCenter userPhone]]) {
+        babyChatMessage.bubbleMessageType = XHBubbleMessageTypeSending;
+        babyChatMessage.isRead = YES;
+        babyChatMessage.shouldShowUserName =  NO;
+    }else{
+        babyChatMessage.bubbleMessageType = XHBubbleMessageTypeReceiving;
+        babyChatMessage.shouldShowUserName = YES;
+    }
     babyChatMessage.msgStatus = EHBabyChatMessageStatusReceived;
     [babyChatMessage configMessageID];
     
@@ -118,22 +131,26 @@ static NSDateFormatter *dateFormatter = nil;
     if (babyChatMessage.timestamp) {
         message.create_time = [dateFormatter stringFromDate:babyChatMessage.timestamp];
     }
-    message.context_type = [NSString stringWithFormat:@"%@",@(babyChatMessage.messageMediaType)];
     switch (babyChatMessage.messageMediaType) {
         case XHBubbleMessageMediaTypeVideo:{
             message.call_duration = [NSNumber numberWithInteger:[babyChatMessage.voiceDuration integerValue]];
             message.context = babyChatMessage.voicePath;
+            message.context_type = CONTEXT_TYPE_VOICE;
         }
             break;
         case XHBubbleMessageMediaTypeText:{
             message.context = babyChatMessage.text;
+            message.context_type = CONTEXT_TYPE_TEXT;
         }
             break;
-        default:
+        default:{
+            message.context = babyChatMessage.text;
+            message.context_type = CONTEXT_TYPE_TEXT;
+        }
             break;
     }
-    message.head_imag_small = [KSAuthenticationCenter userComponent].user_head_img;
-    message.user_nick_name = [KSAuthenticationCenter userComponent].nick_name;
+    message.head_imag_small = babyChatMessage.avatarUrl?:[KSAuthenticationCenter userComponent].user_head_img;
+    message.user_nick_name = babyChatMessage.user_nick_name?:[KSAuthenticationCenter userComponent].nick_name;
     message.msgTimestamp = babyChatMessage.msgTimestamp;
 
     message.babyInfoModel = [EHChatMessageBabyInfoModel new];
@@ -159,12 +176,22 @@ static NSDateFormatter *dateFormatter = nil;
     return @"baby_id";
 }
 
++(TBJSONModelKeyMapper*)modelKeyMapper{
+    NSDictionary* dict = @{@"userPhone":@"user_phone"};
+    return [[TBJSONModelKeyMapper alloc] initWithDictionary:dict];
+}
+
 @end
 
 @implementation EHChatMessageUserPhoneInfoModel
 
 +(NSString*)getPrimaryKey{
     return @"user_phone";
+}
+
++(TBJSONModelKeyMapper*)modelKeyMapper{
+    NSDictionary* dict = @{@"userPhone":@"user_phone"};
+    return [[TBJSONModelKeyMapper alloc] initWithDictionary:dict];
 }
 
 @end

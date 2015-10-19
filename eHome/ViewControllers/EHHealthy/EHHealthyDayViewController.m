@@ -67,6 +67,16 @@
     
     self.show = YES;
 }
+
+//视图消失的时候把日历视图移除
+-(void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    if (self.healthyView.bgView && self.healthyView.calendarView) {
+        [self.healthyView.bgView removeFromSuperview];
+        [self.healthyView.calendarView removeFromSuperview];
+    }
+   
+}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -98,22 +108,11 @@
             supScrollView.scrollEnabled = YES;
             [strongSelf.healthyView.bgView removeFromSuperview];
             [strongSelf.healthyView.calendarView removeFromSuperview];
-            
-            //        NSDateFormatter *formater1=[[NSDateFormatter alloc]init];
-            //        formater1.dateFormat=@"yyyy-MM-dd HH:mm:ss";
-            //        NSDate *myDate=[formater1 dateFromString:@"2015-08-11 11:07:16"];
-            //    [_calendarManager setDate:_todayDate];
             strongSelf.healthyView.calendarVC.selectedDate = sdate;
             self.show = YES;
         }];
         if (!healthyView.bgView) {
-//            healthyView.bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 60, window.bounds.size.width, window.bounds.size.height-60)];
             healthyView.bgView = [[UIView alloc]initWithFrame:window.bounds];
-////            _bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0];
-//            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tap:)];
-//            [_bgView addGestureRecognizer:tap];
-
-          
             
         }
         healthyView.bgView.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0];
@@ -130,18 +129,11 @@
         
         
         healthyView.calendarView.alpha = 0;
-//        [self.view addSubview:healthyView.bgView];
         [window addSubview:healthyView.bgView];
-//        [healthyView.bgView addSubview:healthyView.calendarView];
         [window addSubview:healthyView.calendarView];
-
-
-//        [self.view addSubview:healthyView.calendarView];
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(hideCalendarView)];
         [healthyView.bgView addGestureRecognizer:tap];
         
-        
-        //
         CGRect rectBegin = healthyView.calendarView.frame;
         rectBegin.origin.y = 73*SCREEN_SCALE+64;
         [healthyView.calendarView setFrame:rectBegin];
@@ -178,13 +170,6 @@
     
     //更新日历控件
     self.healthyView.calendarVC = [CalendarViewController new];
-
-    
-    
-    
-    
-    
-    
 }
 - (void)reloadDataWhenViewScroll
 {
@@ -200,6 +185,11 @@
 {
     self.startUserDay=[[EHBabyListDataCenter sharedCenter] currentBabyUserInfo].babyDeviceStartUserDay;
     NSDate *currentDate = self.startUserDay;
+    if(currentDate == nil)
+    {
+        EHLogError(@"the startUserDay is nil");
+    }
+    NSAssert(currentDate !=nil, @"startUserDay must not be nil");
     self.items = nil;
     if(!self.items){
         self.items = [[NSMutableArray alloc]init];
@@ -235,11 +225,16 @@
         }
         healthyView.sTargetStepsLabel.text = [NSString stringWithFormat:@"目标：%ld步",dayModel.target_steps];
         healthyView.finishSteps.text=[NSString stringWithFormat:@"%ld",(long)dayModel.steps];
-        if (dayModel.mileage<1000) {
-             healthyView.distanceLabel.text=[NSString stringWithFormat:@"%.3f米",dayModel.mileage];
+        if (dayModel.mileage == 0) {
+            healthyView.distanceLabel.text= @"0米";
         }else{
-            healthyView.distanceLabel.text=[NSString stringWithFormat:@"%.3f千米",dayModel.mileage/1000.0];
-            
+            if (dayModel.mileage<1000) {
+                healthyView.distanceLabel.text=[NSString stringWithFormat:@"%ld米",dayModel.mileage];
+            }else{
+                healthyView.distanceLabel.text=[NSString stringWithFormat:@"%.3f千米",dayModel.mileage/1000.0];
+                
+            }
+ 
         }
         healthyView.energyLabel.text=[NSString stringWithFormat:@"%ld千卡",dayModel.calorie];
         healthyView.ratioLabel.text=[NSString stringWithFormat:@"%@%%",dayModel.percent];
@@ -299,7 +294,7 @@
         
         
         double barMargin = 17.5*SCREEN_SCALE;
-        double barWidth = ((SCREEN_WIDTH-28*SCREEN_SCALE) -10*SCREEN_SCALE-(colors.count-1)*barMargin)/(colors.count*1.0);
+        double barWidth = ((SCREEN_WIDTH-28*SCREEN_SCALE-31*SCREEN_SCALE) -10*SCREEN_SCALE-(colors.count-1)*barMargin)/(colors.count*1.0);
         
         [healthyView.barChart setDayXLabels:@[@"0-6",@"6",@"8",@"10",@"12",@"14",@"16",@"18",@"20-24"] andMargin:barMargin andWidth:barWidth];
         [healthyView.barChart strokeChartWeekWithMargin:barMargin andWidth:barWidth];
@@ -520,7 +515,9 @@
     
     //更新currentDate的值
     self.currentDate = [NSDate dateWithTimeInterval:carousel.currentItemIndex*24*60*60 sinceDate:self.startUserDay];
-    self.queryDataService.onlyUserCache=YES;
+//    self.queryDataService.onlyUserCache=YES;
+    self.queryDataService.needCache = NO;
+    self.queryDataService.onlyUserCache = NO;
     [self.queryDataService queryBabyHealthyDataWithBabyId:[self.babyId integerValue] AndDate:[self.dateFormatter stringFromDate:self.currentDate]];
 }
 @end

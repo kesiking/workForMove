@@ -15,7 +15,7 @@
 @interface EHHealthyDayModel : EHHealthyBasicModel
 @property(strong,nonatomic)NSArray<EHHealthyDayHourModel> *responseData;
 @property(assign,nonatomic)NSInteger calorie;
-@property(assign,nonatomic)double mileage;
+@property(assign,nonatomic)NSInteger mileage;
 @property(assign,nonatomic)NSInteger steps;
 @property(strong,nonatomic)NSString *runTime;
 @property(assign,nonatomic)NSInteger target_steps;

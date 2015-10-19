@@ -29,7 +29,7 @@
     // Do any additional setup after loading the view.
     self.title = [NSString stringWithFormat:@"转让管理员"];
     [self.view addSubview:[self familyMemberTableView]];
-    
+    self.view.backgroundColor=EHBgcor1;
     UIBarButtonItem* confirmBtn = [[UIBarButtonItem alloc] initWithTitle:@"确认" style:UIBarButtonItemStylePlain target:self action:@selector(confirmBtnTapped:)];
     self.navigationItem.rightBarButtonItem = confirmBtn;
     
@@ -41,6 +41,7 @@
         _familyMemberTableView.sectionFooterHeight = 0;
         _familyMemberTableView.dataSource = self;
         _familyMemberTableView.delegate = self;
+        _familyMemberTableView.backgroundColor=EHBgcor1;
         _familyMemberTableView.tableFooterView = [[UIView alloc] init];
     }
     return _familyMemberTableView;

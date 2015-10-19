@@ -48,6 +48,7 @@
     
     [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.babyHeadImageView.mas_right).with.offset(10);
+        make.right.equalTo(self.contentView.mas_right).with.offset(-130);
         make.centerY.equalTo(self.contentView.mas_centerY);
     }];
 
@@ -79,7 +80,10 @@
 
 -(UIImageView *)backgroundImageView{
     if (!_backgroundImageView) {
-        _backgroundImageView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_clock"]];
+        UIImage *image = [UIImage imageNamed:@"bg_clock"];
+        UIEdgeInsets insets = UIEdgeInsetsMake(1, 1, 1, 200);
+        image = [image resizableImageWithCapInsets:insets];
+        _backgroundImageView = [[UIImageView alloc]initWithImage:image];
         _backgroundImageView.contentMode = UIViewContentModeScaleToFill;
         _babyHeadImageView.layer.masksToBounds=YES;
         _babyHeadImageView.layer.cornerRadius=3;
@@ -99,9 +103,10 @@
 -(UILabel *)nameLabel{
     if (!_nameLabel) {
         _nameLabel = [[UILabel alloc]init];
-        _nameLabel.font = EH_font2;
+        _nameLabel.font = EHFont2;
         _nameLabel.textAlignment = NSTextAlignmentLeft;
-        _nameLabel.textColor = EHCor5;
+        _nameLabel.textColor = EHCor1;
+//        _nameLabel.layer.borderWidth = 1;
 
     }
     return _nameLabel;

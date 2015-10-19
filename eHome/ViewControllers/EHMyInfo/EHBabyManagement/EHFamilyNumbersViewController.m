@@ -58,11 +58,12 @@ typedef enum : NSUInteger {
     
     self.tableView=[[GroupedTableView alloc]initWithFrame:CGRectMake(8, 0, CGRectGetWidth(self.view.frame)-16, CGRectGetHeight( self.view.frame)) style:UITableViewStyleGrouped];
     self.tableView.delegate=self;
-    self.tableView.dataSource=self;
+    self.tableView.dataSource=self;;
+    self.tableView.backgroundColor=EHBgcor1;
     UINib *nib = [UINib nibWithNibName:@"EHFamilyNumbersTableViewCell" bundle:nil];
     [self.tableView registerNib:nib forCellReuseIdentifier:@"EHFamilyNumberTableViewCell"];
     [self.view addSubview:self.tableView];
-    self.view.backgroundColor=self.tableView.backgroundColor;
+    self.view.backgroundColor=EHBgcor1;
     //[self setRightBarItem:EHRightItemMore];
 }
 

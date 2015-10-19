@@ -35,6 +35,15 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)setBabyItem:(WeAppComponentBaseItem *)babyItem
+{
+    _babyItem = babyItem;
+    
+    if ([babyItem isKindOfClass:[EHGetBabyListRsp class]]
+        && [((EHGetBabyListRsp*)babyItem).device_status integerValue] == 0) {
+        self.babyImageView.alpha = 0.5;
+    }
+}
 -(void)setBtnImageUrl:(NSString*)imageUrl{
     if (imageUrl == nil) {
         return;
@@ -96,6 +105,7 @@
     _babyImageView.layer.masksToBounds = YES;
     _babyImageView.layer.borderWidth = 2.0;
     _babyImageView.layer.borderColor = RGB(0xb4, 0xd0, 0xff).CGColor;
+
     [self addSubview:_babyImageView];
     
     _babyLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, _babyImageView.bottom + (self.height - _babyImageView.bottom - 20)/2, self.width, 20)];

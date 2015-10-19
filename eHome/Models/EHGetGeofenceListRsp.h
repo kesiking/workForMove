@@ -10,13 +10,13 @@
 
 @interface EHGetGeofenceListRsp : WeAppComponentBaseItem
 
-@property(nonatomic, assign)int geofence_id;
+@property(nonatomic, assign)NSInteger geofence_id;
 @property(nonatomic, strong)NSString* geofence_name;
-@property(nonatomic, assign)double latitude;
-@property(nonatomic, assign)double longitude;
-@property(nonatomic, assign)int geofence_radius;
+@property(nonatomic, assign)CGFloat   latitude;
+@property(nonatomic, assign)CGFloat   longitude;
+@property(nonatomic, assign)NSInteger geofence_radius;
 @property(nonatomic, strong)NSString* creat_time;
 @property(nonatomic, strong)NSString* geofence_address;
-@property(nonatomic, assign)int status_switch;
+@property(nonatomic, assign)NSInteger status_switch;
 
 @end

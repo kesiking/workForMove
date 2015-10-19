@@ -15,6 +15,8 @@
 #import "EHSocialShareHandle.h"
 #import "NSString+StringSize.h"
 
+#define SHAREMESSAGE1 @"我家宝贝手表的设备码是："
+#define SHAREMESSAGE2 @"下载童行app,输入设备码即可关注！"
 #define TEXTFIELD_INSETS 20
 #define DEVICECODE_TEXTFIELD_Y_MARGIN 40
 #define DEVICECODE_TEXTFIELD_HEIGHT 49
@@ -58,7 +60,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.title = @"宝贝身份";
-    self.view.backgroundColor = EH_bgcor1;
+    self.view.backgroundColor = EHBgcor1;
     [self setupSubViews];
     [self setupShareViews];
     
@@ -261,10 +263,11 @@
 #pragma mark - 点击分享按钮响应事件
 - (void)sharedButonClick:(UIButton *)sender
 {
+    NSString *sharedMessage = [NSString stringWithFormat:@"%@ %@，%@",SHAREMESSAGE1,_deviceCode,SHAREMESSAGE2];
     switch (sender.tag) {
         case EHShareTypeWechatSession:
         {
-            [[UMSocialDataService defaultDataService]  postSNSWithTypes:@[UMShareToWechatSession] content:@"test" image:[self screenshotForCroppingRect:CGRectMake(0, 0, SCREEN_WIDTH, 533)] location:nil urlResource:nil presentedController:self completion:^(UMSocialResponseEntity *response){
+            [[UMSocialDataService defaultDataService]  postSNSWithTypes:@[UMShareToWechatSession] content:sharedMessage image:nil location:nil urlResource:nil presentedController:self completion:^(UMSocialResponseEntity *response){
                 if (response.responseCode == UMSResponseCodeSuccess) {
                     NSLog(@"微信好友分享成功！");
                 }
@@ -274,7 +277,7 @@
             
         case EHShareTypeQQ:
         {
-            [[UMSocialDataService defaultDataService]  postSNSWithTypes:@[UMShareToQQ] content:@"test" image:[self screenshotForCroppingRect:CGRectMake(0, 0, SCREEN_WIDTH, 533)] location:nil urlResource:nil presentedController:self completion:^(UMSocialResponseEntity *response){
+            [[UMSocialDataService defaultDataService]  postSNSWithTypes:@[UMShareToQQ] content:sharedMessage image:nil location:nil urlResource:nil presentedController:self completion:^(UMSocialResponseEntity *response){
                 if (response.responseCode == UMSResponseCodeSuccess) {
                     NSLog(@"QQ分享成功！");
                 }
@@ -284,7 +287,7 @@
 
         case EHShareTypeSms:
         {
-            [[UMSocialDataService defaultDataService] postSNSWithTypes:@[UMShareToSms] content:@"test" image:[self screenshotForCroppingRect:CGRectMake(0, 0, SCREEN_WIDTH, 533)] location:nil urlResource:nil presentedController:self completion:^(UMSocialResponseEntity *response){
+            [[UMSocialDataService defaultDataService] postSNSWithTypes:@[UMShareToSms] content:sharedMessage image:nil location:nil urlResource:nil presentedController:self completion:^(UMSocialResponseEntity *response){
                 if (response.responseCode == UMSResponseCodeSuccess) {
                     NSLog(@"短信分享成功！");
                 }

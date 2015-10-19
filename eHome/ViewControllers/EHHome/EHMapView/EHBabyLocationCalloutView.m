@@ -56,11 +56,31 @@
     self.batteryLabel.hidden = NO;
     self.locationLabel.hidden = NO;
     self.navigationBtn.hidden = NO;
+    [self initNotification];
+}
+
+-(void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 -(void)setPosition:(EHUserDevicePosition *)position{
     _position = position;
     [self reloadData];
+}
+
+-(void)initNotification{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyOutLineNotification:) name:EHBabyOutLineNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyOnLineNotification:) name:EHBabyOnLineNotification object:nil];
+}
+
+-(void)babyOutLineNotification:(NSNotification*)notification{
+    
+   self.babyHeadImageView.alpha = 0.5;
+}
+
+-(void)babyOnLineNotification:(NSNotification*)notification{
+    
+    self.babyHeadImageView.alpha = 1.0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,6 +105,16 @@
     }else{
         [self.babyHeadImageView sd_setImageWithURL:[NSURL URLWithString:currentBabyUserInfo.babyHeadImage] placeholderImage:[EHUtils getBabyHeadPlaceHolderImage:currentBabyUserInfo.babyId newPlaceHolderImagePath:currentBabyUserInfo.babyHeadImage defaultHeadImage:[UIImage imageNamed:@"public_headportrait_map_dorpdown_boy_80"]]];
     }
+    
+    if ([currentBabyUserInfo.device_status integerValue] == 0)
+    {
+        self.babyHeadImageView.alpha = 0.5;
+    }
+    else
+    {
+        self.babyHeadImageView.alpha = 1.0;
+    }
+    
 }
 
 -(void)reloadTimeLabel{
@@ -129,7 +159,7 @@
     }else if (batteryNumber > 0.20 * device_kwh_int){
         [self.batteryImageView setImage:[UIImage imageNamed:@"ico_address_battery_50"]];
     }else if (batteryNumber > 0.05 * device_kwh_int){
-        [self.batteryImageView setImage:[UIImage imageNamed:@"ico_address_battery_25"]];
+        [self.batteryImageView setImage:[UIImage imageNamed:@"ico_address_battery_20"]];
     }else if (batteryNumber >= 0){
         [self.batteryImageView setImage:[UIImage imageNamed:@"ico_address_battery_20"]];
         [_batteryImageView.layer addAnimation:[self opacityForever_Animation:0.5] forKey:nil];
@@ -183,7 +213,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark - 私有函数
 -(BOOL)needChangeAnnotationImageViewAnimation{
-    if (_position && [_position.locationType isEqualToString:current_LocationType]) {
+    if (_position && ([_position.locationType isEqualToString:current_LocationType] || [_position.locationType isEqualToString:SOS_LocationType])) {
         return YES;
     }
     return NO;
@@ -284,6 +314,15 @@
         _babyHeadImageView.image = [UIImage imageNamed:@"public_headportrait_map_dorpdown_boy_80"];
         _babyHeadImageView.layer.cornerRadius = _babyHeadImageView.height/2;
         _babyHeadImageView.layer.masksToBounds = YES;
+        EHGetBabyListRsp* currentBabyUserInfo=[[EHBabyListDataCenter sharedCenter] currentBabyUserInfo];
+        if ([currentBabyUserInfo.device_status integerValue] == 0)
+        {
+            _babyHeadImageView.alpha = 0.5;
+        }
+        else
+        {
+            _babyHeadImageView.alpha = 1.0;
+        }
         [self addSubview:_babyHeadImageView];
     }
     return _babyHeadImageView;

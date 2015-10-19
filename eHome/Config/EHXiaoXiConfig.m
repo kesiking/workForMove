@@ -94,6 +94,7 @@
                                                object:nil];
 }
 
+//APP在前台时，小溪消息回调->分流
 -(void)xiaoXiReedMessageCallBackProcess{
     void(^successCompleteBlock)(MessageModel *model) = ^(MessageModel *model){
         if (!(model.chatType == EHMessageChatType_single)) {
@@ -141,10 +142,12 @@
             void(^loginActionBlock)(BOOL loginSuccess) = ^(BOOL loginSuccess){
                 // 如果登陆成功就跳转到当前
                 EHTabBarViewController* tabbarVC = [EHTabBarViewController getTabBarViewController];
+                /*
                 NSString* preUserPhone = [KSAuthenticationCenter preUserPhone];
                 NSString* currentUserPhone = [KSAuthenticationCenter userPhone];
                 BOOL needPopToHomeController = (preUserPhone == nil || ![preUserPhone isEqualToString:currentUserPhone]) || (tabbarVC.selectedIndex == EHTabBarViewControllerType_Sport);
-                if (tabbarVC && [tabbarVC isKindOfClass:[EHTabBarViewController class]] && needPopToHomeController) {
+                 */
+                if (tabbarVC && [tabbarVC isKindOfClass:[EHTabBarViewController class]]) {
                     [tabbarVC.navigationController popToViewController:tabbarVC animated:YES];
                     [tabbarVC setSelectedIndex:EHTabBarViewControllerType_Home];
                 }
@@ -168,7 +171,7 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma send message method
+#pragma mark - send message method
 - (void)sendRemoteMessageWithMessage:(NSString*)message{
     EHSingleChatBabyRemoteMessageHandle* chatMessageHandle = [EHSingleChatBabyRemoteMessageHandle new];
     [chatMessageHandle sendBabyRemoteMessageWithMessage:message];
@@ -228,7 +231,7 @@ messageSuccessBlock:(void(^)(void))messageSuccessBlock
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma notification method
+#pragma mark - notification method
 -(void)applicationDidBecomeActive:(NSNotification*)notification{
     [self loginXIAOXI];
 }

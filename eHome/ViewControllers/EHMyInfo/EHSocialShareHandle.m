@@ -119,7 +119,7 @@
 - (instancetype)initWithTypeArray:(NSArray *)array Title:(NSString *)title Image:(UIImage *)image InView:(UIView *)view FromTarget:(id)target{
     self = [super init];
     if (self) {
-        self.backgroundColor = [UIColor whiteColor];
+        self.backgroundColor = EHBgcor1;
         self.frame = view.bounds;
         [view addSubview:self];
         

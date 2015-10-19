@@ -132,6 +132,7 @@
             if (service.item) {
                 EHLogInfo(@"----> query device status service success: %@",service.item);
                 EHDeviceStatusModel* deviceStatusModel = (EHDeviceStatusModel*)service.item;
+                strongSelf.currentMessageType = deviceStatusModel.message_type;
                 if (strongSelf.didGetDeviceStatus) {
                     strongSelf.didGetDeviceStatus(deviceStatusModel);
                 }
@@ -152,7 +153,11 @@
     if (self.babyId != babyId) {
         [self reset];
         self.babyId = babyId;
-        [self.queryDeviceStatusService queryForTopMessageWithUserPhone:[KSAuthenticationCenter userPhone] babyId:self.babyId];
+        if (self.babyId)
+        {
+            [self.queryDeviceStatusService queryForTopMessageWithUserPhone:[KSAuthenticationCenter userPhone] babyId:self.babyId];
+        }
+        
     }
 }
 
@@ -234,5 +239,4 @@
 -(void)becomeActiveRestartTimer{
     [self start];
 }
-
 @end

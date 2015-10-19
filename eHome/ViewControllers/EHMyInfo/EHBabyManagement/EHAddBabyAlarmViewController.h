@@ -7,7 +7,7 @@
 //
 
 #import "EHBaseBabyAlarmViewController.h"
-
+#import "EHBabyAlarmModel.h"
 @interface EHAddBabyAlarmViewController : EHBaseBabyAlarmViewController
 
 typedef void(^AlarmAddBlock)(EHBabyAlarmModel *alarmModel);

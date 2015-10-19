@@ -24,6 +24,7 @@
 @property(nonatomic,strong)UIButton *normalBtn;
 @property(nonatomic,strong)UIButton *lazyBtn;
 @property(nonatomic,strong)UIButton *currentSelectBtn;
+@property(nonatomic,assign)NSInteger selectCellIndex;
 @end
 
 @implementation EHBabyLocationModeViewController
@@ -32,13 +33,13 @@
     [super viewDidLoad];
     
     self.title=@"定位模式";
-    self.view.backgroundColor=EH_bgcor1;
+    self.view.backgroundColor=EHBgcor1;
     [self configTableView];
 }
 - (void)configTableView
 {
     self.tableView = [[GroupedTableView alloc]initWithFrame:CGRectMake(12, 20, SCREEN_WIDTH-20, SCREEN_HEIGHT)];
-    self.tableView.backgroundColor = EH_bgcor1;
+    self.tableView.backgroundColor = EHBgcor1;
     [self.view addSubview:self.tableView];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
@@ -167,7 +168,7 @@
         _busyBtn = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetWidth(_tableView.frame) - 12 - 44, 0, 44, 44)];
         _busyBtn.tag = 1000;
         _busyBtn.imageEdgeInsets = UIEdgeInsetsMake(11, 22, 11, 0);
-        [_busyBtn addTarget:self action:@selector(buttonSelected:) forControlEvents:UIControlEventTouchUpInside];
+//        [_busyBtn addTarget:self action:@selector(buttonSelected:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _busyBtn;
 }
@@ -177,7 +178,7 @@
         _normalBtn = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetWidth(_tableView.frame) - 12 - 44, 0, 44, 44)];
         _normalBtn.tag = 1001;
         _normalBtn.imageEdgeInsets = UIEdgeInsetsMake(11, 22, 11, 0);
-        [_normalBtn addTarget:self action:@selector(buttonSelected:) forControlEvents:UIControlEventTouchUpInside];
+//        [_normalBtn addTarget:self action:@selector(buttonSelected:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _normalBtn;
 }
@@ -187,7 +188,7 @@
         _lazyBtn = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetWidth(_tableView.frame) - 12 - 44, 0, 44, 44)];
         _lazyBtn.tag = 1002;
         _lazyBtn.imageEdgeInsets = UIEdgeInsetsMake(11, 22, 11, 0);
-        [_lazyBtn addTarget:self action:@selector(buttonSelected:) forControlEvents:UIControlEventTouchUpInside];
+//        [_lazyBtn addTarget:self action:@selector(buttonSelected:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _lazyBtn;
 }
@@ -249,6 +250,7 @@
             if([_locationMode isEqualToString:@"1"]){
                 [_busyBtn setImage:[UIImage imageNamed:@"public_radiobox_set_on"] forState:UIControlStateNormal];
                 self.currentSelectBtn = _busyBtn;
+                self.selectCellIndex = 2000;
             }else
             {
                 [_busyBtn setImage:[UIImage imageNamed:@"public_radiobox_set_off"] forState:UIControlStateNormal];
@@ -261,6 +263,7 @@
             if([_locationMode isEqualToString:@"2"]){
                 [_normalBtn setImage:[UIImage imageNamed:@"public_radiobox_set_on"] forState:UIControlStateNormal];
                 self.currentSelectBtn = _normalBtn;
+                self.selectCellIndex = 2001;
             }else
             {
                 [_normalBtn setImage:[UIImage imageNamed:@"public_radiobox_set_off"] forState:UIControlStateNormal];
@@ -273,6 +276,7 @@
             if([_locationMode isEqualToString:@"3"]){
                 [_lazyBtn setImage:[UIImage imageNamed:@"public_radiobox_set_on"] forState:UIControlStateNormal];
                 self.currentSelectBtn = _lazyBtn;
+                self.selectCellIndex = 2002;
             }else
             {
                 [_lazyBtn setImage:[UIImage imageNamed:@"public_radiobox_set_off"] forState:UIControlStateNormal];
@@ -282,7 +286,7 @@
         default:
             break;
     }
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.selectionStyle = UITableViewCellSelectionStyleDefault;
     return cell;
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
@@ -310,5 +314,31 @@
     }
     [textLabel sizeToFit];
     return footerView;
+}
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    switch (indexPath.row) {
+        case 0:
+            if (self.selectCellIndex == 2000) {
+                break;
+            }
+            [self changLocationMode:@"1"];
+            break;
+        case 1:
+            if (self.selectCellIndex == 2001) {
+                break;
+            }
+            [self changLocationMode:@"2"];
+            break;
+        case 2:
+            if (self.selectCellIndex == 2002) {
+                break;
+            }
+            [self changLocationMode:@"3"];
+            break;
+        default:
+            break;
+    }
 }
 @end

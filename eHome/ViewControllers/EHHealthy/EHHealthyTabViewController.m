@@ -324,12 +324,18 @@
         [NSString stringWithFormat:@"%ld", (long)self.dayVC.dayVCmodel.steps];
         sharedVC.babyTargetSteps.text = [NSString stringWithFormat:@"目标：%ld步",self.dayVC.dayVCmodel.target_steps];
         //距离
-        if(self.dayVC.dayVCmodel.mileage < 1000){
-            sharedVC.distanceDigitLabel.text =
-            [NSString stringWithFormat:@"%.3f米", self.dayVC.dayVCmodel.mileage];
+        
+        if (self.dayVC.dayVCmodel.mileage == 0) {
+            sharedVC.distanceDigitLabel.text = @"0米";
         }else{
-            sharedVC.distanceDigitLabel.text =
-            [NSString stringWithFormat:@"%.3f千米", self.dayVC.dayVCmodel.mileage/1000];
+            if(self.dayVC.dayVCmodel.mileage < 1000){
+                sharedVC.distanceDigitLabel.text =
+                [NSString stringWithFormat:@"%ld米", self.dayVC.dayVCmodel.mileage];
+            }else{
+                sharedVC.distanceDigitLabel.text =
+                [NSString stringWithFormat:@"%.3f千米", self.dayVC.dayVCmodel.mileage/1000.0];
+            }
+            
         }
 
         //热量
@@ -355,18 +361,25 @@
         sharedVC.babyTargetSteps.text = [NSString stringWithFormat:@"目标：%ld步",self.weekVC.weekVCmodel.targetSteps];
 
         //距离
-        if(self.weekVC.weekVCmodel.mileage < 1000){
-            sharedVC.distanceDigitLabel.text =
-            [NSString stringWithFormat:@"%.3f米", self.weekVC.weekVCmodel.mileage];
+        if (self.weekVC.weekVCmodel.mileage == 0) {
+            sharedVC.distanceDigitLabel.text = @"0米";
+
         }else{
-            sharedVC.distanceDigitLabel.text =
-            [NSString stringWithFormat:@"%.3f千米", self.weekVC.weekVCmodel.mileage/1000];
+            if(self.weekVC.weekVCmodel.mileage < 1000){
+                sharedVC.distanceDigitLabel.text =
+                [NSString stringWithFormat:@"%ld米", self.weekVC.weekVCmodel.mileage];
+            }else{
+                sharedVC.distanceDigitLabel.text =
+                [NSString stringWithFormat:@"%.3f千米", self.weekVC.weekVCmodel.mileage/1000.0];
+            }
+            
         }
+        
         
         
         //热量
         sharedVC.energyDigitLabel.text =
-        [NSString stringWithFormat:@"%.0f卡", self.weekVC.weekVCmodel.calorie];
+        [NSString stringWithFormat:@"%ld千卡", self.weekVC.weekVCmodel.calorie];
         //完成
         sharedVC.finishDigitRateLabel.text =
         [NSString stringWithFormat:@"%@%%", self.weekVC.weekVCmodel.percent];
@@ -450,13 +463,18 @@
 }
 #pragma mark - KSTabBarViewControllerProtocol
 - (BOOL)shouldSelectViewController:(UIViewController *)viewController {
-    if ([KSAuthenticationCenter isTestAccount]) {
+    BOOL hasBabyId =(BOOL)[[EHBabyListDataCenter sharedCenter] currentBabyUserInfo].babyId;
+    if ([KSAuthenticationCenter isTestAccount]&&hasBabyId) {
         return YES;
-    }
+    }else if([KSAuthenticationCenter isTestAccount]&&!hasBabyId){
+        [WeAppToast toast:@"暂无试用宝贝，请稍后再试"];
+        return NO;
+        }
     WEAKSELF
     return [self alertViewCheckBabyIdWithCompleteBlock:^{
         STRONGSELF[strongSelf doBabyAttention];
     }];
+
 }
 
 #pragma mark - 用户没有添加宝贝情况下，宝贝添加引导

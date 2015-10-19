@@ -134,7 +134,7 @@
             
         };
         _logoutService.serviceDidFailLoadBlock = ^(WeAppBasicService *service, NSError *error){
-            [WeAppToast toast:@"登出失败，请稍微再试"];
+            [WeAppToast toast:@"登出失败，请稍后再试"];
         };
     }
     return _logoutService;

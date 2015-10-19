@@ -32,6 +32,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.title = @"更改密码";
+    self.view.backgroundColor=EHBgcor1;
     [self.view addSubview:self.modifyPasswordView];
     
 //    UIBarButtonItem *rightButtonItem = [[UIBarButtonItem alloc]initWithCustomView:self.modifyPasswordView.resetViewCtl.btn_nextStep];

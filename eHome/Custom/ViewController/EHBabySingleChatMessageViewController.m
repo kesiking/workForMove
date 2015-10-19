@@ -30,16 +30,31 @@
 
 @property (nonatomic, strong) EHChatMessageTimestampCaculater                  * chatMessageTimestampCaculater;
 
+@property (nonatomic, strong) NSNumber                 * babyId;
+
 
 @end
 
 @implementation EHBabySingleChatMessageViewController
 
+-(id)initWithNavigatorURL:(NSURL *)URL query:(NSDictionary *)query nativeParams:(NSDictionary *)nativeParams{
+    self = [super initWithNavigatorURL:URL query:query nativeParams:nativeParams];
+    if (self) {
+        self.babyId = [nativeParams objectForKey:@"babyId"];
+    }
+    return self;
+}
+
 - (void)loadSingleChatMessageListDataSource {
-    NSNumber* babyId = self.babyUserInfo.babyId;
+    NSNumber* babyId = self.babyId;;
+    if (babyId == nil) {
+        babyId = self.babyUserInfo.babyId;
+    }
     if (babyId == nil) {
         babyId = [NSNumber numberWithInteger:[[[EHBabyListDataCenter sharedCenter] currentBabyId] integerValue]];
     }
+    // 方案一  如果是当前聊天宝贝才接受insert否则都不更新数据库，避免漏掉聊天数据
+    [[EHBabyListDataCenter sharedCenter] setCurrentChatBabyId:[NSString stringWithFormat:@"%@",babyId]];
     [self.chatMessageListService loadChatMessageListWithBabyId:babyId userPhone:[KSAuthenticationCenter userPhone]];
 }
 
@@ -108,6 +123,7 @@
 
 - (void)configChatMessageView{
     [[XHConfigurationHelper appearance] setupPopMenuTitles:@[NSLocalizedStringFromTable(@"copy", @"MessageDisplayKitString", @"复制文本消息")]] ;
+    [[XHConfigurationHelper appearance] setupMessageTableStyle:@{kXHMessageTableAvatarPalceholderImageNameKey:@"tabitem_info_normal"}];
     _voiceRecordHelper = [self valueForKey:@"voiceRecordHelper"];
     _voiceRecordHelper.maxRecordTime = 10;
     _voiceRecordHelper.recordProgress = ^(float progress){
@@ -138,6 +154,8 @@
 
 - (void)dealloc {
     [[XHAudioPlayerHelper shareInstance] setDelegate:nil];
+    // 方案一  如果是当前聊天宝贝才接受insert否则都不更新数据库，避免漏掉聊天数据
+    [[EHBabyListDataCenter sharedCenter] setCurrentChatBabyId:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -195,13 +213,18 @@
         return NO;
     }
     EHChatMessagePageList* chatMessagePageList = (EHChatMessagePageList*)pagelist;
-    if (chatMessagePageList.insertListType == KSInsertListTypeBeforPagelist) {
-        return YES;
-    }
     if (chatMessagePageList.isRefresh) {
         return NO;
     }
-    return NO;
+    if (chatMessagePageList.insertDataList && chatMessagePageList.insertDataList.count > 0) {
+        if (chatMessagePageList.insertListType == KSInsertListTypeAfterPagelist) {
+            return NO;
+        }
+        if (chatMessagePageList.insertListType == KSInsertListTypeBeforPagelist) {
+            return YES;
+        }
+    }
+    return YES;
 }
 
 -(void)configChatMessageTimestampWithPagelist:(WeAppBasicPagedList*)pagelist{
@@ -235,10 +258,17 @@
         case XHBubbleMessageMediaTypeVoice: {
             DLog(@"message : %@", message.voicePath);
             
+            id messageObj = [self.messages objectAtIndex:[indexPath row]];
+            EHChatMessageinfoModel* chatMessageModel = nil;
+            if (messageObj && [messageObj isKindOfClass:[EHChatMessageinfoModel class]]) {
+                chatMessageModel = (EHChatMessageinfoModel*)messageObj;
+            }else if(messageObj && [messageObj isKindOfClass:[XHBabyChatMessage class]]){
+                chatMessageModel = [EHChatMessageinfoModel makeMessage:(XHBabyChatMessage*)messageObj];
+            }
             // Mark the voice as read and hide the red dot.
-            if ([message isKindOfClass:[XHBabyChatMessage class]]) {
+            if (chatMessageModel && [chatMessageModel isKindOfClass:[EHChatMessageinfoModel class]]) {
                 message.isRead = YES;
-                [[EHSingleChatCacheManager sharedCenter] updateBabyChatMessage:(XHBabyChatMessage*)message writeSuccess:^(BOOL success) {
+                [[EHSingleChatCacheManager sharedCenter] updateBabyChatMessage:chatMessageModel writeSuccess:^(BOOL success) {
                     EHLogInfo(@"-----> message 是否已读 设置成功");
                 }];
             }
@@ -356,6 +386,10 @@
  *  @param date             发送时间
  */
 - (void)didSendVoice:(NSString *)voicePath voiceDuration:(NSString *)voiceDuration fromSender:(NSString *)sender onDate:(NSDate *)date {
+    if ([voiceDuration doubleValue] < 1.0) {
+        [WeAppToast toast:@"录音时间太短"];
+        return;
+    }
     XHBabyChatMessage *voiceMessage = [[XHBabyChatMessage alloc] initWithVoicePath:voicePath voiceUrl:nil voiceDuration:voiceDuration sender:sender timestamp:date];
     [self configMessage:voiceMessage];
     [self sendMessage:voiceMessage];
@@ -385,6 +419,8 @@
     message.msgStatus = EHBabyChatMessageStatusSending;
     message.user_nick_name = [KSAuthenticationCenter userComponent].nick_name;
     [message configMessageID];
+    //只要是自己发送的消息，shouldShowUserName都为NO
+    message.shouldShowUserName = NO;
     [self addMessage:message];
     [self finishSendMessageWithBubbleMessageType:message.messageMediaType];
 }
@@ -396,10 +432,21 @@
 }
 
 -(BOOL)checkTextValid:(NSString*)text{
-    if (text.length > 50) {
-        [WeAppToast toast:@"输入字数超出限制"];
+    if (text == nil || text.length == 0) {
+        [WeAppToast toast:@"请输入合法字符"];
         return NO;
     }
+    if (text.length > 50) {
+        [WeAppToast toast:@"输入字数超出限制(50字)"];
+        return NO;
+    }
+    
+    BOOL stringContainsEmoji = [EHUtils stringContainsEmoji:text];
+    if (stringContainsEmoji) {
+        [WeAppToast toast:@"暂时不支持表情符号哦"];
+        return NO;
+    }
+    
     return YES;
 }
 

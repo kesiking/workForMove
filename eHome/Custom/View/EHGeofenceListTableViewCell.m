@@ -7,81 +7,87 @@
 //
 
 #import "EHGeofenceListTableViewCell.h"
+#import "NSString+StringSize.h"
+
+@interface EHGeofenceListTableViewCell ()
+
+@property (nonatomic, strong)UILabel *nameLabel;
+
+@property (nonatomic, strong)UILabel *radiusLabel;
+
+@property (nonatomic, strong)UILabel *addressLabel;
+
+@end
 
 @implementation EHGeofenceListTableViewCell
-{
-    UILabel *_nameLabel;
-    UILabel *_addressLabel;
-    CAShapeLayer *_lineLayer;
-}
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        _nameLabel = [[UILabel alloc]initWithFrame:CGRectMake(kSpaceX, 10, 200, 20)];
-        _nameLabel.font = EH_font3;
-        _nameLabel.textColor = EH_cor3;
-        
-        _addressLabel = [[UILabel alloc]initWithFrame:CGRectMake(kSpaceX, 10 + 20 + 15, 200, 15)];
-        _addressLabel.font = EH_font6;
-        _addressLabel.textColor = EH_cor4;
-        
-        UIBezierPath *path = [UIBezierPath bezierPathWithRect:CGRectMake(0, CGRectGetHeight(self.frame) - 1, CGRectGetWidth(self.frame), 1)];
-        _lineLayer = [CAShapeLayer layer];
-        _lineLayer.path = path.CGPath;
-        _lineLayer.strokeColor = [UIColor clearColor].CGColor;
-        _lineLayer.fillColor = [UIColor lightGrayColor].CGColor;
-        [self.layer addSublayer:_lineLayer];
-        
-        [self.contentView addSubview:_nameLabel];
-        [self.contentView addSubview:_addressLabel];
+        [self.contentView addSubview:self.nameLabel];
+        [self.contentView addSubview:self.radiusLabel];
+        [self.contentView addSubview:self.addressLabel];
         [self.contentView addSubview:self.swit];
-//        self.layer.borderWidth = 1;
     }
     return self;
 }
 
 - (void)configWithGeofence:(EHGetGeofenceListRsp *)geofence{
-    _nameLabel.text = geofence.geofence_name;
-    _addressLabel.text = geofence.geofence_address;
+    self.nameLabel.text = geofence.geofence_name;
+    self.radiusLabel.text = [NSString stringWithFormat:@"%d米",geofence.geofence_radius];
+    self.addressLabel.text = geofence.geofence_address;
     _swit.on = geofence.status_switch;
-    if (_swit.on == YES) {
-        _swit.knobColor = [UIColor colorWithRed:92/255.0 green:176/255.0 blue:65/255.0 alpha:1];
-    }
-    else {
-        _swit.knobColor = [UIColor colorWithRed:176/255.0 green:176/255.0 blue:180/255.0 alpha:1];
-    }
 }
 
-- (void)switchChanged:(id)sender{
-    SevenSwitch *swit = (SevenSwitch *)sender;
-    
-    if (swit.on == YES) {
-        swit.knobColor = [UIColor colorWithRed:92/255.0 green:176/255.0 blue:65/255.0 alpha:1];
-    }
-    else {
-        swit.knobColor = [UIColor colorWithRed:176/255.0 green:176/255.0 blue:180/255.0 alpha:1];
-    }
-    !self.switchStatusChangeBlock?:self.switchStatusChangeBlock(swit.on);
-}
 
 - (void)layoutSubviews{
-    _nameLabel.frame = CGRectMake(kSpaceX, 10, 200, 20);
-    _addressLabel.frame = CGRectMake(kSpaceX, 10 + 20 + 15, 200, 15);
-    _swit.frame = CGRectMake(CGRectGetWidth(self.frame) - 20 - 50, 22.5, 50, 25);
-    UIBezierPath *path = [UIBezierPath bezierPathWithRect:CGRectMake(kSpaceX, CGRectGetHeight(self.frame) - 0.2, CGRectGetWidth(self.frame) - kSpaceX, 0.2)];
-    _lineLayer.path = path.CGPath;
+    [super layoutSubviews];
+    CGSize radiusLabelSize = [self.radiusLabel.text sizeWithFontSize:EHSiz2 Width:MAXFLOAT];
+    self.radiusLabel.frame = CGRectMake(CGRectGetWidth(self.frame) - 71.5 - radiusLabelSize.width, 17, radiusLabelSize.width, radiusLabelSize.height);
+    
+    self.swit.frame = CGRectMake(CGRectGetWidth(self.frame) - 12 - 39, (CGRectGetHeight(self.frame) - 22) / 2.0, 39, 22);
+    
+    _nameLabel.frame = CGRectMake(12, 14, CGRectGetMinX(self.radiusLabel.frame) - 12, CGRectGetHeight(self.radiusLabel.frame));
+    
+    _addressLabel.frame = CGRectMake(12, CGRectGetMaxY(self.nameLabel.frame) + 9.5, CGRectGetMinX(self.swit.frame) - 12 - 12, [self.addressLabel.text sizeWithFontSize:EHSiz5 Width:MAXFLOAT].height);
 }
 
-- (SevenSwitch *)swit{
+#pragma mark - Getters And Setters
+- (UILabel *)nameLabel {
+    if (!_nameLabel) {
+        _nameLabel = [[UILabel alloc]initWithFrame:CGRectMake(kSpaceX, 10, 200, 20)];
+        _nameLabel.font = EHFont2;
+        _nameLabel.textColor = EHCor5;
+    }
+    return _nameLabel;
+}
+
+- (UILabel *)radiusLabel {
+    if (!_radiusLabel) {
+        _radiusLabel = [[UILabel alloc]initWithFrame:CGRectMake(kSpaceX, 10, 200, 20)];
+        _radiusLabel.font = EHFont2;
+        _radiusLabel.textColor = EHCor5;
+    }
+    return _radiusLabel;
+}
+
+- (UILabel *)addressLabel {
+    if (!_addressLabel) {
+        _addressLabel = [[UILabel alloc]initWithFrame:CGRectMake(kSpaceX, 10, 200, 20)];
+        _addressLabel.font = EHFont5;
+        _addressLabel.textColor = EHCor4;
+    }
+    return _addressLabel;
+}
+
+- (EHSwitch *)swit{
     if (!_swit) {
-        _swit = [[SevenSwitch alloc]initWithFrame:CGRectMake(CGRectGetWidth(self.frame) - 20 - 50, 25, 50, 20)];
-        _swit.onColor = [UIColor colorWithRed:168/255.0 green:216/255.0 blue:152/255.0 alpha:1];
-        _swit.knobColor = [UIColor colorWithRed:92/255.0 green:176/255.0 blue:65/255.0 alpha:1];
-        _swit.inactiveColor = [UIColor colorWithRed:214/255.0 green:214/255.0 blue:217/255.0 alpha:1];
-        
-        [_swit addTarget:self action:@selector(switchChanged:) forControlEvents:UIControlEventValueChanged];
+        _swit = [[EHSwitch alloc]initWithFrame:CGRectZero];
+        WEAKSELF
+        _swit.switchChangedBlock = ^(BOOL on){
+            !weakSelf.switchChangedBlock?:weakSelf.switchChangedBlock(on);
+        };
     }
     return _swit;
 }

@@ -34,9 +34,9 @@
         self.title = @"修改昵称";
     }
     
-    self.view.backgroundColor = EH_bgcor1;
+    self.view.backgroundColor = EHBgcor1;
     
-    self.babyNameTextField = [[UITextField alloc] initWithFrame:CGRectMake(15, 22, CGRectGetWidth([UIScreen mainScreen].bounds) - 30, 49)];
+    self.babyNameTextField = [[UITextField alloc] initWithFrame:CGRectMake(15, 12, CGRectGetWidth([UIScreen mainScreen].bounds) - 30, 49)];
     self.babyNameTextField.font = [UIFont systemFontOfSize:EH_siz3];
     //self.babyNameTextField.backgroundColor = [UIColor whiteColor];
     self.babyNameTextField.textColor = EH_cor3;
@@ -44,7 +44,6 @@
     self.babyNameTextField.text = self.babyName;
     self.babyNameTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.babyNameTextField.borderStyle = UITextBorderStyleRoundedRect;
-    
     [self.view addSubview:self.babyNameTextField];
  
     

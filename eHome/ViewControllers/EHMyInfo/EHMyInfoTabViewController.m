@@ -54,12 +54,13 @@ typedef NS_ENUM(NSInteger, EHCollentionItemType) {
 
 
 @interface EHMyInfoTabViewController()<UITableViewDataSource,UITableViewDelegate,EHSocialShareViewDelegate, EHCollectionItemTableViewCellDelegate>
-
+@property (strong, nonatomic) UITableView *tableView;;
+@property (strong, nonatomic) EHGetBabyListRsp*  currentSelectBaby;;
 @end
 
 @implementation EHMyInfoTabViewController
 {
-    UITableView *_tableView;
+//    UITableView *_tableView;
 //    NSArray *_babyArray;
 //    EHGetBabyListService* _getBabyList;
     
@@ -72,12 +73,13 @@ typedef NS_ENUM(NSInteger, EHCollentionItemType) {
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.needLogin = YES;
-    
+    self.view.backgroundColor=EHBgcor1;
     _currentSelectBaby = [[EHBabyListDataCenter sharedCenter] currentBabyUserInfo];
     [self initTableView];
     //[self initNavBarViews];
     [self setupFunctionCollectionItemList];
     [self initAppSettingItemList];
+    [self initNotification];
 }
 
 -(void)measureViewFrame{
@@ -100,6 +102,11 @@ typedef NS_ENUM(NSInteger, EHCollentionItemType) {
     [super viewWillDisappear:animated];
 }
 
+-(void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - Getters And Setters
 -(void)initNavBarViews{
     
     UIBarButtonItem* rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.navBarRightView];
@@ -112,7 +119,7 @@ typedef NS_ENUM(NSInteger, EHCollentionItemType) {
         _tableView = [[UITableView alloc]initWithFrame:CGRectZero style:UITableViewStyleGrouped];
         _tableView.dataSource = self;
         _tableView.delegate = self;
-        
+        _tableView.backgroundColor=EHBgcor1;
         [self.view addSubview:_tableView];
         
         [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -120,6 +127,13 @@ typedef NS_ENUM(NSInteger, EHCollentionItemType) {
         }];
     }
 }
+
+-(void)initNotification{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHBindBabySuccessNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHUNBindBabySuccessNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHBabyInfoChangedNotification object:nil];
+}
+
 
 -(void)babyHorizontalListViewBabyCliced:(EHGetBabyListRsp*)babyUserInfo
 {
@@ -361,7 +375,7 @@ static NSString * kEHBabyDetailTableViewCellId = @"kEHBabyDetailTableViewCellId"
         else
         {
             if (indexPath.row == 0) {
-                [EHSocialShareHandle presentWithTypeArray:@[EHShareToWechatSession,EHShareToWechatTimeline,EHShareToQQ,EHShareToSina,EHShareToSms,EHShareToQRCode] Title:[NSString stringWithFormat:@"%@ %@",kEH_APP_NAME,kEH_WEBSITE_URL] Image:[UIImage imageNamed:kEH_LOGO_IMAGE_NAME] FromTarget:self];
+                [EHSocialShareHandle presentWithTypeArray:@[EHShareToWechatSession,EHShareToWechatTimeline,EHShareToSms,EHShareToQRCode] Title:[NSString stringWithFormat:@"%@ %@",kEH_APP_NAME,kEH_WEBSITE_URL] Image:[UIImage imageNamed:kEH_LOGO_IMAGE_NAME] FromTarget:self];
             }
             else {
                 EHAboutViewController *aboutViewController = [[EHAboutViewController alloc]init];
@@ -394,7 +408,7 @@ static NSString * kEHBabyDetailTableViewCellId = @"kEHBabyDetailTableViewCellId"
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 8;
+    return 12;
 }
 
 //- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
@@ -415,7 +429,6 @@ static NSString * kEHBabyDetailTableViewCellId = @"kEHBabyDetailTableViewCellId"
 //}
 
 
-#pragma mark - Getters And Setters
 
 //设置宝贝列表，获取宝贝信息
 //- (void)loadBabyUsers{
@@ -448,6 +461,21 @@ static NSString * kEHBabyDetailTableViewCellId = @"kEHBabyDetailTableViewCellId"
 
 #pragma mark - Events Response
 
+#pragma mark - refresh baby list method
+
+-(void)refreshBabyList{
+    [self.babyHorizontalListView refreshDataRequest];
+}
+#pragma mark - 添加或是接触宝贝消息响应
+
+-(void)babyDidChangedNotification:(NSNotification*)notification{
+    BOOL isNeedForceRefreshData = [[notification.userInfo objectForKey:EHFORCE_REFRESH_DATA] boolValue];
+    if (isNeedForceRefreshData) {
+        [self refreshBabyList];
+    }else{
+        [self refreshDataRequest];
+    }
+}
 
 #pragma mark - EHSocialShareViewDelegate
 - (void)shareWithType:(NSInteger)type Title:(NSString *)title Image:(UIImage *)image{

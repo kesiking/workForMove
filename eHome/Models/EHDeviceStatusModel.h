@@ -13,7 +13,10 @@ typedef NS_ENUM(NSInteger, EHDeviceStatusModelMessageType) {
     EHDeviceStatusModelMessageType_Battery = 1,         // 电池电量
     EHDeviceStatusModelMessageType_OutOrInLine = 2,     // 离线
 };
-
+typedef NS_ENUM(NSInteger, EHCurrentMessageType) {
+    EHCurrentMessageType_babyMessage = 1,         // 宝贝消息
+    EHCurrentMessageType_systemMessage = 2,         // 系统消息
+};
 @interface EHDeviceStatusModel : WeAppComponentBaseItem
 
 // 设备电量
@@ -22,6 +25,8 @@ typedef NS_ENUM(NSInteger, EHDeviceStatusModelMessageType) {
 @property (nonatomic, strong) NSNumber * device_status;
 // 设备未读消息
 @property (nonatomic, strong) NSNumber * message_number;
+// 最后一条消息的类型,用于不同消息类型的跳转
+@property (nonatomic, strong) NSNumber * message_type;
 // 设备描述文案
 @property (nonatomic, strong) NSString * device_description_info;
 

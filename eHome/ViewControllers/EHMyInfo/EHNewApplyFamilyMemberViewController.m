@@ -39,7 +39,7 @@
     [super viewDidLoad];
     self.title=@"新申请的成员";
     [self.view addSubview:[self newApplyFamilyMemberTableView]];
-    self.view.backgroundColor=_newfamilyMemberTableView.backgroundColor;
+    self.view.backgroundColor=EHBgcor1;
     if (self.redPointIsShow) {
         self.redPointIsShow(NO);
     }

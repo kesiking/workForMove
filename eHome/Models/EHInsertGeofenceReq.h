@@ -10,12 +10,12 @@
 
 @interface EHInsertGeofenceReq : WeAppComponentBaseItem
 
-@property (nonatomic, strong) NSString *geofence_name;
-@property (nonatomic, assign) double    latitude;
-@property (nonatomic, assign) double    longitude;
-@property (nonatomic, assign) int       geofence_radius;
-@property (nonatomic, assign) int       creator_id;
-@property (nonatomic, assign) int       baby_id;
-@property (nonatomic, strong) NSString *geofence_address;
+@property (nonatomic, strong) NSString  *geofence_name;
+@property (nonatomic, assign) CGFloat    latitude;
+@property (nonatomic, assign) CGFloat    longitude;
+@property (nonatomic, assign) NSInteger  geofence_radius;
+@property (nonatomic, assign) NSInteger  creator_id;
+@property (nonatomic, assign) NSInteger  baby_id;
+@property (nonatomic, strong) NSString  *geofence_address;
 
 @end

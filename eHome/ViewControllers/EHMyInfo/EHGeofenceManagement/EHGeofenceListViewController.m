@@ -14,8 +14,7 @@
 #import "EHUpdateGeofenceStatusService.h"
 #import "EHBabyListDataCenter.h"
 #import "NSString+StringSize.h"
-
-#define kCellHeight     70
+#import "EHGeofenceMapViewShareInstance.h"
 
 @interface EHGeofenceListViewController() <UITableViewDataSource,UITableViewDelegate>
 
@@ -25,25 +24,24 @@
 
 @property (nonatomic, strong)NSIndexPath *switchChangedIndexPath;
 
+@property (nonatomic, assign)NSUInteger beginListCount;
+@property (nonatomic, strong)EHUpdateGeofenceStatusService *statusService;
+
 @end
 
 @implementation EHGeofenceListViewController
 {
     EHGetGeofenceListService *_listService;
-    EHUpdateGeofenceStatusService *_statusService;
-    UITableView *_tableView;
-    NSUInteger _beginListCount;
+    //EHUpdateGeofenceStatusService *_statusService;
+    //UITableView *_tableView;
+    //NSUInteger _beginListCount;
 }
 
 #pragma mark - Life Cycle
 - (void)viewDidLoad{
     [super viewDidLoad];
     
-    self.title = @"安全围栏";
-    self.view.backgroundColor = EH_bgcor1;
-    
-    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc]initWithImage:[UIImage imageNamed:@"public_ico_tbar_add"] style:UIBarButtonItemStylePlain target:self action:@selector(rightItemClick:)];
-    self.navigationItem.rightBarButtonItem = rightItem;
+    [self configNavigationBar];
     
     [self.view addSubview:self.tableView];
     self.switchChangedIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
@@ -51,7 +49,9 @@
     [self configUpdateGeofenceStatusService];
     
     [self initMapView];
+ 
 }
+
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
@@ -62,7 +62,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
-    if (_beginListCount != self.geofenceList.count) {
+    if (self.beginListCount != self.geofenceList.count) {
         !self.geofenceListCountDidChanged?:self.geofenceListCountDidChanged(self.geofenceList);
     }
 }
@@ -129,14 +129,16 @@
     [cell configWithGeofence:rsp];
     cell.backgroundColor = [UIColor clearColor];
     
-    NSNumber *geofence_id = [NSNumber numberWithInt:rsp.geofence_id];
-    cell.switchStatusChangeBlock = ^(BOOL isOn){
+    NSNumber *geofence_id = [NSNumber numberWithInteger:rsp.geofence_id];
+    WEAKSELF
+    cell.switchChangedBlock = ^(BOOL isOn){
+        STRONGSELF
         NSDictionary *dic = @{@"geofence_id":geofence_id,
                               @"status_switch":[NSNumber numberWithInteger:isOn]};
         NSArray *array = @[dic];
-        [_statusService updateGeofenceStatus:array];
-        [self.statusHandler showLoadingViewInView:self.view];
-        self.switchChangedIndexPath = indexPath;
+        [strongSelf.statusService updateGeofenceStatus:array];
+        [strongSelf.statusHandler showLoadingViewInView:strongSelf.view];
+        strongSelf.switchChangedIndexPath = indexPath;
     };
     return cell;
 }
@@ -152,10 +154,9 @@
         gdvc.babyUser = self.babyUser;
         gdvc.geofenceInfo = self.geofenceList[indexPath.row];
         gdvc.existedNameArray = existedNameArray;
-        gdvc.geofenceCoordinate = CLLocationCoordinate2DMake(gdvc.geofenceInfo.latitude, gdvc.geofenceInfo.longitude);
-        gdvc.radius = gdvc.geofenceInfo.geofence_radius;
         gdvc.mapView = self.mapView;
         [self.navigationController pushViewController:gdvc animated:YES];
+        
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
         return;
     }
@@ -167,28 +168,41 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return kCellHeight;
+    CGFloat height = 14 + [@"text" sizeWithFontSize:EHSiz2 Width:MAXFLOAT].height + 9.5 + [@"text" sizeWithFontSize:EHSiz5 Width:MAXFLOAT].height + 10.5;
+    return height;
 }
 
 #pragma mark - Common Methods
 - (void)initMapView
 {
-    [MAMapServices sharedServices].apiKey = kMAMapAPIKey;   //设置KEY
-    self.mapView = [[MAMapView alloc] initWithFrame:self.view.bounds];
+    self.mapView = [[EHGeofenceMapViewShareInstance sharedCenter] getMapViewWithFrame:self.view.bounds];
     self.mapView.showsUserLocation = NO;                       //YES 为打开定位，NO为关闭定位
     self.mapView.showsScale = NO;
     self.mapView.showsCompass = NO;
     //    [_mapView setCenterCoordinate:coordinate];              //地图设置中心点
     //    [_mapView setZoomLevel:10 animated:YES];                //地图设置缩放级别，3~20
     [self.mapView setUserTrackingMode: MAUserTrackingModeNone]; //地图不跟着位置移动
+    
 }
 
 #pragma mark - Getters And Setters
+- (void)configNavigationBar {
+    self.title = @"安全围栏";
+    self.view.backgroundColor = EHBgcor1;
+    
+    UIButton *rightItemBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 22, 22)];
+    [rightItemBtn setImage:[UIImage imageNamed:@"icon_my_add02_n"] forState:UIControlStateNormal];
+    [rightItemBtn setImage:[UIImage imageNamed:@"icon_my_add02_p"] forState:UIControlStateHighlighted];
+    [rightItemBtn addTarget:self action:@selector(rightItemClick:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc]initWithCustomView:rightItemBtn];
+
+    self.navigationItem.rightBarButtonItem = rightItem;
+}
+
 - (UITableView *)tableView{
     if (!_tableView){
-        _tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame)) style:UITableViewStylePlain];
+        _tableView = [[GroupedTableView alloc]initWithFrame:CGRectMake(8, 12, CGRectGetWidth(self.view.frame) - 16, CGRectGetHeight(self.view.frame) - 12) style:UITableViewStylePlain];
         _tableView.backgroundColor = [UIColor clearColor];
-        _tableView.rowHeight = kCellHeight;
         _tableView.dataSource = self;
         _tableView.delegate = self;
         _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -251,26 +265,27 @@ static bool firstTag = YES;
 - (void)configGetGeofenceListService{
     if (!_listService) {
         _listService = [EHGetGeofenceListService new];
-        typeof(_tableView) __weak weakTableView = _tableView;
+        //typeof(_tableView) __weak weakTableView = _tableView;
         WEAKSELF
         _listService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
             STRONGSELF
             [strongSelf hideLoadingView];
             strongSelf.geofenceList = service.dataList;
-            for (EHGetGeofenceListRsp *rsp in service.dataList) {
-                EHLogInfo(@"rsp = %@",rsp);
-            }
-            
+//            for (EHGetGeofenceListRsp *rsp in service.dataList) {
+//                EHLogInfo(@"rsp = %@",rsp);
+//            }
+//            
             if (firstTag) {
-                _beginListCount = strongSelf.geofenceList.count;
+                strongSelf.beginListCount = strongSelf.geofenceList.count;
                 firstTag = NO;
             }
-            
+
             [strongSelf checkDataArray];
-            [weakTableView reloadData];
+            [[strongSelf tableView] reloadData];
         };
         _listService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
-            [weakSelf hideLoadingView];
+            STRONGSELF
+            [strongSelf hideLoadingView];
             [WeAppToast toast:@"获取围栏列表失败"];
         };
     }
@@ -279,11 +294,11 @@ static bool firstTag = YES;
 - (void)configUpdateGeofenceStatusService{
     if (!_statusService) {
         _statusService = [EHUpdateGeofenceStatusService new];
-        typeof(self) __weak weakSelf = self;
-
+        WEAKSELF
         _statusService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
+            STRONGSELF
             [[NSNotificationCenter defaultCenter] postNotificationName:EHGeofenceChangeNotification object:nil];
-            [weakSelf.statusHandler hideLoadingView];
+            [strongSelf.statusHandler hideLoadingView];
         };
         _statusService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
             STRONGSELF

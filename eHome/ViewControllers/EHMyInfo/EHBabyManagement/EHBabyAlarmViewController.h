@@ -7,16 +7,22 @@
 //
 
 #import "KSViewController.h"
-#import "EHAddBabyAlarmViewController.h"
-#import "EHEditBabyAlarmViewController.h"
+#import "EHBabyAlarmAddViewController.h"
+#import "EHBabyAlarmEditViewController.h"
 #import "EHGetBabyListRsp.h"
 
+typedef NS_ENUM(NSInteger, EHAlarmListStatusType) {
+    EHAlarmListStatusTypeAdd = 0,
+    EHAlarmListStatusTypeUpdate,
+    EHAlarmListStatusTypeDelete,
+};
 
 
 @interface EHBabyAlarmViewController : KSViewController
 
 @property (strong,nonatomic) EHGetBabyListRsp    *babyUser;
 @property (strong,nonatomic) NSMutableArray *babyAlarmList;
+
 
 
 

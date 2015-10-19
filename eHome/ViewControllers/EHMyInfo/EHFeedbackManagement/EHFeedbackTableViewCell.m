@@ -25,14 +25,15 @@
         _bubbleImageView = [[UIImageView alloc]init];
         
         _timeLabel = [[UILabel alloc]init];
-        _timeLabel.textColor = RGB(0xbb, 0xbb, 0xbb);
-        _timeLabel.font = EH_font4;
+        _timeLabel.textColor = EHCor3;
+        _timeLabel.font = EHFont6;
         _timeLabel.textAlignment = NSTextAlignmentCenter;
         _timeLabel.numberOfLines = 0;
         _timeLabel.lineBreakMode = NSLineBreakByWordWrapping;
         
         _contentLabel = [[UILabel alloc]init];
-        _contentLabel.font = EH_font3;
+        _contentLabel.textColor = EHCor5;
+        _contentLabel.font = EHFont2;
         _contentLabel.textAlignment = NSTextAlignmentLeft;
         _contentLabel.numberOfLines = 0;
         _contentLabel.lineBreakMode = NSLineBreakByWordWrapping;

@@ -41,7 +41,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = EH_bgcor1;
+    self.view.backgroundColor = EHBgcor1;
     
     [self.view addSubview:self.tableView];
 
@@ -179,7 +179,10 @@
         else {
             UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellID];
             cell.textLabel.text = @"频率";
+            cell.textLabel.font = EHFont2;
+            cell.textLabel.textColor = EHCor5;
             cell.detailTextLabel.text = [self.remindModel.is_repeat boolValue]?@"重复":@"仅一次";
+            cell.detailTextLabel.font = EHFont2;
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             return cell;
         }
@@ -187,7 +190,7 @@
     else {
         UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellID];
         
-        UILabel *deleteLabel = [[UILabel alloc]initWithFrame:cell.bounds];
+        UILabel *deleteLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(tableView.frame), [self tableView:tableView heightForRowAtIndexPath:indexPath])];
         deleteLabel.text = @"删除该提醒";
         deleteLabel.font = EHFont2;
         deleteLabel.textColor = EHCor22;

@@ -21,7 +21,6 @@
     NSString *_sendNickName;
     UIButton *_sureBtn;
     UITextField *_nickNameField;
-    CAShapeLayer *_lineLayer;
     EHModifyNickNameService *_modifyNickNameService;
 }
 
@@ -38,23 +37,22 @@
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc]initWithCustomView:[self sureBtn]];
     self.navigationItem.rightBarButtonItem = rightItem;
     self.navigationItem.title = @"我的昵称";
+    self.view.backgroundColor=EHBgcor1;
     [self.view addSubview:[self nickNameField]];
     
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textFieldValueChanged:) name:UITextFieldTextDidChangeNotification object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    [_nickNameField becomeFirstResponder];
+//    [_nickNameField becomeFirstResponder];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UITextFieldTextDidChangeNotification object:nil];
 }
 
 #pragma mark - Events Response
@@ -84,21 +82,6 @@
     }
 }
 
-- (void)textFieldValueChanged:(NSNotification *)notification{
-    UITextField* textField = [notification object];
-    
-    if (textField.text.length > 0) {
-        if (textField.markedTextRange == nil && textField.text.length > 20) {
-            NSString *substring = [textField.text substringToIndex:20];
-            textField.text = substring;
-        }
-        _lineLayer.strokeColor = EH_linecor2.CGColor;
-    }
-    else {
-        _lineLayer.strokeColor = EH_linecor1.CGColor;
-    }
-}
-
 - (BOOL)textFieldShouldReturn:(UITextField *)theTextField {
     [theTextField resignFirstResponder];
     return YES;
@@ -119,13 +102,6 @@
         _nickNameField.returnKeyType = UIReturnKeyDone;
         _nickNameField.clearButtonMode = UITextFieldViewModeWhileEditing;
         _nickNameField.delegate = self;
-        UIBezierPath *bp = [UIBezierPath bezierPathWithRect:CGRectMake(0, 0, CGRectGetWidth(_nickNameField.frame), 0.1)];
-        _lineLayer = [CAShapeLayer layer];
-        _lineLayer.path = bp.CGPath;
-        _lineLayer.frame = CGRectMake(0, CGRectGetHeight(_nickNameField.frame) - 0.1, CGRectGetWidth(_nickNameField.frame), 0.1);
-        _lineLayer.strokeColor = EH_linecor2.CGColor;
-        
-//        [_nickNameField.layer addSublayer:_lineLayer];
     }
     return _nickNameField;
 }

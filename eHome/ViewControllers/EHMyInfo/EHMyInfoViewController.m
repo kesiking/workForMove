@@ -36,7 +36,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"我的信息";
-    
+    self.view.backgroundColor=EHBgcor1;
     [self initTableView];
     [self.view addSubview:[self logOutButton]];
     _headImageView = [self headImageView];
@@ -146,6 +146,7 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellID];
     }
+    cell.textLabel.font = EHFont2;
     cell.textLabel.text = titleArray[indexPath.section * 2 + indexPath.row];
     
     if (indexPath.section == 0 && indexPath.row == 0) {
@@ -164,6 +165,7 @@
     if (indexPath.section == 1 && indexPath.row == 0) {
         cell.detailTextLabel.text = [KSLoginComponentItem sharedInstance].user_phone;
     }
+    cell.detailTextLabel.font = EHFont2;
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
     return cell;
@@ -212,7 +214,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    return 15;
+    return 12;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
@@ -225,7 +227,7 @@
     _tableView.rowHeight = kCellHeight;
     _tableView.dataSource = self;
     _tableView.delegate = self;
-    self.view.backgroundColor = _tableView.backgroundColor;
+    _tableView.backgroundColor=EHBgcor1;
     [self.view addSubview:_tableView];
     
     [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -238,7 +240,7 @@
 
 - (UIImageView *)headImageView{
     if (!_headImageView) {
-        _headImageView = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetWidth(_tableView.frame)-75, 10, 30, 30)];
+        _headImageView = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetWidth(_tableView.frame)-85, 10, 30, 30)];
         _headImageView.layer.masksToBounds = YES;
         _headImageView.layer.cornerRadius = CGRectGetWidth(_headImageView.frame) / 2.0;
         NSURL *imageUrl = [NSURL URLWithString:[KSLoginComponentItem sharedInstance].user_head_img];

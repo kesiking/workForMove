@@ -53,7 +53,6 @@
     }];
     
     self.calendarBtn = [[UIButton alloc]init];
-//    self.calendarBtn.backgroundColor = [UIColor redColor];
     [self.calendarBtn setBackgroundImage:[UIImage imageNamed:@"icon_calendar"] forState:UIControlStateNormal];
     
     [self.firstView addSubview:_calendarBtn];
@@ -99,12 +98,9 @@
     UIColor *textColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"jianbian"]];
     self.finishSteps.textColor=textColor;
     self.finishSteps.font=[UIFont systemFontOfSize:EHSize8];
-//    self.finishSteps.textAlignment=NSTextAlignmentCenter;
-//     [self.finishSteps sizeToFit];
 
     //UiLabel自适应
     NSDictionary *attributesq = [NSDictionary dictionaryWithObject:[UIFont systemFontOfSize:EHSize8]forKey:NSFontAttributeName];
-//    CGSize sizeForLabelq = [self.finishSteps.text boundingRectWithSize:CGSizeMake(380, 200) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading  attributes:attributesq context:nil].size;
     CGSize sizeForLabelq = [self.finishSteps.text boundingRectWithSize:CGSizeMake(380, 200) options:NSStringDrawingUsesLineFragmentOrigin  attributes:attributesq context:nil].size;
 
     self.finishSteps.size = sizeForLabelq;
@@ -131,9 +127,7 @@
         make.bottom.equalTo(self.secondView.mas_bottom).offset(-39*SCREEN_SCALE);
 
     }];
-
-    
-    
+  
 }
 
 
@@ -264,10 +258,6 @@
         make.size.mas_equalTo(CGSizeMake(1, 34*SCREEN_SCALE));
     }];
     
-    
-    
-    
-    
 }
 
 - (void)setupFourthView
@@ -279,28 +269,24 @@
     [self addSubview:self.fourthView];
     
     //添加柱状图
-    self.bgChartView = [[UIView alloc]initWithFrame:CGRectMake(14*SCREEN_SCALE, 14*SCREEN_SCALE, SCREEN_WIDTH-24*SCREEN_SCALE, 144*SCREEN_SCALE)];
+    self.bgChartView = [[UIView alloc]initWithFrame:CGRectMake(14*SCREEN_SCALE+31*SCREEN_SCALE, 14*SCREEN_SCALE, SCREEN_WIDTH-24*SCREEN_SCALE-31*SCREEN_SCALE, 144*SCREEN_SCALE)];
     [self.fourthView addSubview:self.bgChartView];
+//    self.bgChartView.backgroundColor = [UIColor redColor];
     
     self.lineViewOne = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_histogram_line"]];
     [self.bgChartView addSubview:self.lineViewOne];
-    
-//    self.linelightViewOne = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_histogram_line"]];
     
     self.linelightViewOne = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH-28*SCREEN_SCALE, 1)];
     self.linelightViewOne.backgroundColor = EHCor15;
     
     [self.bgChartView addSubview:self.linelightViewOne];
-    
-//    self.linelightViewTwo = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_histogram_line"]];
+ 
     self.linelightViewTwo = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH-28*SCREEN_SCALE, 1)];
     self.linelightViewTwo.backgroundColor = EHCor15;
     [self.bgChartView addSubview:self.linelightViewTwo];
     
     self.lineViewTwo = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_histogram_line"]];
     [self.bgChartView addSubview:self.lineViewTwo];
-//    self.lineViewThree = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_histogram_line"]];
-//    [self.bgChartView addSubview:self.lineViewThree];
     self.lineViewFour = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_histogram_line"]];
     [self.bgChartView addSubview:self.lineViewFour];
     self.barChart=[[PNBarChart alloc]initWithFrame:CGRectMake(0,0,self.bgChartView.size.width,self.bgChartView.size.height)];
@@ -310,6 +296,7 @@
     
     
     self.maxYValueLabel = [[UILabel alloc]initWithFrame:CGRectZero];
+    self.maxYValueLabel.textAlignment = NSTextAlignmentRight;
     self.maxYValueLabel.text = @"0";
     self.maxYValueLabel.textColor=EH_cor5;
     self.maxYValueLabel.font=[UIFont systemFontOfSize:EH_siz7];
@@ -324,24 +311,21 @@
     //添加约束
     [self.maxYValueLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.barChart.mas_top).offset(0*SCREEN_SCALE);
-        make.left.equalTo(self.barChart.mas_left).offset(0*SCREEN_SCALE);
+        make.right.equalTo(self.barChart.mas_left).offset(0*SCREEN_SCALE);
     }];
     
-    
     self.middleValueLabel = [[UILabel alloc]initWithFrame:CGRectZero];
+    self.middleValueLabel.textAlignment = NSTextAlignmentRight;
     self.middleValueLabel.text = @"0";
     self.middleValueLabel.textColor=EH_cor5;
     self.middleValueLabel.font=[UIFont systemFontOfSize:EH_siz7];
-    
-
     self.middleValueLabel.height = sizeForDateLabel2.height;
-    
     [self.bgChartView addSubview:self.middleValueLabel];
     
     //添加约束
     [self.middleValueLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.lineViewTwo.mas_top).offset(0*SCREEN_SCALE);
-        make.left.equalTo(self.barChart.mas_left).offset(0*SCREEN_SCALE);
+        make.right.equalTo(self.barChart.mas_left).offset(0*SCREEN_SCALE);
     }];
     
     
@@ -349,49 +333,39 @@
     self.minYValueLabel.text = @"0";
     self.minYValueLabel.textColor=EH_cor5;
     self.minYValueLabel.font=[UIFont systemFontOfSize:EH_siz7];
-    
-    
     self.minYValueLabel.height = sizeForDateLabel2.height;
-    
     [self.barChart addSubview:self.minYValueLabel];
     
-//    //添加约束
-//    [self.minYValueLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.top.equalTo(self.lineViewThree.mas_top).offset(0*SCREEN_SCALE);
-//        make.left.equalTo(self.barChart.mas_left).offset(0*SCREEN_SCALE);
-//    }];
-
-
     [self.lineViewOne mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.fourthView.mas_top).offset(14*SCREEN_SCALE-1);
-        make.left.equalTo(self.fourthView.mas_left).offset(14*SCREEN_SCALE);
-        make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH-28*SCREEN_SCALE, 1));
+        make.left.equalTo(self.fourthView.mas_left).offset(14*SCREEN_SCALE+31*SCREEN_SCALE);
+        make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH-28*SCREEN_SCALE-31*SCREEN_SCALE, 1));
     }];
     
     
     [self.linelightViewOne mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.lineViewOne.mas_bottom).offset(27*SCREEN_SCALE-1);
-        make.left.equalTo(self.fourthView.mas_left).offset(14*SCREEN_SCALE);
-        make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH-28*SCREEN_SCALE, 1));
+        make.left.equalTo(self.fourthView.mas_left).offset(14*SCREEN_SCALE+31*SCREEN_SCALE);
+        make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH-28*SCREEN_SCALE-31*SCREEN_SCALE, 1));
     }];
     
     
     [self.lineViewTwo mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.lineViewOne.mas_bottom).offset(54*SCREEN_SCALE-1);
-        make.left.equalTo(self.fourthView.mas_left).offset(14*SCREEN_SCALE);
-        make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH-28*SCREEN_SCALE, 1));
+        make.left.equalTo(self.fourthView.mas_left).offset(14*SCREEN_SCALE+31*SCREEN_SCALE);
+        make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH-28*SCREEN_SCALE-31*SCREEN_SCALE, 1));
     }];
 
     [self.linelightViewTwo mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.lineViewTwo.mas_bottom).offset(27*SCREEN_SCALE-1);
-        make.left.equalTo(self.fourthView.mas_left).offset(14*SCREEN_SCALE);
-        make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH-28*SCREEN_SCALE, 1));
+        make.left.equalTo(self.fourthView.mas_left).offset(14*SCREEN_SCALE+31*SCREEN_SCALE);
+        make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH-28*SCREEN_SCALE-31*SCREEN_SCALE, 1));
     }];
     
     [self.lineViewFour mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.fourthView.mas_top).offset(36*3*SCREEN_SCALE+14*SCREEN_SCALE-1);
-        make.left.equalTo(self.fourthView.mas_left).offset(14*SCREEN_SCALE);
-        make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH-28*SCREEN_SCALE, 1));
+        make.left.equalTo(self.fourthView.mas_left).offset(14*SCREEN_SCALE+31*SCREEN_SCALE);
+        make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH-28*SCREEN_SCALE-31*SCREEN_SCALE, 1));
     }];
 
     

@@ -27,7 +27,7 @@
 @property(nonatomic,strong)UIButton *normalBtn;
 @property(nonatomic,strong)UIButton *crazyBtn;
 @property(nonatomic,strong)UIButton *currentSelectBtn;
-
+@property(nonatomic,assign)NSInteger selectCellIndex;
 @end
 
 @implementation EHHealthySettingViewController
@@ -44,6 +44,7 @@
     // Dispose of any resources that can be recreated.
 }
 #pragma mark - 私有方法
+//点击整个cell有效，该方法暂未使用 2015.10.15
 - (void)buttonSelected:(UIButton *)sender
 {
     if ((self.currentSelectBtn == self.lazyBtn&&sender.tag == 1000)||(self.currentSelectBtn == self.normalBtn&&sender.tag == 1001)||(self.currentSelectBtn == self.crazyBtn&&sender.tag == 1002)) {
@@ -180,7 +181,7 @@
         _lazyBtn = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetWidth(_tableView.frame) - 12 - 44, 0, 44, 44)];
         _lazyBtn.tag = 1000;
         _lazyBtn.imageEdgeInsets = UIEdgeInsetsMake(11, 22, 11, 0);
-        [_lazyBtn addTarget:self action:@selector(buttonSelected:) forControlEvents:UIControlEventTouchUpInside];
+//        [_lazyBtn addTarget:self action:@selector(buttonSelected:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _lazyBtn;
 }
@@ -190,7 +191,7 @@
         _normalBtn = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetWidth(_tableView.frame) - 12 - 44, 0, 44, 44)];
         _normalBtn.tag = 1001;
         _normalBtn.imageEdgeInsets = UIEdgeInsetsMake(11, 22, 11, 0);
-        [_normalBtn addTarget:self action:@selector(buttonSelected:) forControlEvents:UIControlEventTouchUpInside];
+//        [_normalBtn addTarget:self action:@selector(buttonSelected:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _normalBtn;
 }
@@ -200,7 +201,7 @@
         _crazyBtn = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetWidth(_tableView.frame) - 12 - 44, 0, 44, 44)];
         _crazyBtn.tag = 1002;
         _crazyBtn.imageEdgeInsets = UIEdgeInsetsMake(11, 22, 11, 0);
-        [_crazyBtn addTarget:self action:@selector(buttonSelected:) forControlEvents:UIControlEventTouchUpInside];
+//        [_crazyBtn addTarget:self action:@selector(buttonSelected:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _crazyBtn;
 }
@@ -246,6 +247,7 @@
             if([_currentTargetSteps integerValue] == 4000){
                 [_lazyBtn setImage:[UIImage imageNamed:@"public_radiobox_set_on"] forState:UIControlStateNormal];
                 self.currentSelectBtn = _lazyBtn;
+                self.selectCellIndex = 2000;
             }else
             {
                 [_lazyBtn setImage:[UIImage imageNamed:@"public_radiobox_set_off"] forState:UIControlStateNormal];
@@ -259,6 +261,7 @@
             if([_currentTargetSteps integerValue] == 6000){
                 [_normalBtn setImage:[UIImage imageNamed:@"public_radiobox_set_on"] forState:UIControlStateNormal];
                 self.currentSelectBtn = _normalBtn;
+                self.selectCellIndex = 2001;
             }else
             {
                 [_normalBtn setImage:[UIImage imageNamed:@"public_radiobox_set_off"] forState:UIControlStateNormal];
@@ -272,6 +275,7 @@
             if([_currentTargetSteps integerValue] == 8000){
                 [_crazyBtn setImage:[UIImage imageNamed:@"public_radiobox_set_on"] forState:UIControlStateNormal];
                 self.currentSelectBtn = _crazyBtn;
+                self.selectCellIndex = 2002;
             }else
             {
                 [_crazyBtn setImage:[UIImage imageNamed:@"public_radiobox_set_off"] forState:UIControlStateNormal];
@@ -281,8 +285,34 @@
         default:
             break;
     }
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.selectionStyle = UITableViewCellSelectionStyleDefault;
     return cell;
+}
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    switch (indexPath.row) {
+        case 0:
+            if (self.selectCellIndex == 2000) {
+                break;
+            }
+            [self updateTargetSteps:@4000];
+            break;
+        case 1:
+            if (self.selectCellIndex == 2001) {
+                break;
+            }
+            [self updateTargetSteps:@6000];
+            break;
+        case 2:
+            if (self.selectCellIndex == 2002) {
+                break;
+            }
+            [self updateTargetSteps:@8000];
+            break;
+        default:
+            break;
+    }
 }
 //- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 //{

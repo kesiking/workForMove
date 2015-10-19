@@ -30,8 +30,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.title = [NSString stringWithFormat:@"移除家庭成员"];
+    self.view.backgroundColor=EHBgcor1;
     [self.view addSubview:[self familyMemberTableView]];
-    
     UIBarButtonItem* confirmBtn = [[UIBarButtonItem alloc] initWithTitle:@"确认" style:UIBarButtonItemStylePlain target:self action:@selector(confirmBtnTapped:)];
     self.navigationItem.rightBarButtonItem = confirmBtn;
     
@@ -44,6 +44,7 @@
         _familyMemberTableView.rowHeight = 70;
         _familyMemberTableView.sectionFooterHeight = 0;
         _familyMemberTableView.dataSource = self;
+        _familyMemberTableView.backgroundColor=EHBgcor1;
         _familyMemberTableView.delegate = self;
         _familyMemberTableView.tableFooterView = [[UIView alloc] init];
     }

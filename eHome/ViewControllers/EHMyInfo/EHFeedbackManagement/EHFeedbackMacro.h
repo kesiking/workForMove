@@ -11,19 +11,22 @@
 
 #define kHeadportrait_administrator @"headportrait_administrator"
 #define kHeadportrait_me            @"headportrait_home_150"
+#define kChatMe                     @"chat_me"
+#define kChatOther                  @"chat_other"
 
-#define kSpaceX_CellSide  20
-#define kSpaceX_Image_Bubble 5
-#define kSpaceX_Bubble_Content_Side 25
-#define kSpaceX_Bubble_Content_Middle 15
-#define kSpaceY_CellTop_SubTop 15
-#define kSpaceY_Time_Content 5
-#define kSpaceY_Bubble_Content 12
+#define kSpaceX_CellSide  12
+#define kSpaceX_Image_Bubble 6
+#define kSpaceX_Bubble_Content_Side 17
+#define kSpaceX_Bubble_Content_Middle 12
+#define kSpaceY_CellTop_SubTop 12
+#define kSpaceY_Time_Content 15.5
+#define kSpaceY_Bubble_Content 13
 
 #define kHeadImageWidth 40
 #define kSpaceX_Bubble_CellSide (kSpaceX_CellSide + kHeadImageWidth + kSpaceX_Image_Bubble)
 
 #define kTimeWidth (SCREEN_WIDTH - kSpaceX_CellSide * 2)
+#define kTimeHeight (40 - 31)
 #define kLabelMaxWidth (SCREEN_WIDTH - kSpaceX_Bubble_CellSide * 2 - kSpaceX_Bubble_Content_Side - kSpaceX_Bubble_Content_Middle)
 
 

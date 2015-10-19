@@ -10,7 +10,7 @@
 
 @interface EHDelBabyAlarmService : KSAdapterService
 
-// alarmList内存放dic：@{kEHAttentionPhone:188******, kEHPhoneType:@"0"}
+// alarmList内存放dic：@{kEHBabyAlarmId:self.alarmModel.uuid};
 -(void)delBabyAlarm: (NSArray *)alarmList byBabyId:(NSNumber *)babyId andAdminPhone:(NSString *)adminPhone;
 
 @end

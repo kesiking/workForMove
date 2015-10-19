@@ -19,7 +19,7 @@ static NSDateFormatter* inputFormatter = nil;
 
 -(void)setFromDictionary:(NSDictionary *)dict{
     [super setFromDictionary:dict];
-    self.device_status = [NSNumber numberWithInteger:EHDeviceStatus_OnLine];
+    //self.device_status = [NSNumber numberWithInteger:EHDeviceStatus_OnLine];
     
     if (inputFormatter == nil) {
         inputFormatter = [[NSDateFormatter alloc] init];
@@ -32,7 +32,7 @@ static NSDateFormatter* inputFormatter = nil;
 
 -(BOOL)isBabyInFamilyPhoneNumbers{
     if (self.devicePhoneNumber == nil || self.devicePhoneNumber.length == 0) {
-        return YES;
+        return NO;
     }
     NSString* phoneNumber = [KSAuthenticationCenter userPhone];
     if (phoneNumber == nil || phoneNumber.length == 0) {

@@ -30,7 +30,7 @@
 }
 
 #pragma mark - Events Response
-- (void)backItemClcik:(id)sender{
+- (void)cancleBtnClick:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -64,10 +64,9 @@
 #pragma mark - Getters And Setters
 - (void)configNavigationBar{
     self.title = @"相册";
-
-    UIBarButtonItem *returnButtonItem = [[UIBarButtonItem alloc] init];
-    returnButtonItem.title = @"";
-    self.navigationItem.backBarButtonItem = returnButtonItem;
+    
+    UIBarButtonItem *cancleItem = [[UIBarButtonItem alloc]initWithTitle:@"取消" style:UIBarButtonItemStylePlain target:self action:@selector(cancleBtnClick:)];
+    self.navigationItem.rightBarButtonItem = cancleItem;
 }
 
 /**

@@ -129,7 +129,7 @@
         [_btn_finish.titleLabel setFont:[UIFont systemFontOfSize:16]];
         [_btn_finish setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_btn_finish setTitleColor:UINEXTBUTTON_UNSELECT_COLOR forState:UIControlStateDisabled];
-        _btn_finish.backgroundColor = EHCor6;
+        [_btn_finish setBackgroundImage:[UIImage imageNamed:@"btn_complete_n"] forState:UIControlStateNormal];
         _btn_finish.titleLabel.textAlignment = NSTextAlignmentCenter;
         [_btn_finish addTarget:self action:@selector(doNextStep) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:_btn_finish];

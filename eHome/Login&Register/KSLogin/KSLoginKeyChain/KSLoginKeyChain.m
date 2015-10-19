@@ -50,8 +50,10 @@ static NSString *kSSToolkitKeyChainAccountName  = @"SSToolkitKeyChainAccountName
 
 -(void)setAccountName:(NSString*)accountName{
     if (accountName && accountName.length > 0) {
-        [SSKeychain setPassword:accountName forService:kSSToolkitKeyChainServiceName account:kSSToolkitKeyChainAccountName];
+//        [SSKeychain setPassword:accountName forService:kSSToolkitKeyChainServiceName account:kSSToolkitKeyChainAccountName];
 //        [_keyChainItem setObject:accountName forKey:(__bridge id)kSecAttrAccount];
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        [userDefaults setObject:accountName forKey:@"accountName"];
     }
 }
 
@@ -64,7 +66,9 @@ static NSString *kSSToolkitKeyChainAccountName  = @"SSToolkitKeyChainAccountName
 
 -(NSString*)getAccountName{
 //    return [_keyChainItem objectForKey:(__bridge id)kSecAttrAccount];
-    return [SSKeychain passwordForService:kSSToolkitKeyChainServiceName account:kSSToolkitKeyChainAccountName];
+//    return [SSKeychain passwordForService:kSSToolkitKeyChainServiceName account:kSSToolkitKeyChainAccountName];
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    return  [userDefaults stringForKey:@"accountName"];
 }
 
 -(NSString*)getPassword{

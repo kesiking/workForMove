@@ -40,7 +40,7 @@
     [self userNickName];
     [self userPhone];
     [self rightButton];
-    self.view.backgroundColor=EH_bgcor1;
+    self.view.backgroundColor=EHBgcor1;
     
     
 

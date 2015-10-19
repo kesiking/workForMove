@@ -36,7 +36,7 @@
 //    UIBarButtonItem *rightButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.modifyPhoneView.resetViewCtl.btn_nextStep];
 //    self.modifyPhoneView.resetViewCtl.btn_nextStep.enabled = NO;
 //    self.navigationItem.rightBarButtonItem = rightButtonItem;
-    
+    self.view.backgroundColor=EHBgcor1;
     [self.view addSubview:self.modifyPhoneView];
 }
 

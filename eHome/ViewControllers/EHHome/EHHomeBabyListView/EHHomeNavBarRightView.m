@@ -22,6 +22,14 @@
 
 @implementation EHHomeNavBarRightView
 
++ (instancetype)sharedCenter {
+    static id sharedCenter = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedCenter = [[self alloc] initWithFrame:CGRectMake(0, 0, 60, 44)];
+    });
+    return sharedCenter;
+}
 -(void)setupView{
     [super setupView];
     [self initCommonInfo];

@@ -65,6 +65,10 @@
         [_tableViewCtl setHasNoDataFootViewTitle:@"已无宝贝信息可同步"];
         [_tableViewCtl setNextFootViewTitle:@""];
 //        [_tableViewCtl registerClass:[EHMessageInfoCell class]];
+        //EHOMEIOS-296（在消息列表中收到新消息，刷新后点击返回按钮，消息按钮仍有小红点）Bug修复
+        [_tableViewCtl setOnRefreshEvent:^(KSScrollViewServiceController* scrollViewController){
+            [[NSNotificationCenter defaultCenter] postNotificationName:EHClearRemoteMessageAttentionNotification object:nil userInfo:nil];
+        }];
         [_tableViewCtl registerClass:[EHBabyMsgInfoCell class]];
         [_tableViewCtl setService:self.messageInfoService];
         [_tableViewCtl setDataSourceRead:self.dataSourceRead];

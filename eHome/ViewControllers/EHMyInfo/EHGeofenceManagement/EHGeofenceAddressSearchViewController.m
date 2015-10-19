@@ -10,7 +10,7 @@
 #import "EHAddressSearchResultTableViewCell.h"
 #import "MJRefresh.h"
 
-#define kCellHeight     49
+#define kCellHeight     60
 #define kResultOffset   20
 #define kTimeDuration   1       //自动搜索的停止时间间隔
 
@@ -30,11 +30,11 @@
     NSString *_searchCity;              //要搜索的城市
 }
 
-#pragma mark - Life Circle
+#pragma mark - Life Cycle
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.navigationItem.titleView = [self searchView];
-    self.view.backgroundColor = EH_bgcor1;
+    self.navigationItem.titleView = [self searchField];
+    self.view.backgroundColor = EHBgcor2;
     
     _dataArray = [[NSMutableArray alloc]init];
     _resultPageNo = 1;
@@ -45,6 +45,11 @@
     [self.view addSubview:self.tableView];
     self.tableView.footer = [MJRefreshAutoNormalFooter footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData)];
     self.tableView.footer.hidden = YES;
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [self.view endEditing:YES];
 }
 
 #pragma mark - Events Response
@@ -89,8 +94,8 @@
  */
 - (void)onPlaceSearchDone:(AMapPlaceSearchRequest *)request response:(AMapPlaceSearchResponse *)response
 {
-    NSLog(@"response.count = %ld",response.count);
-    NSLog(@"response.suggestion = %@",response.suggestion);
+//    NSLog(@"response.count = %ld",response.count);
+//    NSLog(@"response.suggestion = %@",response.suggestion);
     if(response.pois.count == 0)
     {
         if (response.suggestion) {
@@ -106,7 +111,7 @@
     }
     for (AMapPOI *p in response.pois) {
         [_dataArray addObject:p];
-        NSLog(@"p = %@\n",p);
+//        NSLog(@"p = %@\n",p);
     }
     [_tableView reloadData];
     self.tableView.footer.hidden = NO;
@@ -145,11 +150,22 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     AMapPOI *poi = _dataArray[indexPath.row];
     CLLocationCoordinate2D coordinate2D = CLLocationCoordinate2DMake(poi.location.latitude, poi.location.longitude);
-    NSLog(@"1address = %@",poi.name);
-    NSLog(@"1coordinate: %f,%f",poi.location.latitude,poi.location.longitude);
+//    NSLog(@"1address = %@",poi.name);
+//    NSLog(@"1coordinate: %f,%f",poi.location.latitude,poi.location.longitude);
     !self.searchFinishedBlock?:self.searchFinishedBlock(poi.name,coordinate2D);
     [self.navigationController popViewControllerAnimated:YES];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+-(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+        [cell setSeparatorInset:UIEdgeInsetsZero];
+    }
+    
+    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+        [cell setLayoutMargins:UIEdgeInsetsZero];
+    }
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -165,53 +181,54 @@
 
 #pragma mark - UIView
 #pragma mark - Getters And Setters
--(UIView *)searchView{
-    UIView *searchView = [[UIView alloc]initWithFrame:CGRectMake(0, 10, CGRectGetWidth(self.view.frame) - 102/2.0 - 40/2.0, 44 - 20)];
-    [searchView addSubview:[self searchField]];
-    [searchView addSubview:[self searchBottomView]];
-    
-    return searchView;
-}
-
 - (UITextField *)searchField{
     if (!_searchField) {
-        _searchField = [[UITextField alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame) - 102/2.0 - 40/2.0, 44 - 20 - 5 - 1)];
+        _searchField = [[UITextField alloc]initWithFrame:CGRectMake(-40, 0, CGRectGetWidth(self.view.frame) - 61 - 12, 30)];
+        _searchField.backgroundColor = EHCor1;
         _searchField.layer.masksToBounds = YES;
-        _searchField.layer.cornerRadius = 3;
+        _searchField.layer.cornerRadius = 5;
+        _searchField.layer.borderWidth = 1;
+        _searchField.layer.borderColor = EHLinecor1.CGColor;
         _searchField.clearButtonMode = UITextFieldViewModeWhileEditing;
         _searchField.delegate = self;
-        _searchField.font = EH_font3;
-        _searchField.textColor = [UIColor whiteColor];
-        UIColor *color = [UIColor whiteColor];
-        _searchField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"输入围栏中心关键字" attributes:@{NSForegroundColorAttributeName: color}];
+        _searchField.font = EHFont5;
+        _searchField.textColor = EHCor5;
+        UIColor *color = EHCor3;
+        _searchField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@" 输入围栏中心关键词" attributes:@{NSForegroundColorAttributeName: color}];
         _searchField.returnKeyType = UIReturnKeyDone;
         _searchField.tintColor = [UIColor whiteColor];
         [_searchField addTarget:self action:@selector(searchFieldValueChanged:) forControlEvents:UIControlEventEditingChanged];
         
-        UIButton *searchIconView = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, CGRectGetHeight(_searchField.frame) + 5, CGRectGetHeight(_searchField.frame))];
-        [searchIconView setImageEdgeInsets:UIEdgeInsetsMake(0, 0, 0, 5)];
-        [searchIconView setImage:[UIImage imageNamed:@"ico_tbar_search"] forState:UIControlStateNormal];
+        UIButton *searchIconView = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 15 + 8 + 8 + 4, 15)];
+        [searchIconView setImageEdgeInsets:UIEdgeInsetsMake(0, 8, 0, 8 + 4)];
+        [searchIconView setImage:[UIImage imageNamed:@"ico_createfence_search"] forState:UIControlStateNormal];
+        
+        CALayer *lineLayer = [CALayer layer];
+        lineLayer.frame = CGRectMake(CGRectGetWidth(searchIconView.frame) - 4, 0, 0.5, CGRectGetHeight(searchIconView.frame));
+        lineLayer.backgroundColor = EHLinecor1.CGColor;
+        [searchIconView.layer addSublayer:lineLayer];
+        
         _searchField.leftView = searchIconView;
         _searchField.leftViewMode = UITextFieldViewModeAlways;
     }
     return  _searchField;
 }
 
-- (UIImageView *)searchBottomView{
-    UIImageView *searchBottomView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"input_tbar"]];
-    searchBottomView.frame = CGRectMake(0, 19, CGRectGetWidth(self.view.frame) - 102/2.0 - 40/2.0, 5);
-
-    return searchBottomView;
-}
-
 - (UITableView *)tableView{
     if (!_tableView) {
         _tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame)) style:UITableViewStylePlain];
-        _tableView.backgroundColor = [UIColor clearColor];
+        _tableView.backgroundColor = EHBgcor3;
         _tableView.rowHeight = kCellHeight;
         _tableView.dataSource = self;
         _tableView.delegate = self;
         _tableView.tableFooterView = [[UIView alloc] init];
+        
+        if ([_tableView respondsToSelector:@selector(setSeparatorInset:)]) {
+            [_tableView setSeparatorInset: UIEdgeInsetsZero];
+        }
+        if ([_tableView respondsToSelector:@selector(setLayoutMargins:)]) {
+            [_tableView setLayoutMargins: UIEdgeInsetsZero];
+        }
     }
    
     return _tableView;

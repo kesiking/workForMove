@@ -48,7 +48,6 @@
  *	secondView包含的内容
  */
 @property(strong,nonatomic) UILabel *sTargetStepsLabel;
-//@property(strong,nonatomic) UILabel *targetStepsLabel;
 @property(strong,nonatomic) UILabel *finishSteps;
 @property(strong,nonatomic) UILabel *step;
 /**
@@ -90,7 +89,6 @@
 @property(strong,nonatomic)UIView *linelightViewOne;
 @property(strong,nonatomic) UIView *linelightViewTwo;
 
-//@property(strong,nonatomic)UIImageView *lineViewThree;
 @property(strong,nonatomic)UIImageView *lineViewFour;
 @property (strong, nonatomic)UILabel *totalStepsLabel;
 
@@ -98,6 +96,5 @@
 @property(assign,nonatomic)NSInteger numberOfInstance;
 @property(strong,nonatomic)NSNumber *page;
 
-//@property (strong, nonatomic)UILabel *maxLabel;
 
 @end

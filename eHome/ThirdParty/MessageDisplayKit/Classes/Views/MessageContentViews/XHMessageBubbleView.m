@@ -69,7 +69,10 @@
                 stringSize = temp;
             }
         }
-    } else {
+    }else if([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.0){
+        NSDictionary *attribute = [NSDictionary dictionaryWithObjectsAndKeys:[[XHMessageBubbleView appearance] font],NSFontAttributeName, nil];
+        stringSize = [text boundingRectWithSize:CGSizeMake(MAXFLOAT, 20) options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesFontLeading attributes:attribute context:nil].size;
+    }else{
         stringSize = [text sizeWithFont:[[XHMessageBubbleView appearance] font]
                       constrainedToSize:CGSizeMake(MAXFLOAT, 20)];
     }
@@ -336,13 +339,13 @@
 - (void)configureVoiceDurationLabelFrameWithBubbleFrame:(CGRect)bubbleFrame {
     [_voiceDurationLabel sizeToFit];
     CGRect voiceFrame = _voiceDurationLabel.frame;
-    voiceFrame.origin.x = (self.message.bubbleMessageType == XHBubbleMessageTypeSending ? bubbleFrame.origin.x - CGRectGetWidth(voiceFrame) : bubbleFrame.origin.x + bubbleFrame.size.width);
+    voiceFrame.origin.x = (self.message.bubbleMessageType == XHBubbleMessageTypeSending ? bubbleFrame.origin.x - CGRectGetWidth(voiceFrame)-5 : bubbleFrame.origin.x + bubbleFrame.size.width+5);
     _voiceDurationLabel.frame = voiceFrame;
 }
 
 - (void)configureVoiceUnreadDotImageViewFrameWithBubbleFrame:(CGRect)bubbleFrame {
     CGRect voiceUnreadDotFrame = _voiceUnreadDotImageView.frame;
-    voiceUnreadDotFrame.origin.x = (self.message.bubbleMessageType == XHBubbleMessageTypeSending ? bubbleFrame.origin.x + kXHUnReadDotSize : CGRectGetMaxX(bubbleFrame) - kXHUnReadDotSize * 2);
+    voiceUnreadDotFrame.origin.x = (self.message.bubbleMessageType == XHBubbleMessageTypeSending ? bubbleFrame.origin.x + kXHUnReadDotSize : CGRectGetMaxX(bubbleFrame) + 25);
     voiceUnreadDotFrame.origin.y = CGRectGetMidY(bubbleFrame) - kXHUnReadDotSize / 2.0;
     _voiceUnreadDotImageView.frame = voiceUnreadDotFrame;
 }
@@ -369,11 +372,11 @@
         // 2、初始化显示文本消息的TextView
         if (!_displayTextView) {
             SETextView *displayTextView = [[SETextView alloc] initWithFrame:CGRectZero];
-            displayTextView.textColor = [UIColor colorWithWhite:0.143 alpha:1.000];
+            displayTextView.textColor = [UIColor colorWithRed:0x33/255.0 green:0x33/255.0 blue:0x33/255.0 alpha:1.0];
             displayTextView.backgroundColor = [UIColor clearColor];
             displayTextView.selectable = NO;
             displayTextView.lineSpacing = kXHTextLineSpacing;
-            displayTextView.font = [[XHMessageBubbleView appearance] font];
+            displayTextView.font = [UIFont systemFontOfSize:15.0f];
             displayTextView.showsEditingMenuAutomatically = NO;
             displayTextView.highlighted = NO;
             [self addSubview:displayTextView];
@@ -398,7 +401,7 @@
                 geolocationsLabel.lineBreakMode = NSLineBreakByTruncatingTail;
                 geolocationsLabel.textColor = [UIColor whiteColor];
                 geolocationsLabel.backgroundColor = [UIColor clearColor];
-                geolocationsLabel.font = [UIFont systemFontOfSize:12];
+                geolocationsLabel.font = [UIFont systemFontOfSize:12.0f];
                 [bubblePhotoImageView addSubview:geolocationsLabel];
                 _geolocationsLabel = geolocationsLabel;
             }
@@ -407,9 +410,9 @@
         // 4、初始化显示语音时长的label
         if (!_voiceDurationLabel) {
             UILabel *voiceDurationLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 26, 28, 20)];
-            voiceDurationLabel.textColor = [UIColor colorWithWhite:0.579 alpha:1.000];
+            voiceDurationLabel.textColor = [UIColor colorWithRed:0x99/255.0 green:0x99/255.0 blue:0x99/255.0 alpha:1.0];
             voiceDurationLabel.backgroundColor = [UIColor clearColor];
-            voiceDurationLabel.font = [UIFont systemFontOfSize:13.f];
+            voiceDurationLabel.font = [UIFont boldSystemFontOfSize:12.f];
             voiceDurationLabel.textAlignment = NSTextAlignmentCenter;
             voiceDurationLabel.hidden = YES;
             [self addSubview:voiceDurationLabel];
@@ -488,7 +491,7 @@
                 
                 CGRect textFrame = CGRectMake(textX,
                                               CGRectGetMinY(bubbleFrame) + marginY,
-                                              CGRectGetWidth(bubbleFrame) - kXHLeftTextHorizontalBubblePadding - kXHRightTextHorizontalBubblePadding - kXHArrowMarginWidth,
+                                              CGRectGetWidth(bubbleFrame) - kXHLeftTextHorizontalBubblePadding - kXHRightTextHorizontalBubblePadding - kXHArrowMarginWidth + 5,
                                               bubbleFrame.size.height - kXHHaveBubbleMargin * 2);
                 
                 self.displayTextView.frame = CGRectIntegral(textFrame);

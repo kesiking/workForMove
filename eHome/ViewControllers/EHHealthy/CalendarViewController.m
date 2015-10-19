@@ -16,7 +16,9 @@
     
     NSDate *_todayDate;
     NSDate *_minDate;
+    NSDate *_beginDate;
     NSDate *_maxDate;
+    NSDate *_endDate;
     NSDate *_dateSelected;
 }
 
@@ -66,20 +68,15 @@
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    [self createMinAndMaxDate];
+//    [self createMinAndMaxDate];
     NSDateFormatter *formater1=[[NSDateFormatter alloc]init];
     formater1.dateFormat=@"yyyy-MM-dd HH:mm:ss";
     if (_selectedDate!=nil) {
-        NSString *datestrSwitch=[formater1 stringFromDate:_selectedDate];
         NSLog(@"%@",_selectedDate); //结果：2015-07-16 15:25:28
-        NSString *currentMonth = [datestrSwitch substringToIndex:7];
-        NSString *currentMonthDateString = [NSString stringWithFormat:@"%@%@",currentMonth,@"-01 00:00:00"];
-        NSDate *currentMonthDate=[formater1 dateFromString:currentMonthDateString];
-        [_calendarManager setDate:currentMonthDate];
+        [_calendarManager setDate:_selectedDate];
         _dateSelected = _selectedDate;
     }
     [_calendarManager reload];
-
    
 }
 
@@ -158,14 +155,10 @@
             [_calendarContentView loadPreviousPageWithAnimation];
         }
     }
-    
-    NSLog(@"Date: %@", dayView.date);
     NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd"];
     NSString *displayDateString=[dateFormatter stringFromDate:dayView.date];
-    NSLog(@"DateString: %@", displayDateString);
-
-    
+ 
     if (self.returnSelectedDateBlock != nil) {
         self.returnSelectedDateBlock(displayDateString);
     }
@@ -176,8 +169,12 @@
 // Used to limit the date for the calendar, optional
 - (BOOL)calendar:(JTCalendarManager *)calendar canDisplayPageWithDate:(NSDate *)date
 {
-    return [_calendarManager.dateHelper date:date isEqualOrAfter:_minDate andEqualOrBefore:_maxDate];
+    return [_calendarManager.dateHelper date:date isEqualOrAfter:_beginDate andEqualOrBefore:_endDate];
+
 }
+
+//重新写一个setDate的区间判断
+
 
 - (void)calendarDidLoadNextPage:(JTCalendarManager *)calendar
 {
@@ -202,6 +199,33 @@
     // Max date will be 2 month after today
     //当前
     _maxDate = _todayDate;
+   
+    double ainterval = 0;
+    NSDate *abeginDate = nil;
+    NSDate *aendDate = nil;
+    NSCalendar *nsCalendar = [NSCalendar currentCalendar];
+    [nsCalendar setFirstWeekday:2];//设定周一为周首日
+    BOOL ok = [nsCalendar rangeOfUnit:NSMonthCalendarUnit startDate:&abeginDate interval:&ainterval forDate:_maxDate];
+    //分别修改为 NSDayCalendarUnit NSWeekCalendarUnit NSYearCalendarUnit
+    if (ok) {
+        aendDate = [abeginDate dateByAddingTimeInterval:ainterval-1];
+    }else {
+        
+    }
+    _endDate = aendDate;
+    
+    ainterval = 0;
+    abeginDate = nil;
+    aendDate = nil;
+    ok = [nsCalendar rangeOfUnit:NSMonthCalendarUnit startDate:&abeginDate interval:&ainterval forDate:_minDate];
+    //分别修改为 NSDayCalendarUnit NSWeekCalendarUnit NSYearCalendarUnit
+    if (ok) {
+        aendDate = [abeginDate dateByAddingTimeInterval:ainterval-1];
+    }else {
+        
+    }
+    _beginDate = abeginDate;
+
 
 }
 

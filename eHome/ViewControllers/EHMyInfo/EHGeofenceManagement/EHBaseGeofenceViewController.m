@@ -10,7 +10,16 @@
 #import "EHGeofenceAddressSearchViewController.h"
 #import "NSString+StringSize.h"
 
+
 @interface EHBaseGeofenceViewController ()<MAMapViewDelegate,AMapSearchDelegate,UITextFieldDelegate>
+
+@property (nonatomic, strong) CAShapeLayer *overlayLayer;    //地图中间覆盖物图层
+
+@property (nonatomic, assign) CGFloat neededZoomLevel;       //根据围栏设定的所需缩放级别
+
+@property (nonatomic, assign)     BOOL scaleTag;                 //缩放标记（防地图死循环回调）
+@property (nonatomic, assign)     BOOL searchFinishTag;          //搜索返回标记
+@property (nonatomic, assign)     BOOL radiusUpdated;            //滑动条更新标记，用来重设当前缩放级别判定
 
 @end
 
@@ -18,23 +27,20 @@
 {
     AMapSearchAPI *_search;         //地图搜索服务
     
-    CAShapeLayer *_overlayLayer;    //地图中间覆盖物图层
-    
-    BOOL _scaleTag;                 //缩放标记（防地图死循环回调）
-    BOOL _radiusUpdated;            //滑动条更新标记，用来重设当前缩放级别判定
-    BOOL _searchFinishTag;          //搜索返回标记
+//    BOOL _scaleTag;                 //缩放标记（防地图死循环回调）
+//    BOOL _radiusUpdated;            //滑动条更新标记，用来重设当前缩放级别判定
+//    BOOL _searchFinishTag;          //搜索返回标记
 }
 
-#pragma mark - Life Circle
+#pragma mark - Life Cycle
 
 - (instancetype)init{
     self = [super init];
     if (self) {
-        self.radius = 500;          //默认500
-        _scaleTag = NO;
-        _radiusUpdated = YES;
-        _searchFinishTag = NO;
         self.geofenceModifiedTag = YES;
+        _radiusUpdated           = YES;
+        _scaleTag                = NO;
+        _searchFinishTag         = NO;
     }
     return self;
 }
@@ -43,16 +49,18 @@
     [super viewDidLoad];
     
     [self configMapView];
-    [self.view.layer addSublayer:[self overlayLayer]];
+    [self.view.layer addSublayer:self.overlayLayer];
     [self.view addSubview:[self centerImageView]];
-    [self.view addSubview:self.topView];
+    [self.view addSubview:self.geofenceNameView];
+    [self.view addSubview:self.geofenceAddressView];
     [self.view addSubview:self.sliderView];
+    
+    self.geofenceCoordinate = CLLocationCoordinate2DMake(self.geofenceInfo.latitude, self.geofenceInfo.longitude);
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     self.mapView.delegate = self;
-    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -62,7 +70,7 @@
     if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
         self.navigationController.interactivePopGestureRecognizer.enabled = NO;
     }
-    MACoordinateRegion region = MACoordinateRegionMakeWithDistance(self.geofenceCoordinate, self.radius * 2, self.radius * 2);
+    MACoordinateRegion region = MACoordinateRegionMakeWithDistance(self.geofenceCoordinate, self.geofenceInfo.geofence_radius * 2, self.geofenceInfo.geofence_radius * 2);
     region = [self.mapView regionThatFits:region];
     [self.mapView setRegion:region animated:YES];
     _radiusUpdated = YES;
@@ -87,14 +95,16 @@
  */
 - (void)showAddressSearchVC {
     EHGeofenceAddressSearchViewController *gasVC = [[EHGeofenceAddressSearchViewController alloc]init];
+    WEAKSELF
     gasVC.searchFinishedBlock = ^(NSString *address,CLLocationCoordinate2D coordinate){
-        _searchFinishTag = YES;
+        STRONGSELF
+        strongSelf.searchFinishTag = YES;
         NSLog(@"address = %@",address);
         NSLog(@"coordinate: %f,%f",coordinate.latitude,coordinate.longitude);
-        self.topView.address = address;
-        self.geofenceCoordinate = CLLocationCoordinate2DMake(coordinate.latitude,coordinate.longitude);
-        [_mapView setCenterCoordinate:coordinate];
-        [self updateRightItemStatus];
+        strongSelf.geofenceAddressView.address = address;
+        strongSelf.geofenceCoordinate = CLLocationCoordinate2DMake(coordinate.latitude,coordinate.longitude);
+        [strongSelf.mapView setCenterCoordinate:coordinate];
+        [strongSelf updateRightItemStatus];
     };
     [self.navigationController pushViewController:gasVC animated:YES];
 }
@@ -103,7 +113,8 @@
  *  更新导航栏右按钮状态
  */
 - (void)updateRightItemStatus{
-    NSString *geofenceName = self.topView.geofenceName;
+    NSString *geofenceName = self.geofenceNameView.geofenceName;
+
     if (geofenceName.length > 0 && geofenceName.length <= 10) {
         self.rightItemButton.enabled = YES;
     }
@@ -122,7 +133,7 @@
     regeoRequest.searchType = AMapSearchType_ReGeocode;
     regeoRequest.location = [AMapGeoPoint locationWithLatitude:coordinate.latitude longitude:coordinate.longitude];
     //    regeoRequest.radius = 10000;
-    //        regeoRequest.requireExtension = YES;
+    //    regeoRequest.requireExtension = YES;
     
     //发起逆地理编码
     [_search AMapReGoecodeSearch: regeoRequest];
@@ -170,11 +181,13 @@
 - (void)checkMapViewZoomLevel:(MAMapView *)mapView {
     
     //中心位置自动回正代码块（处于围栏详情状态(非可编辑)时应在操作地图后自动回正）
+    WEAKSELF
     void (^returnCenterBlock)() = ^(){
-        if (!self.geofenceModifiedTag) {
-            if ((mapView.centerCoordinate.latitude != self.geofenceCoordinate.latitude) || (mapView.centerCoordinate.longitude != self.geofenceCoordinate.longitude)) {
-                _scaleTag = YES;
-                [self performSelector:@selector(reCenterMap) withObject:nil afterDelay:0.1];
+        STRONGSELF
+        if (!strongSelf.geofenceModifiedTag) {
+            if ((mapView.centerCoordinate.latitude != strongSelf.geofenceCoordinate.latitude) || (mapView.centerCoordinate.longitude != strongSelf.geofenceCoordinate.longitude)) {
+                strongSelf.scaleTag = YES;
+                [strongSelf performSelector:@selector(reCenterMap) withObject:nil afterDelay:0.1];
             }
         }
     };
@@ -183,23 +196,23 @@
     if (mapView.zoomLevel > self.neededZoomLevel) {
         _scaleTag = YES;
         [UIView animateWithDuration:0.5 animations:^{
-            _overlayLayer.transform = CATransform3DIdentity;
+            self.overlayLayer.transform = CATransform3DIdentity;
         }];
         [self performSelector:@selector(resetMap) withObject:nil afterDelay:0.1];
     }
     //地图缩小
     else if (mapView.zoomLevel < self.neededZoomLevel){
-        CGFloat scale =  self.radius * 2 / (mapView.metersPerPointForCurrentZoomLevel * CGRectGetWidth(_mapView.frame));
+        CGFloat scale =  self.sliderView.radius * 2 / (mapView.metersPerPointForCurrentZoomLevel * CGRectGetWidth(_mapView.frame));
         scale = MIN(scale, 1);
         [UIView animateWithDuration:0.5 animations:^{
-            _overlayLayer.transform = CATransform3DMakeScale(scale, scale, 1);
+            self.overlayLayer.transform = CATransform3DMakeScale(scale, scale, 1);
         }];
         returnCenterBlock();
     }
     //地图无缩放（平移）
     else{
         [UIView animateWithDuration:0.5 animations:^{
-            _overlayLayer.transform = CATransform3DIdentity;
+            self.overlayLayer.transform = CATransform3DIdentity;
         }];
         returnCenterBlock();
         if (self.geofenceModifiedTag) {
@@ -235,13 +248,23 @@
         //        if (![addressComponent.streetNumber.number isEqualToString:@""] && ![addressComponent.streetNumber.number containsString:@"号"]) {
         //            [address appendString:@"号"];
         //        }
-        self.topView.address = address;
+        self.geofenceAddressView.address = address;
     }
 }
 
 #pragma mark - Getter And Setters
+- (EHGetGeofenceListRsp *)geofenceInfo {
+    if (!_geofenceInfo) {
+        _geofenceInfo = [[EHGetGeofenceListRsp alloc]init];
+        _geofenceInfo.geofence_radius = 500;
+        _geofenceInfo.latitude = 0;
+        _geofenceInfo.longitude = 0;
+    }
+    return _geofenceInfo;
+}
+
 /**
- *  地图
+ *  地图视图
  */
 - (void)configMapView{
     self.mapView.frame = self.view.bounds;
@@ -251,21 +274,18 @@
     self.mapView.scaleOrigin= CGPointMake(self.mapView.scaleOrigin.x, CGRectGetHeight(self.mapView.frame) - 40);  //设置比例尺位置
     self.mapView.touchPOIEnabled = NO;
     [self.view addSubview:self.mapView];
-    
-
 
     _search = [[AMapSearchAPI alloc] initWithSearchKey:kMAMapAPIKey Delegate:self];
-    
 }
 
 /**
  *  覆盖圆形图层
  */
 - (CAShapeLayer *)overlayLayer{
-    CGFloat length = CGRectGetWidth(_mapView.frame);
-    CGRect rect = CGRectMake(0, (CGRectGetHeight(_mapView.frame) - length) / 2.0, length, length);
-    UIBezierPath *bp = [UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:length / 2.0];
     if (!_overlayLayer) {
+        CGFloat length = CGRectGetWidth(_mapView.frame);
+        CGRect rect = CGRectMake(0, (CGRectGetHeight(_mapView.frame) - length) / 2.0, length, length);
+        UIBezierPath *bp = [UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:length / 2.0];
         _overlayLayer = [CAShapeLayer layer];
         _overlayLayer.path = bp.CGPath;
         _overlayLayer.strokeColor = [UIColor clearColor].CGColor;
@@ -276,7 +296,7 @@
 }
 
 /**
- *  中心原点
+ *  中心原点视图
  */
 - (UIImageView *)centerImageView{
     UIImageView *imv = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"center_createfence_map"]];;
@@ -287,41 +307,48 @@
 }
 
 /**
- *  顶部视图
+ *  围栏名称视图
  */
-- (UIView *)topView{
-    if (!_topView) {
-        CGFloat topViewHeight = 85;
-        
+- (EHGeofenceNameView *)geofenceNameView {
+    if (!_geofenceNameView) {
+        _geofenceNameView= [[EHGeofenceNameView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 43)];
+        _geofenceNameView.geofenceName = self.geofenceInfo.geofence_name;
         WEAKSELF
-        _topView = [[EHGeofenceTopView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), topViewHeight)];
-        
-        _topView.searchBtnClickBlock = ^(){
-            [weakSelf showAddressSearchVC];
-        };
-        
-        _topView.geofenceNameFieldChangedBlock = ^(){
+        _geofenceNameView.geofenceNameFieldChangedBlock = ^(){
             [weakSelf updateRightItemStatus];
         };
     }
-    
-    return _topView;
+    return _geofenceNameView;
 }
 
 /**
- *  底部滑动视图
+ *  围栏中心点视图
+ */
+- (EHGeofenceAddressView *)geofenceAddressView {
+    if (!_geofenceAddressView) {
+        _geofenceAddressView= [[EHGeofenceAddressView alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(self.view.frame) - 60 - 43, CGRectGetWidth(self.view.frame), 43)];
+        _geofenceAddressView.address = self.geofenceInfo.geofence_address;
+        WEAKSELF
+        _geofenceAddressView.searchBtnClickBlock = ^(){
+            [weakSelf showAddressSearchVC];
+        };
+
+    }
+    return _geofenceAddressView;
+}
+
+/**
+ *  半径滑动条视图
  */
 - (UIView *)sliderView{
     if (!_sliderView) {
         _sliderView = [[EHRadiusSliderView alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(self.view.frame) - 60, CGRectGetWidth(self.view.frame), 60)];
         
-        _sliderView.radius = self.radius;
+        _sliderView.radius = self.geofenceInfo.geofence_radius;
         WEAKSELF
         _sliderView.radiusChangedBlock = ^(NSInteger radius){
             STRONGSELF
-            strongSelf.radius = radius;
-            EHLogInfo(@"self.radius = %ld",radius);
-            _radiusUpdated = YES;
+            strongSelf.radiusUpdated = YES;
             
             MACoordinateRegion region = MACoordinateRegionMakeWithDistance(strongSelf.mapView.centerCoordinate, radius * 2, radius * 2);
             region = [strongSelf.mapView regionThatFits:region];

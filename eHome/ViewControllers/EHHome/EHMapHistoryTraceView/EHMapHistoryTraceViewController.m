@@ -110,7 +110,7 @@ typedef void(^historyTraceListDidSelectedBlock) (NSArray* dataList, NSUInteger i
 }
 
 -(void)mapHistoryNarvigationBarItemClicked:(id)sender{
-    TBOpenURLFromSourceAndParams(internalURL(@"EHMapHistoryTracePolylineViewController"), self,@{@"timerTitle":self.timerTitle,@"positionArray":self.historyTraceInfoListView.positionArray?:@[],@"endMovingPositionIndex":[NSNumber numberWithUnsignedInteger:MAX([self.historyTraceInfoListView.positionArray count] - 1, 0)]});
+    TBOpenURLFromSourceAndParams(internalURL(@"EHMapHistoryTracePolylineViewController"), self,@{@"timerTitle":self.timerTitle,@"selectDate":self.selectDate,@"positionArray":self.historyTraceInfoListView.positionArray?:@[],@"endMovingPositionIndex":[NSNumber numberWithUnsignedInteger:MAX([self.historyTraceInfoListView.positionArray count] - 1, 0)]});
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
