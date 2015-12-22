@@ -40,7 +40,7 @@
             [WeAppToast toast:LOGIN_INPUT_ACCOUNTNAME_UNLOGGICAL_INFO];
             return NO;
         }
-        [strongSelf showLoadingView];
+        //[strongSelf showLoadingView];
         [strongSelf.validateCodeService sendValidateCodeWithAccountName:strongSelf.user_phone];
         return YES;
     };
@@ -162,7 +162,7 @@
     _registerService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
         STRONGSELF
         [strongSelf hideLoadingView];
-        [WeAppToast toast:REGISTER_SUCCESS_INFO];
+        //[WeAppToast toast:REGISTER_SUCCESS_INFO];
         if (strongSelf.registerActionBlock) {
             strongSelf.registerActionBlock(YES);
         }

@@ -9,7 +9,7 @@
 #import "KSView.h"
 #import "EHBabyLocationAnnotationView.h"
 
-#define MAP_DEFAULT_ZOOM_SCALE (17.5)
+#define MAP_DEFAULT_ZOOM_SCALE (15.6)
 
 @interface EHMapViewContainer : KSView <MAMapViewDelegate>
 {

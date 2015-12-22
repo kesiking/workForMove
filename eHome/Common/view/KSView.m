@@ -79,6 +79,13 @@
     }
 }
 
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
+    [super touchesEnded:touches withEvent:event];
+    if ([self needTouchEventLog]) {
+        [KSTouchEvent touchWithView:self];
+    }
+}
+
 #pragma mark- override by subclass
 
 -(void)setupView{
@@ -89,6 +96,10 @@
     
 }
 
+-(BOOL)needTouchEventLog{
+    return YES;
+}
+
 #pragma mark- TBModelStatusHandler
 
 - (TBModelStatusHandler*)statusHandler{
@@ -96,7 +107,7 @@
         KSModelStatusBasicInfo *info = [[KSModelStatusBasicInfo alloc] init];
         
         info.titleForErrorBlock=^(NSError*error){
-            return @"服务器正忙，请稍微再试";
+            return @"服务器正忙，请稍后再试";
         };
         info.subTitleForErrorBlock=^(NSError*error){
             return error.userInfo[NSLocalizedDescriptionKey];

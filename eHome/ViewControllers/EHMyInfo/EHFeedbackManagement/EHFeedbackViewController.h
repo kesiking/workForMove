@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface EHFeedbackViewController : UIViewController
+@interface EHFeedbackViewController : KSViewController
 
 @end

@@ -50,7 +50,7 @@
         self.healthyView.step.hidden=YES;
         self.healthyView.finishSteps.text=@"暂无宝贝";
         self.healthyView.distanceLabel.text=@"-千米";
-        self.healthyView.energyLabel.text=@"-千卡";
+        self.healthyView.energyLabel.text=@"-卡";
         self.healthyView.ratioLabel.text=@"-%";
         [self.healthyView.distanceChart updateChartByCurrent:@0];
         [self.healthyView.energyChart updateChartByCurrent:@0];
@@ -113,7 +113,7 @@
 {
     self.healthyView.finishSteps.text=@"0";
     self.healthyView.distanceLabel.text=@"0公里";
-    self.healthyView.energyLabel.text=@"0千卡";
+    self.healthyView.energyLabel.text=@"0卡";
     self.healthyView.ratioLabel.text=@"0%";
     [self.healthyView.distanceChart updateChartByCurrent:@0];
     [self.healthyView.energyChart updateChartByCurrent:@0];

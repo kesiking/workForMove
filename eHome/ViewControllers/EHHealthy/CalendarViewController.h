@@ -11,7 +11,7 @@
 
 typedef void (^ReturnSelectedDateBlock)(NSString *showSelectedDate);
 
-@interface CalendarViewController : UIViewController<JTCalendarDelegate>
+@interface CalendarViewController : KSViewController<JTCalendarDelegate>
 
 @property (weak, nonatomic) IBOutlet JTCalendarMenuView *calendarMenuView;
 @property (weak, nonatomic) IBOutlet JTHorizontalCalendarView *calendarContentView;

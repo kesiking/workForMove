@@ -124,6 +124,7 @@
         _text_phoneNum.textView.textEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0);
         _text_phoneNum.textView.colorWhileEditing = nil;
         _text_phoneNum.textView.borderStyle = UITextBorderStyleNone;
+        _text_phoneNum.textView.keyboardType = UIKeyboardTypeNumberPad;
         [_text_phoneNum.backgroundImage setImage:[UIImage imageNamed:@"btn_input"]];
 //        [_text_phoneNum.textView setValue:[UIColor whiteColor] forKeyPath:@"_placeholderLabel.textColor"];
         [_text_phoneNum.textView setTextColor:EHCor5];
@@ -151,7 +152,7 @@
         account_label.tag = 1003;
 //        [leftView addSubview:account_label];
         
-        UIImageView* imageView = [[UIImageView alloc] initWithFrame:CGRectMake((leftView.frame.size.width - 20)/2, (leftView.frame.size.height - 20)/2, 20, 20)];
+        UIImageView* imageView = [[UIImageView alloc] initWithFrame:CGRectMake((leftView.frame.size.width - 22)/2, (leftView.frame.size.height - 21)/2, 22, 21)];
         imageView.tag = 1001;
         imageView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
         [imageView setImage:[UIImage imageNamed:@"icon_user"]];
@@ -207,7 +208,7 @@
         password_label.tag = 1003;
 //        [leftView addSubview:password_label];
         
-        UIImageView* imageView = [[UIImageView alloc] initWithFrame:CGRectMake((leftView.frame.size.width - 20)/2, (leftView.frame.size.height - 20)/2, 20, 20)];
+        UIImageView* imageView = [[UIImageView alloc] initWithFrame:CGRectMake((leftView.frame.size.width - 22)/2, (leftView.frame.size.height - 21)/2, 22, 21)];
         imageView.tag = 1001;
         imageView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
         imageView.image = [UIImage imageNamed:@"icon_password"];
@@ -250,8 +251,10 @@
 //        _btn_login.layer.cornerRadius = 5;
 //        _btn_login.layer.masksToBounds = YES;
 //        [_btn_login setBackgroundColor:UILOGINNAVIGATIONBAR_COLOR];
-        [_btn_login setBackgroundImage:[UIImage imageNamed:@"btn_login_n"] forState:UIControlStateNormal];
-        [_btn_login setBackgroundImage:[UIImage imageNamed:@"btn_login_h"] forState:UIControlStateDisabled];
+        UIImage* nImage = [UIImage imageNamed:@"btn_login_n"];
+        [_btn_login setBackgroundImage:[nImage resizableImageWithCapInsets:UIEdgeInsetsMake(nImage.size.height/2, nImage.size.width/2, nImage.size.height/2, nImage.size.width/2)] forState:UIControlStateNormal];
+        UIImage* hImage = [UIImage imageNamed:@"btn_login_h"];
+        [_btn_login setBackgroundImage:[hImage resizableImageWithCapInsets:UIEdgeInsetsMake(hImage.size.height/2, hImage.size.width/2, hImage.size.height/2, hImage.size.width/2)] forState:UIControlStateDisabled];
         [_btn_login setTitle:@"登录" forState:UIControlStateNormal];
         [_btn_login.titleLabel setFont:[UIFont boldSystemFontOfSize:16]];
         _btn_login.titleLabel.textColor = [UIColor whiteColor];
@@ -289,6 +292,17 @@
 -(void)textFieldDidBeginEditing:(UITextField *)textField{
     //[self setupLeftViewWithTextField:textField];
 }
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    if (_text_phoneNum.textView == textField) {
+        if (![EHUtils isEmptyString:string] && (![EHUtils isPureInt:string] || string.length > 11 || range.location > 10)) {
+            [WeAppToast toast:@"请输入正确的手机号码"];
+            return NO;
+        }
+    }
+    return YES;
+}
+
 
 -(void)setupLeftViewWithTextField:(UITextField*)textField{
     if (textField.text.length > 0) {

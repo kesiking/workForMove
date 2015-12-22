@@ -35,12 +35,15 @@
 
 +(void)toast:(NSString*)s toView:(UIView*)v displaytime:(float)t postion:(int)y{
     if (s == nil || s.length == 0) {
+        
+        EHLogError(@"toast message is nil");
         return;
     }
     @synchronized([self class]) {
     
     UIView*h=[v viewWithTag:hinttag];
     if (h) {
+        EHLogWarn(@"already has a toast in view");
         return;
     }
     if(h==nil){
@@ -75,7 +78,7 @@
     
     [v addSubview:h];
     
-    //    [v bringSubviewToFront:h];
+    [v bringSubviewToFront:h];
 //    [UIView animateWithDuration:.3 delay:t options:UIViewAnimationOptionCurveEaseInOut animations:^{
 //        h.transform=CGAffineTransformMakeScale(.8,.8);
 //    } completion:^(BOOL finished) {

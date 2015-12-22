@@ -354,13 +354,15 @@
 - (NSString *)showWorkDate {
     NSDate *date = [NSDate date];
     NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-    NSDateComponents *comps = [[NSDateComponents alloc] init];
+    NSDateComponents *comps;// = [[NSDateComponents alloc] init];
     NSInteger unitFlags = NSWeekdayCalendarUnit;
     comps = [calendar components:unitFlags fromDate:date];
     NSInteger week = [comps weekday];
     NSLog(@"week = %ld",week);
     NSMutableString *workDateStr = [[NSMutableString alloc]initWithString:@"0000000"];
     [workDateStr replaceCharactersInRange:NSMakeRange(week - 1, 1) withString:@"1"];
+    NSString *changedWorkDate = [NSString stringWithFormat:@"%@%@",[workDateStr substringFromIndex:1],[workDateStr substringToIndex:1]];
+    workDateStr = [changedWorkDate mutableCopy];
     return workDateStr;
 }
 

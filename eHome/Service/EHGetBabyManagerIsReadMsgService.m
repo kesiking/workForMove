@@ -10,12 +10,13 @@
 
 @implementation EHGetBabyManagerIsReadMsgService
 
--(void)getBabyManagerIsReadMsgService: (NSString *) phone{
+-(void)getBabyManagerIsReadMsgService: (NSString *) phone device_code:(NSString *)device_code{
     if(phone==nil){
         EHLogError(@"phone is nil");
+        return;
     }
     self.jsonTopKey = @"responseData";
-    [self loadNumberValueWithAPIName:kEHGetBabyManagerIsReadMsgApiName params:@{@"gardian_phone":phone} version:nil];
+    [self loadNumberValueWithAPIName:kEHGetBabyManagerIsReadMsgApiName params:@{@"gardian_phone":phone,@"device_code":device_code} version:nil];
 }
 
 @end

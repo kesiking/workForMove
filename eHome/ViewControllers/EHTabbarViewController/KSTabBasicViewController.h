@@ -56,4 +56,8 @@
 
 -(void)userDidLogout:(NSDictionary*)userInfo;
 
+-(void)setTabBarWithRedPoint;
+
+-(void)clearTabBarRedPoint;
+
 @end

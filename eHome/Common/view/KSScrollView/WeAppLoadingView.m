@@ -152,21 +152,29 @@
 }
 
 - (CAAnimation *)scaleAnimation:(int)tag{
+    CAMediaTimingFunction *linearCurve = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
     CABasicAnimation *scaleAnm = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
     scaleAnm.fromValue = @1;
     scaleAnm.toValue = @kMinScale;
     scaleAnm.duration = 1;
-    scaleAnm.autoreverses = YES;
     scaleAnm.timeOffset = (1 - (tag + 7) % 8 / 7.0)/0.6;
     scaleAnm.repeatCount = INFINITY;
+    scaleAnm.timingFunction = linearCurve;
+    scaleAnm.removedOnCompletion = NO;
+    scaleAnm.autoreverses = YES;
     return scaleAnm;
 }
 
 - (CAAnimation *)rotationAnimation{
+    CAMediaTimingFunction *linearCurve = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
     CABasicAnimation *rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
     rotationAnimation.byValue = @(M_PI*2);
-    rotationAnimation.duration= 8;
+    rotationAnimation.duration = 8;
     rotationAnimation.repeatCount = INFINITY;
+    rotationAnimation.timingFunction = linearCurve;
+    rotationAnimation.removedOnCompletion = NO;
+    rotationAnimation.fillMode = kCAFillModeForwards;
+    rotationAnimation.autoreverses = NO;
     return rotationAnimation;
 }
 

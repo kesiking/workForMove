@@ -9,10 +9,11 @@
 #import "WeAppComponentBaseItem.h"
 #import "XHBabyChatMessage.h"
 
-#define SEND_MESSAGE_FROM_APP_USER   @"0"
-#define SEND_MESSAGE_FROM_BABY_WATCH @"1"
-#define CONTEXT_TYPE_TEXT            @"0"
-#define CONTEXT_TYPE_VOICE           @"1"
+#define SEND_MESSAGE_FROM_APP_USER     @"0"
+#define SEND_MESSAGE_FROM_BABY_WATCH   @"1"
+#define CONTEXT_TYPE_TEXT              @"0"
+#define CONTEXT_TYPE_VOICE             @"1"
+#define CONTEXT_TYPE_EMOTION           @"2"
 
 @class EHChatMessageBabyInfoModel;
 @class EHChatMessageUserPhoneInfoModel;

@@ -9,9 +9,7 @@
 #import "EHFamilyMemberViewController.h"
 #import "EHGetBabyAttentionUsersRsp.h"
 #import "EHFamilyMemberTableViewCell.h"
-#import "EHTransferManagerViewController.h"
 #import "EHGetBabyAttentionUsersService.h"
-#import "EHFamilyMemberManageViewController.h"
 #import "EHNewApplyFamilyMemberTableViewCell.h"
 #import "EHNewApplyFamilyMemberViewController.h"
 #import "EHFamilyMemberFirstSectionTableViewCell.h"
@@ -63,11 +61,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
+    [self initNotification];
     self.title = [NSString stringWithFormat:@"%@的家庭成员", self.babyName];
-    if ([EHUtils isAuthority:self.authority]) {
-        [self topView];
-    }
+    [self topView];
     [self familyMemberTableView];
     self.view.backgroundColor=EHBgcor1;
     
@@ -91,21 +87,44 @@
 
 
 -(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
     if ([EHUtils isAuthority:self.authority]) {
         [self setHeadImage];
     }
 }
 
+-(void)initNotification{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHBabyListChangedNotification object:nil];
+}
+
+-(void)babyDidChangedNotification:(NSNotification*)notification{
+    self.authority=[[EHBabyListDataCenter sharedCenter].currentBabyUserInfo.authority mutableCopy];
+    if ([EHUtils isAuthority:self.authority]) {
+        [_topView mas_updateConstraints:^(MASConstraintMaker *make){
+                make.height.mas_equalTo(160);
+            }];
+        [self updateFamilyMemberList];
+    }
+}
+
+-(void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 -(void)topView{
     _topView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_family" ]];
-    // _topView.frame = CGRectMake(8, 12, CGRectGetWidth(self.view.frame)-2*8, (CGRectGetWidth(self.view.frame)-2*8) * CGRectGetHeight(_topView.frame) / CGRectGetWidth(_topView.frame));
+//     _topView.frame = CGRectMake(8, 12, CGRectGetWidth(self.view.frame)-2*8, 100);
     [self.view addSubview:_topView];
     [_topView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.view.mas_left).with.offset(8*SCREEN_SCALE);
         make.top.equalTo(self.view.mas_top).with.offset(12*SCREEN_SCALE);
         make.right.equalTo(self.view.mas_right).with.offset(-8*SCREEN_SCALE);
-        make.height.mas_equalTo((CGRectGetWidth(self.view.frame)-16)*CGRectGetHeight(_topView.frame) / CGRectGetWidth(_topView.frame));
+        if ([EHUtils isAuthority:self.authority]) {
+            make.height.mas_equalTo(160);
+
+        }else{
+            make.height.mas_equalTo(0);
+        }
     }];
 
     
@@ -125,7 +144,7 @@
     }];
 
     
-    _headImageView=[[UIImageView alloc]init];
+    _headImageView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"headportrait_home_150"]];
     _headImageView.layer.cornerRadius = IMAGEWIDTH/2.0;
     _headImageView.layer.masksToBounds = YES;
     [_topView addSubview:_headImageView];
@@ -217,7 +236,6 @@
 
 - (UITableView *)familyMemberTableView{
     if (!_familyMemberTableView) {
-     //   _familyMemberTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(_topView.frame)+12,CGRectGetWidth(self.view.frame) , CGRectGetHeight(self.view.frame)-CGRectGetHeight(_topView.frame)) style:UITableViewStyleGrouped];
         _familyMemberTableView=[[GroupedTableView alloc]initWithFrame:CGRectZero style:UITableViewStyleGrouped];
         _familyMemberTableView.rowHeight = 61;
         _familyMemberTableView.sectionFooterHeight = 0;
@@ -226,22 +244,12 @@
         _familyMemberTableView.tableFooterView = [[UIView alloc] init];
         _familyMemberTableView.backgroundColor=EHBgcor1;
         [self.view addSubview:_familyMemberTableView];
-        if ([EHUtils isAuthority:self.authority]) {
-            [_familyMemberTableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        [_familyMemberTableView mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.top.equalTo(_topView.mas_bottom);
                 make.left.equalTo(_topView.mas_left);
                 make.right.equalTo(_topView.mas_right);
                 make.bottom.equalTo(self.view.mas_bottom);
             }];
-        }
-        else{
-            [_familyMemberTableView mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.equalTo(self.view.mas_top);
-                make.left.equalTo(self.view.mas_left).with.offset(8*SCREEN_SCALE);
-                make.right.equalTo(self.view.mas_right).with.offset(-8*SCREEN_SCALE);
-                make.bottom.equalTo(self.view.mas_bottom);
-            }];
-        }
     }
     return _familyMemberTableView;
 }
@@ -258,19 +266,37 @@
         NSLog(@"index = %ld",index);
         if (index == 0) {
             self.isTransferManager=YES;
-            [self showTransferManagerView];
+            [self.familyMemberTableView reloadData];
+
+          //  [self showTransferManagerView];
         }
         else if (index == 1)
         {
             self.isDeleteFamilyMember=YES;
-            [self showFamilyMemberMangeView];
+            [self.familyMemberTableView reloadData];
+
+          //  [self showFamilyMemberMangeView];
         }
         UIBarButtonItem* confirmBtn = [[UIBarButtonItem alloc] initWithTitle:@"确认" style:UIBarButtonItemStylePlain target:self action:@selector(confirmBtnTapped:)];
         self.navigationItem.rightBarButtonItem = confirmBtn;
         
     }];
 }
-
+-(void)showFamilyMemberView{
+    NSMutableArray * familyMemberExcludeManager = [NSMutableArray new];
+    [self.familyMemberList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        if (![EHUtils isAuthority:[(EHBabyAttentionUser*)obj authority]]) {
+            [familyMemberExcludeManager addObject:obj];
+        }
+        else
+        {
+            self.currentManager = [[(EHBabyAttentionUser*)obj user] user_phone];
+        }
+        
+    }];
+    self.familyMemberList=familyMemberExcludeManager;
+    [self.familyMemberTableView reloadData];
+}
 
 - (void)showTransferManagerView
 {
@@ -341,15 +367,22 @@
         
         if (service.item) {
             EHLogInfo(@"%@",service.item);
-            strongSelf.familyMemberList = [(EHGetBabyAttentionUsersRsp*)service.item user] ;
-            
+           strongSelf.familyMemberList = [(EHGetBabyAttentionUsersRsp*)service.item user] ;
+           [strongSelf reSetFamilyNumber];
+
             if (strongSelf.familyMemberList.count > 1 && [EHUtils isAuthority:strongSelf.authority]) {
                 UIBarButtonItem* moreBtn = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"public_ico_tbar_more"] style:UIBarButtonItemStylePlain target:strongSelf action:@selector(moreBtnTapped:)];
                 strongSelf.navigationItem.rightBarButtonItem = moreBtn;
+            }else{
+                strongSelf.navigationItem.rightBarButtonItem = nil;
+
             }
             
-            [strongSelf reSetFamilyNumber];
-            [strongSelf.familyMemberTableView reloadData];
+            if ([EHUtils isAuthority:strongSelf.authority])  {
+                [strongSelf showFamilyMemberView];
+            }else{
+                [strongSelf.familyMemberTableView reloadData];
+            }
         }
         
     };
@@ -379,16 +412,18 @@
         [self viewDidLayoutSubviews];
 
     }else{
-        [_topView removeFromSuperview];
-       // [_topView setHeight:0];
-      //  [_familyMemberTableView updateConstraints];
-        [_familyMemberTableView mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.top.equalTo(self.view.mas_top).with.offset(12*SCREEN_SCALE);
-            make.left.equalTo(self.view.mas_left).with.offset(8*SCREEN_SCALE);
-            make.right.equalTo(self.view.mas_right).with.offset(-8*SCREEN_SCALE);
-            make.bottom.equalTo(self.view.mas_bottom);
-            
+     //   [_topView removeFromSuperview];
+        
+        [_topView mas_updateConstraints:^(MASConstraintMaker *make){
+            make.height.mas_equalTo(0);
         }];
+        //        [_familyMemberTableView mas_updateConstraints:^(MASConstraintMaker *make) {
+//            make.top.equalTo(self.view.mas_top).with.offset(12*SCREEN_SCALE);
+//            make.left.equalTo(self.view.mas_left).with.offset(8*SCREEN_SCALE);
+//            make.right.equalTo(self.view.mas_right).with.offset(-8*SCREEN_SCALE);
+//            make.bottom.equalTo(self.view.mas_bottom);
+//            
+//        }];
         
         
         
@@ -511,11 +546,19 @@ static BOOL kEHFamilyMemberFirstSectionCellRegistered=NO;
     [cell.headImageView sd_setImageWithURL:[NSURL URLWithString:attentionUser.user.user_head_img_small] placeholderImage:[EHUtils getUserHeadPlaceHolderImage:attentionUser.user.user_id newPlaceHolderImagePath:attentionUser.user.user_head_img_small defaultHeadImage:[UIImage imageNamed:@"headportrait_80"]]];
     
     if (self.isTransferManager) {
-        cell.checkImageView.image = [UIImage imageNamed:@"btn_checkbox_normal"];
+        if (_currentSecectIndex==indexPath) {
+            cell.checkImageView.image = [UIImage imageNamed:@"public_radiobox_set_on"];
+        }else {
+            cell.checkImageView.image = [UIImage imageNamed:@"btn_checkbox_normal"];
+        }
         cell.checkImageView.hidden = NO;
 
     }else if(self.isDeleteFamilyMember){
-        cell.checkImageView.image = [UIImage imageNamed:@"btn_checkbox_normal"];
+        if ([_currentSecectMembers  objectForKey:indexPath]) {
+            cell.checkImageView.image = [UIImage imageNamed:@"public_radiobox_set_on"];
+        }else{
+            cell.checkImageView.image = [UIImage imageNamed:@"btn_checkbox_normal"];
+        }
     }else{
         if ([EHUtils isAuthority:attentionUser.authority]) {
             cell.checkImageView.image = [UIImage imageNamed:@"ico_administrator"];
@@ -545,13 +588,16 @@ static BOOL kEHFamilyMemberFirstSectionCellRegistered=NO;
         if(indexPath.section==0){
             EHNewApplyFamilyMemberViewController *newApplyFamilyMember=[[EHNewApplyFamilyMemberViewController alloc]init];
             newApplyFamilyMember.baby_Id=self.babyId;
+            WEAKSELF
             newApplyFamilyMember.redPointIsShow=^(BOOL isShow){
-                self.redPointIsShow=isShow;
-                [self.familyMemberTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationNone];
+                STRONGSELF
+                strongSelf.redPointIsShow=isShow;
+                [strongSelf.familyMemberTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationNone];
                 //[self getBabyManagerIsReadMsg];
             };
             newApplyFamilyMember.bindingBabySuccess=^{
-                [self updateFamilyMemberList];
+                STRONGSELF
+                [strongSelf updateFamilyMemberList];
             };
             
             [self.navigationController pushViewController:newApplyFamilyMember animated:YES];
@@ -614,7 +660,7 @@ static BOOL kEHFamilyMemberFirstSectionCellRegistered=NO;
         EHLogError(@"getBabyManagerIsReadMsgService error");
     };
     
-    [_getBabyManagerIsReadMsgService getBabyManagerIsReadMsgService:[KSAuthenticationCenter userPhone] ];
+    [_getBabyManagerIsReadMsgService getBabyManagerIsReadMsgService:[KSAuthenticationCenter userPhone] device_code:self.device_code];
     
     
     
@@ -644,6 +690,8 @@ static BOOL kEHFamilyMemberFirstSectionCellRegistered=NO;
         transferAction = [RMAction actionWithTitle:@"移除家庭成员" style:RMActionStyleDone andHandler:^(RMActionController *controller) {
             [self deleteBabyUser];
         }];
+    }else{
+        return;
     }
     transferAction.titleColor = EH_cor7;
     transferAction.titleFont = EH_font2;
@@ -688,7 +736,7 @@ static BOOL kEHFamilyMemberFirstSectionCellRegistered=NO;
         WEAKSELF
         _transferManagerService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
             STRONGSELF
-            EHBabyAttentionUser *attentionUser = (EHBabyAttentionUser *)[strongSelf.familyMemberList objectAtIndex:strongSelf.currentSecectIndex.row];
+            //EHBabyAttentionUser *attentionUser = (EHBabyAttentionUser *)[strongSelf.familyMemberList objectAtIndex:strongSelf.currentSecectIndex.row];
             [strongSelf updateFamilyMemberList];
             strongSelf.authority=@"0";
             strongSelf.isTransferManager=NO;
@@ -723,6 +771,7 @@ static BOOL kEHFamilyMemberFirstSectionCellRegistered=NO;
             
             NSDictionary* userInfo = error.userInfo;
             [WeAppToast toast:[userInfo objectForKey:NSLocalizedDescriptionKey]];
+            EHLogError(@"删除失败 %@",userInfo);
         };
     }
     

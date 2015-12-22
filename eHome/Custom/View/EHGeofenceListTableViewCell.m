@@ -44,9 +44,8 @@
 - (void)layoutSubviews{
     [super layoutSubviews];
     CGSize radiusLabelSize = [self.radiusLabel.text sizeWithFontSize:EHSiz2 Width:MAXFLOAT];
-    self.radiusLabel.frame = CGRectMake(CGRectGetWidth(self.frame) - 71.5 - radiusLabelSize.width, 17, radiusLabelSize.width, radiusLabelSize.height);
-    
-    self.swit.frame = CGRectMake(CGRectGetWidth(self.frame) - 12 - 39, (CGRectGetHeight(self.frame) - 22) / 2.0, 39, 22);
+    self.radiusLabel.frame = CGRectMake(CGRectGetWidth(self.frame) - 71.5 - radiusLabelSize.width, (CGRectGetHeight(self.frame)-radiusLabelSize.height)/2.0, radiusLabelSize.width, radiusLabelSize.height);
+    self.swit.frame = CGRectMake(CGRectGetWidth(self.frame) - 61, (CGRectGetHeight(self.frame) - 42) / 2.0, 59, 42);
     
     _nameLabel.frame = CGRectMake(12, 14, CGRectGetMinX(self.radiusLabel.frame) - 12, CGRectGetHeight(self.radiusLabel.frame));
     

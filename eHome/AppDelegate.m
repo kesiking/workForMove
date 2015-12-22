@@ -13,6 +13,7 @@
 #import "EHRemoteMessageModel.h"
 #import "EHXiaoXiConfig.h"
 #import "IQKeyboardManager.h"
+#import "UncaughtExceptionHandler.h"
 @interface AppDelegate ()
 
 @property (nonatomic, assign)  BOOL    isNotNeedPushNotificationMessage;
@@ -26,23 +27,42 @@
 
     [EHLog initEHLog];
     
-    EHLogInfo(@"launch finished!");
+
     [self configRemoteNotificationWithApplication:application launchingWithOptions:launchOptions];
     [self configUIContent];
     [self configApplication];
     [self configIQKeyboardManager];
     [EHSocializedShareConfig config];
-    
+    [KSTouchEvent configTouch];
+    [KSTouchEvent setNeedTouchEventLog:NO];
+    [self configAppCare];
+    [self startNetworkstartMonitoring];
+    EHLogInfo(@"launch finished!");
     return YES;
 }
 
+- (void)startNetworkstartMonitoring
+{
+    [[AFNetworkReachabilityManager sharedManager] startMonitoring];
+}
+
+- (void)configAppCare
+{
+    EHLogInfo(@"configAppCare");
+    //注册异常
+    [UncaughtExceptionHandler InstallUncaughtExceptionHandler];
+    NSSetUncaughtExceptionHandler(&UncaughtExceptionHandlers);
+    [[exceptionSolve sharedManager] appKey:@"20151029022"];
+}
+
 -(void)configIQKeyboardManager{
-    
+    EHLogInfo(@"configIQKeyboardManager");
     IQKeyboardManager *manager = [IQKeyboardManager sharedManager];
     manager.enable = NO;
     manager.enableAutoToolbar = NO;
 }
 -(void)configApplication{
+    EHLogInfo(@"configApplication");
     // 配置小溪
     [EHXiaoXiConfig configXiaoXi];
     // 读取配置文件
@@ -50,10 +70,15 @@
     // 配置Navigator，支持全局url跳转
     [KSBasicNavigator configNavigator];
     // 检查是否登录
-    [[KSAuthenticationCenter sharedCenter] autoLoginWithCompleteBlock:nil];
+    [[KSAuthenticationCenter sharedCenter] autoLoginWithCompleteBlock:^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:EHBabyListNeedChangeNotification object:nil];
+    }];
+    
+    [EHBabyListDataCenter sharedCenter];
 }
 
 -(void)configUIContent{
+    EHLogInfo(@"configUIContent");
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
@@ -68,8 +93,8 @@
     if([navigationController.navigationBar respondsToSelector:@selector(tintColor)]){
         navigationController.navigationBar.tintColor  =   UINAVIGATIONBAR_TITLE_COLOR;
     }
-    [navigationController.navigationBar setBackgroundImage:[[UIImage alloc] init] forBarMetrics:UIBarMetricsDefault];
-    navigationController.navigationBar.shadowImage = [[UIImage alloc]init];
+//    [navigationController.navigationBar setBackgroundImage:[[UIImage alloc] init] forBarMetrics:UIBarMetricsDefault];
+//    navigationController.navigationBar.shadowImage = [[UIImage alloc]init];
     // 修改navbar title颜色
     NSDictionary *navbarTitleTextAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
                                                UINAVIGATIONBAR_TITLE_COLOR, NSForegroundColorAttributeName,
@@ -86,6 +111,7 @@
 
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
 {
+    EHLogInfo(@"open URL = %@", [url absoluteString]);
     return  [UMSocialSnsService handleOpenURL:url];
 }
 
@@ -94,6 +120,8 @@
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation
 {
+    EHLogInfo(@"open URL = %@", [url absoluteString]);
+    
     return  [UMSocialSnsService handleOpenURL:url];
 }
 
@@ -108,20 +136,24 @@
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
+    EHLogInfo(@"applicationDidEnterBackground");
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
+    EHLogInfo(@"applicationWillEnterForeground");
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
+    EHLogInfo(@"applicationDidBecomeActive");
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     [self cancelAllNotificationMessage];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {
+    EHLogInfo(@"applicationWillTerminate");
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
@@ -139,31 +171,42 @@
     EHLogInfo(@"userInfo == %@",userInfo);
     // 防止小溪抽风一直走离线推送，导致不断消息页面进栈
     if (application.applicationState == UIApplicationStateActive) {
-        NSLog(@"active");
+        EHLogInfo(@"UIApplicationStateActive");
         //程序当前正处于前台
     }else if(application.applicationState == UIApplicationStateInactive){
-        NSLog(@"inactive");
+        EHLogInfo(@"UIApplicationStateInactive");
         //程序处于后台
         @synchronized(self){
             if (!self.isNotNeedPushNotificationMessage) {
                 self.isNotNeedPushNotificationMessage = YES;
                 NSString *message = [[userInfo objectForKey:@"aps"] objectForKey:@"alert"];
+                EHLogInfo(@"remote message = %@", message);
+                NSString *hideParam = [userInfo objectForKey:@"hideparam"];
+                EHLogInfo(@"remote hideParam = %@", hideParam);
+                NSString *babyId = nil;
+                if (hideParam) {
+                    NSError* error = nil;
+                    NSData *data = [hideParam dataUsingEncoding:NSUTF8StringEncoding];
+                    NSDictionary *responseDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+                    babyId = [NSString stringWithFormat:@"%@", responseDict[@"babyId"]];
+                }
                 // 消息处理
                 [self sendRemoteMessageWithMessageWithMessageText:message];
                 // 返回app首页
                 [self goBackToHomeTabViewControllerWithMessageText:message];
                 // 根据消息打开不同页面，如进入消息页面，进入申请页面
-                [self openNativeViewControllerWithMessageText:message];
+                [self openNativeViewControllerWithMessageText:message andBabyId:babyId];
             }
         }
     }
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error{
-    EHLogInfo(@"Regist fail%@",error);
+    EHLogInfo(@"Register Remote Notificationsfail %@",error);
 }
 
 -(void)configRemoteNotificationWithApplication:(UIApplication *)application launchingWithOptions:(NSDictionary *)launchOptions {
+    EHLogInfo(@"launchOptions = %@", launchOptions);
     if ([application respondsToSelector:@selector(isRegisteredForRemoteNotifications)])
     {
         //IOS8
@@ -188,7 +231,7 @@
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification*)notification
 {
-    
+    EHLogInfo(@"didReceiveLocalNotification");
 }
 
 - (void)cancelAllNotificationMessage{
@@ -212,38 +255,64 @@
     }
 }
 
-- (void)openNativeViewControllerWithMessageText:(NSString*)messageText{
-    
-    if ([messageText hasPrefix:@"语音通话"]) {
-        NSString* babyId = [self getBabyIdStringFromMessageText:messageText];
+- (void)openNativeViewControllerWithMessageText:(NSString*)messageText andBabyId:(NSString *)remoteNotibabyId{
+    if ([messageText hasSuffix:@"群中发来了一条新消息"]) {
+        NSString* babyId = remoteNotibabyId;
         if (babyId == nil) {
+            DDLogError(@"baby id is nil in voice message");
             return;
         }
-        TBOpenURLFromTargetWithNativeParams(internalURL(@"EHBabySingleChatMessageViewController"), self.window.rootViewController, @{ACTION_ANIMATION_KEY:@(false)} ,@{@"babyId":[NSNumber numberWithInteger:[babyId integerValue]]});
-    }else if ([messageText hasPrefix:@"用户关注"]) {
-        NSString* babyId = [self getBabyIdStringFromMessageText:messageText];
+        TBOpenURLFromTargetWithNativeParams(tabbarURL(kEHOMETabHome), self.window.rootViewController, @{ACTION_ANIMATION_KEY:@(false)} ,@{kEHOMETabHomeGetBabyId:[NSNumber numberWithInteger:[babyId integerValue]]});
+    }else if ([messageText hasPrefix:@"用户"]&&[messageText hasSuffix:@"家庭成员页面处理"]){
+        NSString* babyId = remoteNotibabyId;
         if (babyId == nil) {
+            DDLogError(@"baby id is nil in user attention message");
             return;
         }
         TBOpenURLFromTargetWithNativeParams(internalURL(@"EHNewApplyFamilyMemberViewController"), self.window.rootViewController, @{ACTION_ANIMATION_KEY:@(false)} ,@{@"babyId":[NSNumber numberWithInteger:[babyId integerValue]]});
     }else{
         NSMutableDictionary* params = [NSMutableDictionary dictionary];
-        if ([messageText isEqualToString:@"家庭消息"]) {
+        if ([messageText isEqualToString:@"家庭消息"] || [messageText isEqualToString:@"换卡提醒"]) {
             [params setObject:@(1) forKey:@"systemMessageType"];
         }
         TBOpenURLFromTargetWithNativeParams(internalURL(@"EHMessageInfoViewController"), self.window.rootViewController, @{ACTION_ANIMATION_KEY:@(false)} ,params);
     }
+        
+        
+//    if ([messageText hasPrefix:@"语音通话"]) {
+//        NSString* babyId = [self getBabyIdStringFromMessageText:messageText];
+//        if (babyId == nil) {
+//            DDLogError(@"baby id is nil in voice message");
+//            return;
+//        }
+//        TBOpenURLFromTargetWithNativeParams(tabbarURL(kEHOMETabHome), self.window.rootViewController, @{ACTION_ANIMATION_KEY:@(false)} ,@{kEHOMETabHomeGetBabyId:[NSNumber numberWithInteger:[babyId integerValue]]});
+//    }else if ([messageText hasPrefix:@"用户关注"]) {
+//        NSString* babyId = [self getBabyIdStringFromMessageText:messageText];
+//        if (babyId == nil) {
+//            DDLogError(@"baby id is nil in user attention message");
+//            return;
+//        }
+//        TBOpenURLFromTargetWithNativeParams(internalURL(@"EHNewApplyFamilyMemberViewController"), self.window.rootViewController, @{ACTION_ANIMATION_KEY:@(false)} ,@{@"babyId":[NSNumber numberWithInteger:[babyId integerValue]]});
+//    }else{
+//        NSMutableDictionary* params = [NSMutableDictionary dictionary];
+//        if ([messageText isEqualToString:@"家庭消息"] || [messageText isEqualToString:@"换卡提醒"]) {
+//            [params setObject:@(1) forKey:@"systemMessageType"];
+//        }
+//        TBOpenURLFromTargetWithNativeParams(internalURL(@"EHMessageInfoViewController"), self.window.rootViewController, @{ACTION_ANIMATION_KEY:@(false)} ,params);
+//    }
    
 }
 
 -(NSString*)getBabyIdStringFromMessageText:(NSString*)messageText{
     NSArray *array = [messageText componentsSeparatedByString:@"("];
     if ([array count] <= 1) {
+        DDLogError(@"get baby id error!");
         return nil;
     }
     NSString *subMessage = [array objectAtIndex:1];
     NSArray *subarray = [subMessage componentsSeparatedByString:@")"];
     if ([array count] <= 1) {
+        DDLogError(@"get baby id error!");
         return nil;
     }
     NSString* babyId = [subarray objectAtIndex:0];

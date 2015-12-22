@@ -58,6 +58,14 @@ static SystemSoundID EHWorningSoundID = 1005;
             STRONGSELF
             if (index == 0) {
                 [strongSelf stopWorning];
+                
+                //发出SOS消息的通知
+                NSMutableDictionary* userInfo = [NSMutableDictionary new];
+                if (messageInfoModel.babyId) {
+                    [userInfo setObject:messageInfoModel.babyId forKey:EHMESSAGE_BABY_ID_DATA];
+                }
+                [[NSNotificationCenter defaultCenter] postNotificationName:EHBabySOSMessageNotification object:nil userInfo:userInfo];
+                
                 NSMutableDictionary* params = [NSMutableDictionary dictionary];
                 if (messageInfoModel.babyId) {
                     [params setObject:messageInfoModel.babyId forKey:kEHOMETabHomeGetBabyId];
@@ -66,7 +74,7 @@ static SystemSoundID EHWorningSoundID = 1005;
                     }
                     [params setObject:@YES forKey:kEHOMETabHomeSwitchToBaby];
                 }
-                TBOpenURLFromSourceAndParams(tabbarURL(kEHOMETabHome), strongSelf.sourceView, params);
+                TBOpenURLFromSourceAndParams(tabbarURL(kEHOMETabSafe), strongSelf.sourceView, params);
             }
         } cancelButtonTitle:nil otherButtonTitles:@"马上查看", nil];
         EHGetBabyListRsp *babyListRsp = [[EHBabyListDataCenter sharedCenter] getBabyListRspWithBabyId:messageInfoModel.babyId];
@@ -96,16 +104,19 @@ static SystemSoundID EHWorningSoundID = 1005;
 
 -(void)remoteMessageHandle:(EHMessageInfoModel *)messageInfoModel{
     [super remoteMessageHandle:messageInfoModel];
+    EHLogInfo(@"SOS remoteMessageHandle was called -------->>>>>>>>messageInfoModel:%@",messageInfoModel);
     // 判断是否合法，如果不合法则不再发送消息
     if (![self isRemoteMessageLogical:messageInfoModel]) {
         return;
     }
     // 判断是否过期，如果过期则不再发送消息
     if ([self isRemoteMessageTimeOverdue:messageInfoModel]) {
+        EHLogInfo(@"remoteMessage 已经过期-------->>>>>>>>messageInfoModel:%@",messageInfoModel);
         return;
     }
     if (self.remoteMessageCategory == EHMessageInfoCatergoryType_SOS && !isSOSMessageOn) {
         isSOSMessageOn = YES;
+        EHLogInfo(@"SOS isSOSMessageOn -------->>>>>>>>messageInfoModel:%@",messageInfoModel);
         // to do 声音 震动
         NSString* subMessageInfo = messageInfoModel.info;
         NSString* addressString = @"地点";
@@ -131,11 +142,6 @@ static SystemSoundID EHWorningSoundID = 1005;
                                      EHLogInfo(@"-----> Received touch for notification with text: %@ %@", notificationView.textLabel.text,notificationView.detailTextLabel.text);
                                  }];
 #else
-            NSMutableDictionary* userInfo = [NSMutableDictionary new];
-            if (messageInfoModel.babyId) {
-                [userInfo setObject:messageInfoModel.babyId forKey:EHMESSAGE_BABY_ID_DATA];
-            }
-            [[NSNotificationCenter defaultCenter] postNotificationName:EHBabySOSMessageNotification object:nil userInfo:userInfo];
             [self initAlertViewWithMessageInfo:messageInfo messageInfoModel:messageInfoModel];
 #endif
             [self initTimer];

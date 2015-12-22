@@ -20,6 +20,9 @@
         return;
     }
     if (self.remoteMessageCategory == EHMessageInfoCatergoryType_Location) {
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:EHBabyLocationNotification object:nil userInfo:@{@"babyId":messageInfoModel.babyId}];
+        
         // to do
         NSString* subMessageInfo = messageInfoModel.info;
         if (messageInfoModel.trigger_name) {

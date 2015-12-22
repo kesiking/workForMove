@@ -15,10 +15,10 @@
 @interface EHBabyFamilyPhone : WeAppComponentBaseItem
 
 
-@property(nonatomic, strong)NSString* attention_phone;
-@property(nonatomic, strong)NSNumber* device_id;
-@property(nonatomic, strong)NSNumber* device_phone_id;
-@property(nonatomic, strong)NSString* phone_name;
-@property(nonatomic, strong)NSString* phone_type;
+@property(nonatomic, strong)NSString* phoneNumber;//亲情电话
+@property(nonatomic, strong)NSString* deviceCode;//设备编码
+@property(nonatomic, strong)NSNumber* devicePhoneId;//亲情电话表ID
+@property(nonatomic, strong)NSString* relationship;//电话昵称
+@property(nonatomic, assign)NSInteger index;//亲情电话顺序
 
 @end

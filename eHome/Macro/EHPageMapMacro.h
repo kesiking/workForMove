@@ -9,7 +9,8 @@
 #ifndef eHome_EHPageMapMacro_h
 #define eHome_EHPageMapMacro_h
 
-#define kEHOMETabHome            @"ehome_home_url"
+#define kEHOMETabHome            @"ehome_chat_url"
+#define kEHOMETabSafe            @"ehome_home_url"
 #define kEHOMETabHealthy         @"ehome_healthy_url"
 #define kEHOMETabMyinfo          @"ehome_myinfo_url"
 #define kEHBabyAtteintion        @"babyAtteintionPage"

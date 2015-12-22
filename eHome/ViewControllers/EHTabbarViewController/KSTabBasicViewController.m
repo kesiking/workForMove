@@ -9,12 +9,15 @@
 #import "KSTabBasicViewController.h"
 #import "EHAleatView.h"
 #import "EHDeviceStatusCenter.h"
+#import "EHMessageHeader.h"
+#import "RDVTabBarItem.h"
 
 #define babyHorizontalListViewHeight (self.view.height)
 
 @interface KSTabBasicViewController ()
 
 @property(nonatomic,assign) BOOL                 isLoginLoading;
+@property (nonatomic, assign) BOOL                          didSendDeviceBindingMessage;
 
 @end
 
@@ -29,6 +32,37 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLogoutNotification:) name:kUserLogoutSuccessNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLoginNotification:) name:kUserLoginSuccessNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(currentSelectBabyChangedNotification:) name:EHCurrentSelectBabyChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHBabyListChangedNotification object:nil];
+    
+    if ([self needSetupBabyData]) {
+        [self.babyHorizontalListView setupBabyDataWithDataList:[[EHBabyListDataCenter sharedCenter] babyList]];
+        [self switchToBabyWithBabyId:[NSNumber numberWithInteger:[[[EHBabyListDataCenter sharedCenter] currentBabyId] integerValue]]];
+        
+    }
+    [self initStatusCenter];
+    [self initMessageManager];
+}
+
+-(void)initMessageManager{
+
+    [EHMessageManager sharedManager].sourceTarget = self.KSNavigationController.viewControllers.firstObject;
+}
+
+-(void)initStatusCenter{
+    [EHDeviceStatusCenter sharedCenter].didGetDeviceStatus = ^(EHDeviceStatusModel* deviceStatusModel){
+        EHDeviceStatusMessageModel* messageModel = [EHDeviceStatusMessageModel new];
+        messageModel.deviceStatusModel = deviceStatusModel;
+        [[EHMessageManager sharedManager] sendMessage:messageModel];
+        if (deviceStatusModel.message_number) {
+            [self.navBarRightView setupPointImageStatusWithNumber:deviceStatusModel.message_number];
+        }
+    };
+    
+    [EHDeviceStatusCenter sharedCenter].getDeviceStatusFail = ^(void){
+        EHNoneMessageModel* messageModel = [EHNoneMessageModel new];
+        [[EHMessageManager sharedManager] sendMessage:messageModel];
+    };
+    
 }
 
 -(void)initBasicNavBarViews{
@@ -77,10 +111,7 @@
     self.navigationItem.titleView = self.titleView;
     self.navigationController.navigationBarHidden = NO;
     
-    if ([self needSetupBabyData]) {
-        [self switchToBabyWithBabyId:[NSNumber numberWithInteger:[[[EHBabyListDataCenter sharedCenter] currentBabyId] integerValue]]];
-        [self.babyHorizontalListView setupBabyDataWithDataList:[[EHBabyListDataCenter sharedCenter] babyList]];
-    }
+
 }
 
 -(void)viewDidAppear:(BOOL)animated{
@@ -113,6 +144,26 @@
         return self.rdv_tabBarController.navigationItem;
     }
     return [super navigationItem];
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#pragma mark - 设备状态管理器控制 method
+-(void)resetStatusCenter{
+    EHLogInfo(@"reset Status Center");
+    [[EHDeviceStatusCenter sharedCenter] stop];
+}
+
+-(void)configStatusCenter{
+    EHLogInfo(@"currentBabyid = %@", [EHBabyListDataCenter sharedCenter].currentBabyUserInfo.babyId);
+    
+    if ([EHBabyListDataCenter sharedCenter].currentBabyUserInfo.babyId) {
+        [[EHDeviceStatusCenter sharedCenter] setupDeviceCenterWithBabyId:[NSString stringWithFormat:@"%@",[EHBabyListDataCenter sharedCenter].currentBabyUserInfo.babyId]];
+    }
+    else
+    {
+        [[EHDeviceStatusCenter sharedCenter] setupDeviceCenterWithBabyId:nil];
+    }
+    
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -193,10 +244,17 @@
         _babyHorizontalListView.babyListViewClickedBlock = ^(EHBabyHorizontalBasicListView* babyListView,NSInteger index, NSInteger preIndex, EHGetBabyListRsp* babyUserInfo){
             STRONGSELF
             if (preIndex != index && babyUserInfo && babyUserInfo.babyId > 0) {
+                // 重置message展示
+                EHNoneMessageModel* messageModel = [EHNoneMessageModel new];
+                [[EHMessageManager sharedManager] sendMessage:messageModel];
                 // 更新宝贝数据中心的数据
                 [[EHBabyListDataCenter sharedCenter] setCurrentSelectBabyId:babyUserInfo.babyId];
+                [[EHBabyListDataCenter sharedCenter] setCurrentBabyId:[NSString stringWithFormat:@"%@",babyUserInfo.babyId]];
+                [[EHBabyListDataCenter sharedCenter] setCurrentBabyUserInfo:babyUserInfo];
                 [strongSelf.navBarTitleView setBtnTitle:babyUserInfo.babyNickName];
                 [strongSelf babyHorizontalListViewBabyCliced:babyUserInfo];
+                
+                [strongSelf configStatusCenter];
             }
             if (preIndex != EHBabyNonFoundNum) {
                 [strongSelf.navBarTitleView setButtonSelected:YES];
@@ -224,7 +282,19 @@
         _babyHorizontalListView.hasBabyDataBlock = ^(EHBabyHorizontalBasicListView* babyListView, BOOL hasBabyData){
             STRONGSELF
             if (!hasBabyData) {
-                [strongSelf.navBarTitleView setBtnTitle:@"暂无用户"];
+                [strongSelf.navBarTitleView setBtnTitle:@"暂无宝贝"];
+                // 重置message展示
+                EHNoneMessageModel* messageModel = [EHNoneMessageModel new];
+                [[EHMessageManager sharedManager] sendMessage:messageModel];
+                [strongSelf configStatusCenter];
+                // 重置消息提示小红点
+                [[NSNotificationCenter defaultCenter] postNotificationName:EHClearRemoteMessageAttentionNotification object:nil userInfo:nil];
+                [strongSelf babyHorizontalListViewBabyCliced:nil];
+                if (!strongSelf.didSendDeviceBindingMessage) {
+                    strongSelf.didSendDeviceBindingMessage = YES;
+                    EHDeviceBindingMessageModel* messageModel = [EHDeviceBindingMessageModel new];
+                    [[EHMessageManager sharedManager] sendMessage:messageModel];
+                }
             }
         };
     }
@@ -292,7 +362,18 @@
 -(BOOL)checkLogin{
     BOOL isLogin = [KSAuthenticationCenter isLogin];
     if (!isLogin) {
-        [self doLogin];
+        if (IOS_VERSION >=8.0) {
+            [self doLogin];
+        }
+        else
+        {
+            WEAKSELF
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                STRONGSELF
+                [strongSelf doLogin];
+            });
+        }
+        
     }
     return isLogin;
 }
@@ -342,6 +423,14 @@
     [self currentSelectBabyChanged:notification.userInfo];
 }
 
+-(void)babyDidChangedNotification:(NSNotification*)notification{
+    if ([self needSetupBabyData]) {
+        [self.babyHorizontalListView setupBabyDataWithDataList:[[EHBabyListDataCenter sharedCenter] babyList]];
+        [self switchToBabyWithBabyId:[NSNumber numberWithInteger:[[[EHBabyListDataCenter sharedCenter] currentBabyId] integerValue]]];
+        
+    }
+}
+
 -(void)switchToBabyWithBabyId:(NSNumber *)babyId{
     if (babyId == nil) {
         return;
@@ -358,11 +447,12 @@
 }
 
 -(void)userDidLogin:(NSDictionary*)userInfo{
+    _didSendDeviceBindingMessage = NO;
     
 }
 
 -(void)userDidLogout:(NSDictionary*)userInfo{
-    
+    [self resetStatusCenter];
 }
 
 #pragma mark- KSTabBarViewControllerProtocol
@@ -389,4 +479,25 @@
     return bounds;
 }
 
+#pragma mark - tabbar red point
+- (void) setTabBarWithRedPoint
+{
+    [self setTabBarWithBadgeValue:@" " BadgeBackgroundColor:[UIColor redColor] BadgeTextFont:[UIFont systemFontOfSize:4.0f] BadgePositionAdjustment:UIOffsetMake(-3, 3)];
+}
+- (void) clearTabBarRedPoint
+{
+    if ([self rdv_tabBarItem]) {
+        [[self rdv_tabBarItem] setBadgeValue:nil];
+    }
+}
+
+- (void) setTabBarWithBadgeValue:(NSString *)value BadgeBackgroundColor:(UIColor *)color BadgeTextFont:(UIFont *)font BadgePositionAdjustment: (UIOffset)offset
+{
+    if ([self rdv_tabBarItem]) {
+        [[self rdv_tabBarItem] setBadgeValue:value];
+        [[self rdv_tabBarItem] setBadgeBackgroundColor:color];
+        [[self rdv_tabBarItem] setBadgeTextFont:font];
+        [[self rdv_tabBarItem] setBadgePositionAdjustment:offset];
+    }
+}
 @end

@@ -12,6 +12,7 @@
 #import "EHRemoteLocationMessageHandle.h"
 #import "EHRemoteSOSMessageHandle.h"
 #import "EHRemoteOutOrInLineMessageHandle.h"
+#import "EHRemoteFamilyChangeBabyPhoneHandle.h"
 
 @implementation EHRemoteMessageHandleFactory
 
@@ -23,6 +24,10 @@
             break;
         case EHMessageInfoCatergoryType_Family:{
             return [EHRemoteFamiryMessageHandle new];
+        }
+            break;
+        case EHMessageInfoCatergoryType_Family_ChangeBabyPhone:{
+            return [EHRemoteFamilyChangeBabyPhoneHandle new];
         }
             break;
         case EHMessageInfoCatergoryType_Location:{
@@ -39,6 +44,7 @@
             return [EHRemoteOutOrInLineMessageHandle new];
         }
             break;
+        
         default:
             return [EHRemoteBasicMessageHandle new];
             break;

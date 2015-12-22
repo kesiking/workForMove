@@ -83,7 +83,7 @@
             [_bgView removeFromSuperview];
             [_calendarView removeFromSuperview];
         }
-        self.show = NO;
+        strongSelf.show = NO;
 
         
     }];

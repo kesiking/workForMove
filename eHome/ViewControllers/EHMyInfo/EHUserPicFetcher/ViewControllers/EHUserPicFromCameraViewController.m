@@ -9,7 +9,7 @@
 #import "EHUserPicFromCameraViewController.h"
 
 @interface EHUserPicFromCameraViewController ()<UINavigationControllerDelegate,UIImagePickerControllerDelegate>
-
+@property (strong, nonatomic) UIImagePickerController *pickerVC;
 @end
 
 @implementation EHUserPicFromCameraViewController
@@ -18,6 +18,17 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.view addSubview:[self bgImageView]];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babySOSMessageNotification:) name:EHBabySOSMessageNotification object:nil];
+    
+}
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:EHBabySOSMessageNotification object:nil];
+}
+-(void)babySOSMessageNotification:(NSNotification*)notification{
+    if (self.pickerVC && [self.pickerVC isKindOfClass:[UIImagePickerController class]]) {
+        [self imagePickerControllerDidCancel:self.pickerVC];
+    }
 }
 
 #pragma mark - Events Response
@@ -32,10 +43,11 @@
         picker.allowsEditing = YES;
         picker.sourceType = sourceType;
         
+        self.pickerVC = picker;
         [self presentViewController:picker animated:YES completion:nil];
     }else
     {
-        NSLog(@"无法打开照相机,请检查！");
+        EHLogError(@"无法打开照相机,请检查！");
         [WeAppToast toast:@"无法打开照相机,请检查！"];
         [self performSelector:@selector(dismiss) withObject:nil afterDelay:0.1];
     }

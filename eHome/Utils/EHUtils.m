@@ -9,6 +9,11 @@
 #import "EHUtils.h"
 #import "EHUserDefaultData.h"
 #import "AFNetworkReachabilityManager.h"
+#import <AssetsLibrary/AssetsLibrary.h>
+#import "KSAdapterNetWork.h"
+
+#import <CommonCrypto/CommonDigest.h>
+#import <Security/Security.h>
 
 @implementation EHUtils
 
@@ -164,7 +169,9 @@
         return NO;
     }
 
-    NSString *      regex = @"^[A-Za-z0-9\x21-\x7e]{6,20}$";
+//    NSString *      regex = @"^[A-Za-z0-9\x21-\x7e]{6,20}$";
+    //支持特殊字符
+    NSString *      regex = @"^[\\dA-Za-z`~!@#$%^&*()-=_+\\[\\]{}\\|\\\\;:'\",./<>?]{6,20}$";
     NSPredicate *   pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
     return [pred evaluateWithObject:password];  ;
 }
@@ -209,12 +216,12 @@
         return weekBinaryStr;
     }
     //这里先将第一天的周日移到最后方便处理
-    NSString *weekStr = [NSString stringWithFormat:@"%@%@",[weekBinaryStr substringFromIndex:1],[weekBinaryStr substringToIndex:1]];
+//  NSString *weekStr = [NSString stringWithFormat:@"%@%@",[weekBinaryStr substringFromIndex:1],[weekBinaryStr substringToIndex:1]];
     
     for (NSInteger i = 0; i < num; i++) {
         
         NSRange iRange = NSMakeRange(i, 1);
-        NSString *iStr = [weekStr substringWithRange:iRange];
+        NSString *iStr = [weekBinaryStr substringWithRange:iRange];
 
         //如果当天被选择，则加入当天，并往后遍历检测连续重复的个数再做处理
         if ([iStr isEqualToString:@"1"]) {
@@ -224,7 +231,7 @@
             
             for (NSInteger j = (i + 1); j < num; j++) {
                 NSRange jRange = NSMakeRange(j, 1);
-                NSString *jStr = [weekStr substringWithRange:jRange];
+                NSString *jStr = [weekBinaryStr substringWithRange:jRange];
                 
                 //工作日判断
                 if ((i == 0) && (j == (num - 2))) {
@@ -309,7 +316,139 @@
 
 + (BOOL)networkReachable
 {
+    if (![KSAdapterNetWork sharedAdapterNetWork].isStartNetWorkMonitor)
+    {
+        return YES;
+    }
     return [[AFNetworkReachabilityManager sharedManager] isReachable];
+}
+
++ (BOOL)canOpenCamara
+{
+    NSString *mediaType = AVMediaTypeVideo;
+    
+    AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:mediaType];
+    
+    if(authStatus == AVAuthorizationStatusRestricted || authStatus == AVAuthorizationStatusDenied){
+        
+        
+        UIAlertView*alert = [[UIAlertView alloc]initWithTitle:@"请在iPhone的“设置-隐私-相机“选项中,允许贯众爱家访问你的相机"
+                             
+                                                      message:nil
+                             
+                                                     delegate:nil
+                             
+                                            cancelButtonTitle:@"好"
+                             
+                                            otherButtonTitles:nil];
+        
+        [alert show];
+        
+        return NO;
+        
+    }
+    return YES;
+}
+
++ (BOOL)canOpenPhoneAlbum
+{
+    ALAuthorizationStatus author = [ALAssetsLibrary authorizationStatus];
+    
+    if (author == kCLAuthorizationStatusRestricted || author ==kCLAuthorizationStatusDenied){
+        //无权限
+        UIAlertView*alert = [[UIAlertView alloc]initWithTitle:@"请在iPhone的“设置-隐私-照片“选项中,允许贯众爱家访问你的照片"
+                             
+                                                      message:nil
+                             
+                                                     delegate:nil
+                             
+                                            cancelButtonTitle:@"好"
+                             
+                                            otherButtonTitles:nil];
+        
+        [alert show];
+        
+        return NO;
+    }
+    
+    return YES;
+}
+
+
+#define DESKEY @"chenjian@chinamobile.com"
+
++ (NSString*)tripleDES:(NSString*)plainText encryptOrDecrypt:(CCOperation)encryptOrDecrypt
+{
+    if ([EHUtils isEmptyString:plainText]) {
+        return @"";
+    }
+    
+    const void *vplainText;
+    size_t plainTextBufferSize;
+    
+    if (encryptOrDecrypt == kCCDecrypt)//解密
+    {
+
+        NSData *EncryptData = [[NSData alloc] initWithBase64EncodedString:plainText options:0];
+        plainTextBufferSize = [EncryptData length];
+        vplainText = [EncryptData bytes];
+    }
+    else //加密
+    {
+        NSData* data = [plainText dataUsingEncoding:NSUTF8StringEncoding];
+        plainTextBufferSize = [data length];
+        vplainText = (const void *)[data bytes];
+    }
+    
+    CCCryptorStatus ccStatus;
+    uint8_t *bufferPtr = NULL;
+    size_t bufferPtrSize = 0;
+    size_t movedBytes = 0;
+    
+    bufferPtrSize = (plainTextBufferSize + kCCBlockSize3DES) & ~(kCCBlockSize3DES - 1);
+    bufferPtr = malloc( bufferPtrSize * sizeof(uint8_t));
+    memset((void *)bufferPtr, 0x0, bufferPtrSize);
+    // memset((void *) iv, 0x0, (size_t) sizeof(iv));
+    
+    const void *vkey = (const void *)[DESKEY UTF8String];
+    // NSString *initVec = @"init Vec";
+    //const void *vinitVec = (const void *) [initVec UTF8String];
+    //  Byte iv[] = {0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF};
+    ccStatus = CCCrypt(encryptOrDecrypt,
+                       kCCAlgorithm3DES,
+                       kCCOptionPKCS7Padding | kCCOptionECBMode,
+                       vkey,
+                       kCCKeySize3DES,
+                       nil,
+                       vplainText,
+                       plainTextBufferSize,
+                       (void *)bufferPtr,
+                       bufferPtrSize,
+                       &movedBytes);
+    if (ccStatus == kCCSuccess) EHLogInfo(@"SUCCESS");
+    else if (ccStatus == kCCParamError) EHLogInfo(@"PARAM ERROR");
+     else if (ccStatus == kCCBufferTooSmall) EHLogInfo(@"BUFFER TOO SMALL");
+     else if (ccStatus == kCCMemoryFailure) EHLogInfo(@"MEMORY FAILURE");
+     else if (ccStatus == kCCAlignmentError) EHLogInfo(@"ALIGNMENT");
+     else if (ccStatus == kCCDecodeError) EHLogInfo(@"DECODE ERROR");
+     else if (ccStatus == kCCUnimplemented) EHLogInfo(@"UNIMPLEMENTED");
+    
+    NSString *result;
+    
+    if (encryptOrDecrypt == kCCDecrypt)
+    {
+        result = [[NSString alloc] initWithData:[NSData dataWithBytes:(const void *)bufferPtr
+                                                                length:(NSUInteger)movedBytes]
+                                        encoding:NSUTF8StringEncoding];
+    }
+    else
+    {
+        NSData *myData = [NSData dataWithBytes:(const void *)bufferPtr length:(NSUInteger)movedBytes];
+        result = [myData base64EncodedStringWithOptions:0];
+    }
+    
+    free(bufferPtr);
+    return result;
 }
 
 @end

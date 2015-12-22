@@ -98,9 +98,10 @@
         WEAKSELF
         [healthyView.calendarVC returnDateText:^(NSString *showSelectedDate){
             STRONGSELF
+            EHLogInfo(@"calendar selectedDate is %@", showSelectedDate);
             NSDate *sdate=[strongSelf.dateFormatter dateFromString:showSelectedDate];
-            NSString *selectedDateString = [strongSelf.dateFormatter stringFromDate:sdate];
-            strongSelf.healthyView.dateLabel.text = selectedDateString;
+//            NSString *selectedDateString = [strongSelf.dateFormatter stringFromDate:sdate];
+//            strongSelf.healthyView.dateLabel.text = selectedDateString;
             //点击日历返回，日期滚动条更新
             NSTimeInterval secondsInterval= [sdate timeIntervalSinceDate:self.startUserDay];
             NSInteger dayInterval = secondsInterval/(24*60*60)+1;
@@ -109,7 +110,7 @@
             [strongSelf.healthyView.bgView removeFromSuperview];
             [strongSelf.healthyView.calendarView removeFromSuperview];
             strongSelf.healthyView.calendarVC.selectedDate = sdate;
-            self.show = YES;
+            strongSelf.show = YES;
         }];
         if (!healthyView.bgView) {
             healthyView.bgView = [[UIView alloc]initWithFrame:window.bounds];
@@ -166,18 +167,23 @@
     [self.healthyView.carousel scrollToItemAtIndex:[self.items count]-1 animated:NO];
     self.queryDataService.needCache = NO;
     self.queryDataService.onlyUserCache = NO;
+    self.previousIndex = -1;
     [self.queryDataService queryBabyHealthyDataWithBabyId:[self.babyId integerValue] AndDate:[self.dateFormatter stringFromDate:[NSDate date]]];
     
     //更新日历控件
     self.healthyView.calendarVC = [CalendarViewController new];
 }
+
+//日周切换调用
 - (void)reloadDataWhenViewScroll
 {
     self.currentDate = [NSDate date];
     [self.healthyView.carousel scrollToItemAtIndex:[self.items count]-1 animated:NO];
     self.queryDataService.needCache = NO;
     self.queryDataService.onlyUserCache = NO;
+    self.previousIndex = -1;
     [self.queryDataService queryBabyHealthyDataWithBabyId:[self.babyId integerValue] AndDate:[self.dateFormatter stringFromDate:[NSDate date]]];
+    
 }
 #pragma mark - 私有方法
 //配置items数组
@@ -223,7 +229,7 @@
         if ([dateString isEqual:todayString]) {
             healthyView.dateLabel.text = @"今天";
         }
-        healthyView.sTargetStepsLabel.text = [NSString stringWithFormat:@"目标：%ld步",dayModel.target_steps];
+        healthyView.sTargetStepsLabel.text = [NSString stringWithFormat:@"目标：%ld步",dayModel.targetSteps];
         healthyView.finishSteps.text=[NSString stringWithFormat:@"%ld",(long)dayModel.steps];
         if (dayModel.mileage == 0) {
             healthyView.distanceLabel.text= @"0米";
@@ -236,7 +242,13 @@
             }
  
         }
-        healthyView.energyLabel.text=[NSString stringWithFormat:@"%ld千卡",dayModel.calorie];
+        if (1000*dayModel.calorie<10000) {
+            dayModel.calorie = dayModel.calorie*1000;
+            healthyView.energyLabel.text=[NSString stringWithFormat:@"%ld卡",dayModel.calorie];
+        }else{
+            healthyView.energyLabel.text=[NSString stringWithFormat:@"%ld千卡",dayModel.calorie];
+        }
+      
         healthyView.ratioLabel.text=[NSString stringWithFormat:@"%@%%",dayModel.percent];
         [healthyView.distanceChart updateChartByCurrent:[NSNumber numberWithInteger:[dayModel.percent integerValue]]];
         [healthyView.energyChart updateChartByCurrent:[NSNumber numberWithInteger:[dayModel.percent integerValue]]];
@@ -248,6 +260,7 @@
         NSNumber* max1=[dayModel.responseData valueForKeyPath:@"@max.intValue"];
         
         long maxValue = [max1 integerValue];
+
         //截断最大值，如果<500,取到500，如果<1000,取到1000(0的话取0)
         if (maxValue <= 500) {
             if (maxValue == 0) {
@@ -260,16 +273,20 @@
             maxValue = 1000;
         }else{
             int trail = maxValue%1000;
-            if (trail < 500) {
-                maxValue = (maxValue/1000) *1000 +500;
+            if (trail <= 500) {
+                if(trail == 0){
+                    maxValue = maxValue;
+                }else{
+                    maxValue = (maxValue/1000) *1000 +500;
+                }
             }else{
                 maxValue = (maxValue/1000) *1000 +1000;
             }
         }
         
         if (maxValue == 0) {
-            healthyView.maxYValueLabel.text = [NSString stringWithFormat:@"%ld",dayModel.target_steps];
-            healthyView.middleValueLabel.text = [NSString stringWithFormat:@"%ld",dayModel.target_steps/2];
+            healthyView.maxYValueLabel.text = [NSString stringWithFormat:@"%ld",dayModel.targetSteps];
+            healthyView.middleValueLabel.text = [NSString stringWithFormat:@"%ld",dayModel.targetSteps/2];
         }else{
             healthyView.maxYValueLabel.text = [NSString stringWithFormat:@"%ld",maxValue];
             healthyView.middleValueLabel.text = [NSString stringWithFormat:@"%ld",maxValue/2];
@@ -506,7 +523,7 @@
     } completion:^(BOOL finished) {
     }];
     
-    //比较是否和之前在同一位置，如果在同一位置不做刷新操作
+//    比较是否和之前在同一位置，如果在同一位置不做刷新操作
     self.currentIndex = carousel.currentItemIndex;
     if (self.currentIndex == self.previousIndex) {
         return;

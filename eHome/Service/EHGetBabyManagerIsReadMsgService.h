@@ -10,6 +10,6 @@
 
 @interface EHGetBabyManagerIsReadMsgService : KSAdapterService
 
--(void)getBabyManagerIsReadMsgService: (NSString *) phone;
+-(void)getBabyManagerIsReadMsgService: (NSString *) phone device_code:(NSString *)device_code;
 
 @end

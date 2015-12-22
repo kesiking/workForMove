@@ -21,16 +21,17 @@
 #define kHeaderViewHeight 30
 
 @interface EHMyInfoViewController ()<UITableViewDataSource,UITableViewDelegate>
-
+@property (nonatomic, strong)    UIImageView *headImageView;
+@property (nonatomic, strong)    MBProgressHUD *loadingHud;
 @end
 
 @implementation EHMyInfoViewController
 {
     GroupedTableView *_tableView;
-    UIImageView *_headImageView;
+
     EHUploadUserPicService *_uploadHeadImageService;
     EHModifyUserPicService *_modifyUserPicService;
-    EHLoadingHud *_loadingHud;
+
 }
 
 - (void)viewDidLoad {
@@ -39,8 +40,8 @@
     self.view.backgroundColor=EHBgcor1;
     [self initTableView];
     [self.view addSubview:[self logOutButton]];
-    _headImageView = [self headImageView];
-    _loadingHud = [[EHLoadingHud alloc]init];
+    [self initHeadImageView];
+//    _loadingHud = [[EHLoadingHud alloc]init];
 }
 
 #pragma mark - Events Response
@@ -69,13 +70,14 @@
         
         STRONGSELF
         [KSAuthenticationCenter logoutWithCompleteBolck:^{
-            NSMutableDictionary* params = [NSMutableDictionary dictionary];
-            [params setObject:@YES forKey:kEHOMETabHomeNeedLogin];
-            NSDictionary* queryParams = nil;
-            if (IOS_VERSION < 8.0) {
-                queryParams = @{ACTION_ANIMATION_KEY:@(false)};
-            }
-            TBOpenURLFromTargetWithNativeParams(tabbarURL(kEHOMETabHome), strongSelf,queryParams, params);
+            [strongSelf.navigationController popViewControllerAnimated:NO];
+//            NSMutableDictionary* params = [NSMutableDictionary dictionary];
+//            [params setObject:@YES forKey:kEHOMETabHomeNeedLogin];
+//            NSDictionary* queryParams = nil;
+//            if (IOS_VERSION < 8.0) {
+//                queryParams = @{ACTION_ANIMATION_KEY:@(false)};
+//            }
+//            TBOpenURLFromTargetWithNativeParams(tabbarURL(kEHOMETabHome), strongSelf,queryParams, params);
         }];
     }];
     
@@ -113,7 +115,13 @@
  *  上传头像
  */
 - (void)uploadImage:(NSData *)imageData{
-    [_loadingHud showWithStatus:@"正在上传中..." InView:self.view];
+    //[_loadingHud showWithStatus:@"正在上传中..." InView:self.view];
+    _loadingHud = [[MBProgressHUD alloc] initWithView:self.view];
+    [self.view addSubview:_loadingHud];
+    
+    _loadingHud.labelText = @"正在上传中...";
+    [_loadingHud show:YES];
+    
     [self setUpLoadService];
     [_uploadHeadImageService uploadImageWithData:imageData UserPhone:[KSLoginComponentItem sharedInstance].user_phone];
 }
@@ -148,10 +156,11 @@
     }
     cell.textLabel.font = EHFont2;
     cell.textLabel.text = titleArray[indexPath.section * 2 + indexPath.row];
-    
+    WEAKSELF
     if (indexPath.section == 0 && indexPath.row == 0) {
-        [cell.contentView addSubview:_headImageView];
-        CGRect rect = [tableView convertRect:_headImageView.frame toView:nil];
+        STRONGSELF
+        [cell.contentView addSubview:strongSelf.headImageView];
+        CGRect rect = [tableView convertRect:strongSelf.headImageView.frame toView:nil];
         NSLog(@"rect: x= %f ,y= %f,w= %f, h= %f",rect.origin.x,rect.origin.y,rect.size.width,rect.size.height);
     }
     if (indexPath.section == 0 && indexPath.row == 1) {
@@ -213,13 +222,13 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    return 12;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
-    return 0.01;
-}
+//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+//    return 12;
+//}
+//
+//- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
+//    return 0.01;
+//}
 
 #pragma mark - Getters And Setters
 - (void)initTableView{
@@ -231,14 +240,14 @@
     [self.view addSubview:_tableView];
     
     [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.view).with.insets(UIEdgeInsetsMake(0, 10, 0, 10));
+        make.edges.equalTo(self.view).with.insets(UIEdgeInsetsMake(0, 10, 49, 10));
     }];
     
     return;
 }
 
 
-- (UIImageView *)headImageView{
+- (void)initHeadImageView{
     if (!_headImageView) {
         _headImageView = [[UIImageView alloc]initWithFrame:CGRectMake(CGRectGetWidth(_tableView.frame)-85, 10, 30, 30)];
         _headImageView.layer.masksToBounds = YES;
@@ -251,7 +260,6 @@
         [_headImageView addGestureRecognizer:headImageViewTap];
         _headImageView.userInteractionEnabled = YES;
     }
-    return _headImageView;
 }
 
 - (UIButton *)logOutButton{
@@ -266,7 +274,6 @@
 }
 
 - (void)setUpLoadService{
-    EHLoadingHud *__weak weakHud = _loadingHud;
     _uploadHeadImageService = [EHUploadUserPicService new];
     WEAKSELF
     _uploadHeadImageService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
@@ -275,7 +282,11 @@
             [strongSelf modifyUserPicWithPicUrl:item.original SmallPicUrl:item.compress];
     };
     _uploadHeadImageService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
-        [weakHud showErrorWithStatus:@"上传失败！" Finish:^{}];
+        STRONGSELF
+        strongSelf.loadingHud.labelText = @"上传失败！";
+        strongSelf.loadingHud.mode = MBProgressHUDModeText;
+        [strongSelf.loadingHud hide:YES afterDelay:2];
+        //[strongSelf.loadingHud showErrorWithStatus:@"上传失败！" Finish:^{}];
         //        NSDictionary* userInfo = error.userInfo;
         //        [WeAppToast toast:[userInfo objectForKey:NSLocalizedDescriptionKey]];
     };
@@ -283,21 +294,26 @@
 }
 
 - (void)setModifyUserPicServiceWithPicUrl:(NSString *)url{
-    EHLoadingHud *__weak weakHud = _loadingHud;
     
     _modifyUserPicService = [EHModifyUserPicService new];
-    
-    UIImageView __weak *weakImageView = _headImageView;
+    WEAKSELF
     _modifyUserPicService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
         EHLogInfo(@"设置完成！");
+        STRONGSELF
         [KSLoginComponentItem sharedInstance].user_head_img = url;
-        [weakHud showSuccessWithStatus:@"更新头像成功" Finish:^{}];
-        [weakImageView sd_setImageWithURL:[NSURL URLWithString:url] placeholderImage:weakImageView.image options:SDWebImageProgressiveDownload | SDWebImageRetryFailed|SDWebImageLowPriority completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+//        [strongSelf.loadingHud showSuccessWithStatus:@"更新头像成功" Finish:^{}];
+        strongSelf.loadingHud.labelText = @"更新头像成功";
+        strongSelf.loadingHud.mode = MBProgressHUDModeText;
+        [strongSelf.loadingHud hide:YES afterDelay:2];
+        [strongSelf.headImageView sd_setImageWithURL:[NSURL URLWithString:url] placeholderImage:strongSelf.headImageView.image options:SDWebImageProgressiveDownload | SDWebImageRetryFailed|SDWebImageLowPriority completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
         }];
     };
     _modifyUserPicService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
-        [weakHud showErrorWithStatus:@"设置失败！" Finish:^{}];
-        
+        STRONGSELF
+        //[strongSelf.loadingHud showErrorWithStatus:@"设置失败！" Finish:^{}];
+        strongSelf.loadingHud.labelText = @"设置失败！";
+        strongSelf.loadingHud.mode = MBProgressHUDModeText;
+        [strongSelf.loadingHud hide:YES afterDelay:2];
         //        NSDictionary* userInfo = error.userInfo;
         //        [WeAppToast toast:[userInfo objectForKey:NSLocalizedDescriptionKey]];
     };
@@ -307,119 +323,125 @@
     [super didReceiveMemoryWarning];
 }
 
-@end
-
-#pragma mark -
-#pragma mark - EHLogOutAlertView
-
-#define kBtnHeight 50
-#define kSpace 10
-#define kHudViewHeight (kBtnHeight * 3 + kSpace)
-#define kHudViewWidth CGRectGetWidth(self.frame)
-
-@implementation EHLogOutAlertView
+- (void)dealloc
 {
-    UIView *_alertView;
-}
-- (instancetype)init{
-    self = [super init];
-    if (self) {
-        self.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0];
-    }
-    return self;
-}
-
-- (void)show{
-    UIWindow* window = [[UIApplication sharedApplication] keyWindow];
-    self.frame = window.bounds;
-    [window addSubview:self];
-    [self addSubview:[self alertView]];
-    [self appearAnimated];
-}
-
-- (void)appearAnimated{
-    _alertView.layer.transform = CATransform3DMakeTranslation(0, kHudViewHeight, 0);
-    [UIView animateWithDuration:0.3 animations:^{
-        self.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0.6];
-        _alertView.layer.transform = CATransform3DIdentity;
-    }];
-}
-
-- (void)disappearAnimatedAndLogout:(BOOL)logOut{
-    [UIView animateWithDuration:0.3 animations:^{
-        self.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0];
-        _alertView.layer.transform = CATransform3DMakeTranslation(0, kHudViewHeight, 0);
-    } completion:^(BOOL finished) {
-        [self removeFromSuperview];
-        if (logOut) {
-            !self.logOutBlock?:self.logOutBlock();
-        }
-    }];
-}
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
-    [super touchesEnded:touches withEvent:event];
-    [self disappearAnimatedAndLogout:NO];
-}
-
-- (void)logOutButtonClick:(id)sender{
-    [self disappearAnimatedAndLogout:YES];
-}
-
-- (void)cancleButtonClick:(id)sender{
-    [self disappearAnimatedAndLogout:NO];
-}
-
-- (UIView *)alertView{
-    if (!_alertView) {
-        _alertView = [[UIView alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(self.frame) - kHudViewHeight, kHudViewWidth, kHudViewHeight)];
-        _alertView.backgroundColor = [UIColor clearColor];
-        [_alertView addSubview:[self contentLabel]];
-        [_alertView addSubview:[self lineView]];
-        [_alertView addSubview:[self logOutButton]];
-        [_alertView addSubview:[self cancleButton]];
-    }
-    return _alertView;
-}
-
-- (UILabel *)contentLabel{
-    UILabel *contentLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, kHudViewWidth, kBtnHeight)];
-    contentLabel.backgroundColor = [UIColor whiteColor];
-    contentLabel.text = @"退出账号后，您将接受不到app的消息提醒";
-    contentLabel.textColor = EH_cor5;
-    contentLabel.font = EH_font6;
-    contentLabel.textAlignment = NSTextAlignmentCenter;
-
-    return contentLabel;
-}
-
-- (UIView *)lineView{
-    UIView *lineView = [[UIView alloc]initWithFrame:CGRectMake(0, kBtnHeight - 0.5, kHudViewWidth, 0.5)];
-    lineView.backgroundColor = EH_linecor1;
-    
-    return lineView;
-}
-
-- (UIButton *)logOutButton{
-    UIButton *logOutButton = [[UIButton alloc]initWithFrame:CGRectMake(0, kBtnHeight, kHudViewWidth, kBtnHeight)];
-    logOutButton.backgroundColor = [UIColor whiteColor];
-    [logOutButton setTitle:@"退出账号" forState:UIControlStateNormal];
-    [logOutButton setTitleColor:EH_cor7 forState:UIControlStateNormal];
-    logOutButton.titleLabel.font = EH_font2;
-    [logOutButton addTarget:self action:@selector(logOutButtonClick:) forControlEvents:UIControlEventTouchUpInside];
-    
-    return logOutButton;
-}
-
-- (UIButton *)cancleButton{
-    UIButton *cancleButton = [[UIButton alloc]initWithFrame:CGRectMake(0, kBtnHeight * 2 + kSpace, kHudViewWidth, kBtnHeight)];
-    cancleButton.backgroundColor = [UIColor whiteColor];
-    [cancleButton setTitle:@"取消" forState:UIControlStateNormal];
-    [cancleButton setTitleColor:EH_cor4 forState:UIControlStateNormal];
-    cancleButton.titleLabel.font = EH_font2;
-    [cancleButton addTarget:self action:@selector(cancleButtonClick:) forControlEvents:UIControlEventTouchUpInside];
-    
-    return cancleButton;
+    EHLogError(@"a=###############dealloc");
 }
 
 @end
+
+//#pragma mark -
+//#pragma mark - EHLogOutAlertView
+//
+//#define kBtnHeight 50
+//#define kSpace 10
+//#define kHudViewHeight (kBtnHeight * 3 + kSpace)
+//#define kHudViewWidth CGRectGetWidth(self.frame)
+//
+//@implementation EHLogOutAlertView
+//{
+//    UIView *_alertView;
+//}
+//- (instancetype)init{
+//    self = [super init];
+//    if (self) {
+//        self.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0];
+//    }
+//    return self;
+//}
+//
+//- (void)show{
+//    UIWindow* window = [[UIApplication sharedApplication] keyWindow];
+//    self.frame = window.bounds;
+//    [window addSubview:self];
+//    [self addSubview:[self alertView]];
+//    [self appearAnimated];
+//}
+//
+//- (void)appearAnimated{
+//    _alertView.layer.transform = CATransform3DMakeTranslation(0, kHudViewHeight, 0);
+//    [UIView animateWithDuration:0.3 animations:^{
+//        self.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0.6];
+//        _alertView.layer.transform = CATransform3DIdentity;
+//    }];
+//}
+//
+//- (void)disappearAnimatedAndLogout:(BOOL)logOut{
+//    [UIView animateWithDuration:0.3 animations:^{
+//        self.backgroundColor = [UIColor colorWithWhite:0.3 alpha:0];
+//        _alertView.layer.transform = CATransform3DMakeTranslation(0, kHudViewHeight, 0);
+//    } completion:^(BOOL finished) {
+//        [self removeFromSuperview];
+//        if (logOut) {
+//            !self.logOutBlock?:self.logOutBlock();
+//        }
+//    }];
+//}
+//
+//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
+//    [super touchesEnded:touches withEvent:event];
+//    [self disappearAnimatedAndLogout:NO];
+//}
+//
+//- (void)logOutButtonClick:(id)sender{
+//    [self disappearAnimatedAndLogout:YES];
+//}
+//
+//- (void)cancleButtonClick:(id)sender{
+//    [self disappearAnimatedAndLogout:NO];
+//}
+//
+//- (UIView *)alertView{
+//    if (!_alertView) {
+//        _alertView = [[UIView alloc]initWithFrame:CGRectMake(0, CGRectGetHeight(self.frame) - kHudViewHeight, kHudViewWidth, kHudViewHeight)];
+//        _alertView.backgroundColor = [UIColor clearColor];
+//        [_alertView addSubview:[self contentLabel]];
+//        [_alertView addSubview:[self lineView]];
+//        [_alertView addSubview:[self logOutButton]];
+//        [_alertView addSubview:[self cancleButton]];
+//    }
+//    return _alertView;
+//}
+//
+//- (UILabel *)contentLabel{
+//    UILabel *contentLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, kHudViewWidth, kBtnHeight)];
+//    contentLabel.backgroundColor = [UIColor whiteColor];
+//    contentLabel.text = @"退出账号后，您将接受不到app的消息提醒";
+//    contentLabel.textColor = EH_cor5;
+//    contentLabel.font = EH_font6;
+//    contentLabel.textAlignment = NSTextAlignmentCenter;
+//
+//    return contentLabel;
+//}
+//
+//- (UIView *)lineView{
+//    UIView *lineView = [[UIView alloc]initWithFrame:CGRectMake(0, kBtnHeight - 0.5, kHudViewWidth, 0.5)];
+//    lineView.backgroundColor = EH_linecor1;
+//    
+//    return lineView;
+//}
+//
+//- (UIButton *)logOutButton{
+//    UIButton *logOutButton = [[UIButton alloc]initWithFrame:CGRectMake(0, kBtnHeight, kHudViewWidth, kBtnHeight)];
+//    logOutButton.backgroundColor = [UIColor whiteColor];
+//    [logOutButton setTitle:@"退出账号" forState:UIControlStateNormal];
+//    [logOutButton setTitleColor:EH_cor7 forState:UIControlStateNormal];
+//    logOutButton.titleLabel.font = EH_font2;
+//    [logOutButton addTarget:self action:@selector(logOutButtonClick:) forControlEvents:UIControlEventTouchUpInside];
+//    
+//    return logOutButton;
+//}
+//
+//- (UIButton *)cancleButton{
+//    UIButton *cancleButton = [[UIButton alloc]initWithFrame:CGRectMake(0, kBtnHeight * 2 + kSpace, kHudViewWidth, kBtnHeight)];
+//    cancleButton.backgroundColor = [UIColor whiteColor];
+//    [cancleButton setTitle:@"取消" forState:UIControlStateNormal];
+//    [cancleButton setTitleColor:EH_cor4 forState:UIControlStateNormal];
+//    cancleButton.titleLabel.font = EH_font2;
+//    [cancleButton addTarget:self action:@selector(cancleButtonClick:) forControlEvents:UIControlEventTouchUpInside];
+//    
+//    return cancleButton;
+//}
+//
+//
+//@end

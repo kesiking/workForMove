@@ -360,7 +360,7 @@
 }
 
 - (void)dealloc{
-    [self.mapView removeFromSuperview];
+    [self.overlayLayer removeFromSuperlayer];
 }
 
 - (void)didReceiveMemoryWarning {

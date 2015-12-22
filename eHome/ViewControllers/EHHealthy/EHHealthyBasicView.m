@@ -32,12 +32,12 @@
     self.babyHeadBtn=[[UIButton alloc]init];
     self.babyHeadBtn.userInteractionEnabled = NO;
     self.babyHeadBtn.layer.masksToBounds=YES;
-    self.babyHeadBtn.layer.cornerRadius=15*SCREEN_SCALE;
+    self.babyHeadBtn.layer.cornerRadius=20*SCREEN_SCALE;
     [self.firstView addSubview:_babyHeadBtn];
     [self.babyHeadBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(_firstView.mas_top).offset(21*SCREEN_SCALE);
+        make.top.equalTo(_firstView.mas_top).offset(16*SCREEN_SCALE);
         make.left.equalTo(_firstView.mas_left).offset(14*SCREEN_SCALE);
-        make.size.mas_equalTo(CGSizeMake(30*SCREEN_SCALE, 30*SCREEN_SCALE));
+        make.size.mas_equalTo(CGSizeMake(40*SCREEN_SCALE, 40*SCREEN_SCALE));
     }];
 
     self.dateLabel=[[UILabel alloc]init];
@@ -52,14 +52,17 @@
         make.centerX.equalTo(_firstView.mas_centerX);
     }];
     
-    self.calendarBtn = [[UIButton alloc]init];
-    [self.calendarBtn setBackgroundImage:[UIImage imageNamed:@"icon_calendar"] forState:UIControlStateNormal];
+    self.calendarBtn = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 50, 50)];
+    self.calendarBtn.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    [self.calendarBtn setImage:[UIImage imageNamed:@"icon_calendar"] forState:UIControlStateNormal];
+
     
     [self.firstView addSubview:_calendarBtn];
+   
     [self.calendarBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(_firstView.mas_top).offset(21*SCREEN_SCALE);
-        make.right.equalTo(_firstView.mas_right).offset(-14*SCREEN_SCALE);
-        make.size.mas_equalTo(CGSizeMake(30*SCREEN_SCALE, 30*SCREEN_SCALE));
+        make.top.equalTo(_firstView.mas_top).offset(11*SCREEN_SCALE);
+        make.right.equalTo(_firstView.mas_right).offset(-4*SCREEN_SCALE);
+        make.size.mas_equalTo(CGSizeMake(50*SCREEN_SCALE, 50*SCREEN_SCALE));
     }];
     
     //create carousel
@@ -183,7 +186,7 @@
     }];
     
     self.energyLabel=[[UILabel alloc]init];
-    self.energyLabel.text=@"0千卡";
+    self.energyLabel.text=@"0卡";
     self.energyLabel.textColor=EHCor17;
     self.energyLabel.font=EHFont2;
     self.energyLabel.textAlignment=NSTextAlignmentCenter;
@@ -271,7 +274,7 @@
     //添加柱状图
     self.bgChartView = [[UIView alloc]initWithFrame:CGRectMake(14*SCREEN_SCALE+31*SCREEN_SCALE, 14*SCREEN_SCALE, SCREEN_WIDTH-24*SCREEN_SCALE-31*SCREEN_SCALE, 144*SCREEN_SCALE)];
     [self.fourthView addSubview:self.bgChartView];
-//    self.bgChartView.backgroundColor = [UIColor redColor];
+//    self.bgChartView.backgroundColor = [UIColor greenColor];
     
     self.lineViewOne = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_histogram_line"]];
     [self.bgChartView addSubview:self.lineViewOne];
@@ -291,7 +294,7 @@
     [self.bgChartView addSubview:self.lineViewFour];
     self.barChart=[[PNBarChart alloc]initWithFrame:CGRectMake(0,0,self.bgChartView.size.width,self.bgChartView.size.height)];
     self.barChart.backgroundColor = [UIColor clearColor];
-    self.barChart.clipsToBounds = YES;
+    self.barChart.clipsToBounds = NO;
     [self.bgChartView addSubview:self.barChart];
     
     
@@ -340,6 +343,12 @@
         make.top.equalTo(self.fourthView.mas_top).offset(14*SCREEN_SCALE-1);
         make.left.equalTo(self.fourthView.mas_left).offset(14*SCREEN_SCALE+31*SCREEN_SCALE);
         make.size.mas_equalTo(CGSizeMake(SCREEN_WIDTH-28*SCREEN_SCALE-31*SCREEN_SCALE, 1));
+    }];
+    
+    [self.bgChartView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.lineViewOne.mas_bottom).offset(0);
+        make.left.equalTo(self.fourthView.mas_left).offset(14*SCREEN_SCALE+31*SCREEN_SCALE);
+        
     }];
     
     

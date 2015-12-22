@@ -79,8 +79,12 @@
  *  @param sender   发送者的名字
  *  @param date     发送时间
  */
-- (void)didSendEmotion:(NSString *)emotionPath fromSender:(NSString *)sender onDate:(NSDate *)date;
+- (void)didSendEmotion:(NSString *)emotionPath indexPath:(NSIndexPath *)indexPath fromSender:(NSString *)sender onDate:(NSDate *)date;
 
+/**
+ *  拨打电话的回调方法
+ */
+- (void)didPhoneCall;
 /**
  *  发送地理位置的回调方法
  *
@@ -139,6 +143,11 @@
  *  @return 返回计算好的Cell高度
  */
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath targetMessage:(id<XHMessageModel>)message;
+
+/**
+ *  单击tableView的回调方法
+ */
+- (void)didRecognizertapGesture;
 
 @end
 
@@ -231,6 +240,11 @@
  *  是否支持发送表情
  */
 @property (nonatomic, assign) BOOL allowsSendFace; // default is YES
+
+/**
+ *  是否支持拨打电话
+ */
+@property (nonatomic, assign) BOOL allowsPhoneCall; // default is YES
 
 /**
  *  输入框的样式，默认为扁平化

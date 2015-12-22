@@ -11,7 +11,7 @@
 
 typedef void (^FinishSelectedImageBlock) (NSData *selectedImageData);
 
-@interface EHPhotoBrowserViewController : UIViewController
+@interface EHPhotoBrowserViewController : KSViewController
 
 @property(nonatomic,strong)UITableView *tableView;
 @property(nonatomic,strong)ALAssetsGroup *group;

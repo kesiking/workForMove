@@ -54,8 +54,9 @@
     [_iconImageView setImage:[UIImage imageNamed:@"ico_dropdown_cautionpoint"]];
     [self addSubview:_iconImageView];
     
-    _closeBtn = [[UIButton alloc] initWithFrame:CGRectMake(self.width - 20 - 20, (self.height - 20)/2, 20, 20)];
-    [_closeBtn setBackgroundImage:[UIImage imageNamed:@"ico_delete"] forState:UIControlStateNormal];
+    _closeBtn = [[UIButton alloc] initWithFrame:CGRectMake(self.width - 20 - 20 - 10, 2, 40, 40)];
+    _closeBtn.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+    [_closeBtn setImage:[UIImage imageNamed:@"ico_delete"] forState:UIControlStateNormal];
     [_closeBtn addTarget:self action:@selector(closeButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:_closeBtn];
 }

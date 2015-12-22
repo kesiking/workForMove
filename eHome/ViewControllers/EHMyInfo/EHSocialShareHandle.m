@@ -30,11 +30,20 @@
 - (instancetype)init{
     self = [super init];
     if (self) {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babySOSMessageNotification:) name:EHBabySOSMessageNotification object:nil];
         _duration = 0.3;
     }
     return self;
 }
 
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:EHBabySOSMessageNotification object:nil];
+}
+-(void)babySOSMessageNotification:(NSNotification*)notification{
+    [self hide];
+}
 +(EHSocialShareHandle *)sharedManager{
     static dispatch_once_t predicate;
     static EHSocialShareHandle * sharedManager;

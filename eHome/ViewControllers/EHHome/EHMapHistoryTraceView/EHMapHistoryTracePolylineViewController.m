@@ -76,6 +76,8 @@
 -(void)dealloc{
     [self.mapView removeFromSuperview];
     [self.mapView resetMap];
+    // 多实例可清除 -- map多实例方案
+    [[EHMapViewShareInstence sharedCenter] resetMapWithMapContainter:self.mapView];
 }
 
 - (void)viewDidLoad {
@@ -83,6 +85,7 @@
     // Do any additional setup after loading the view.
     [self initHistoryMapVCNavBarViews];
     [self initMapHistoryTraceDate];
+    //[self.mapView resetMap];
     [self.view addSubview:self.mapView];
     [self.view addSubview:self.mapHistoryTraceBottomView];
     [self.view addSubview:self.mapHistoryTraceHeaderView];
@@ -259,6 +262,7 @@
             [strongSelf.mapView resetMap];
             strongSelf.mapView = nil;
             [strongSelf.mapView setPositionArray:strongSelf.positionArray];
+            strongSelf.mapView.endMovingPositionIndex = strongSelf.positionArray.count-1;
             [strongSelf.mapView reloadData];
             if (!strongSelf.positionArray) {
                 [strongSelf setMapHistoryTraceHeaderViewViewShow:NO];

@@ -27,8 +27,18 @@
     
     [self.view addSubview:[self tableView]];
     [self setGroupArray];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babySOSMessageNotification:) name:EHBabySOSMessageNotification object:nil];
 }
-
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:EHBabySOSMessageNotification object:nil];
+}
+- (void)babySOSMessageNotification:(NSNotification *)notification
+{
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
 #pragma mark - Events Response
 - (void)cancleBtnClick:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];

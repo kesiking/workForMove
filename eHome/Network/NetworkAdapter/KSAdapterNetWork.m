@@ -10,8 +10,9 @@
 #import "KSAdapterNetWork.h"
 #import "AFHTTPRequestOperationManager.h"
 #import "KSAuthenticationCenter.h"
+#import "KSSecurityPolicyAdapter.h"
 
-#define DEFAULT_SCHEME @"http"
+#define DEFAULT_SCHEME @"https"
 #define DEFAULT_HOST @"112.54.207.8"
 //#define DEFAULT_HOST @"192.168.8.29"
 
@@ -22,9 +23,62 @@
 #define DEFAULT_PARH @"PersonSafeManagement/"
 #define KS_MANWU_BASE_URL [NSString stringWithFormat:@"%@://%@:%@/",DEFAULT_SCHEME,DEFAULT_HOST,DEFAULT_PORT]
 
+
+@interface KSAdapterNetWork()
+
+@end
+
 @implementation KSAdapterNetWork
 
+
++ (instancetype)sharedAdapterNetWork{
+    static KSAdapterNetWork *_sharedAdapterNetWork = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _sharedAdapterNetWork = [[KSAdapterNetWork alloc] init];
+    });
+    
+    return _sharedAdapterNetWork;
+}
+
+-(instancetype)init
+{
+    if (self = [super init]) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startNetworkMonitorSuccess) name:AFNetworkingReachabilityDidChangeNotification object:nil];
+        return self;
+    }
+    
+    return nil;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)startNetworkMonitorSuccess
+{
+    self.isStartNetWorkMonitor = YES;
+}
+
 -(void)request:(NSString *)apiName withParam:(NSDictionary *)param onSuccess:(NetworkSuccessBlock)successBlock onError:(NetworkErrorBlock)errorBlock onCancel:(NetworkCancelBlock)cancelBlock{
+    
+    if (self.isStartNetWorkMonitor && ![AFNetworkReachabilityManager sharedManager].isReachable) {
+        
+        EHLogError(@"network error");
+        NSString* errorString = @"当前网络不可用，请检查网络设置!";
+        [WeAppToast toast:errorString];
+        NSError *error = [NSError errorWithDomain:@"apiRequestErrorDomain" code:9999 userInfo:@{NSLocalizedDescriptionKey: errorString}];
+        NSMutableDictionary* errorDic = [NSMutableDictionary dictionary];
+        if (error) {
+            [errorDic setObject:error forKey:@"responseError"];
+        }
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            errorBlock(errorDic);
+        });
+        
+        return;
+    }
     // 检查是否需要登陆
     self.needLogin = [param objectForKey:@"needLogin"];
     // 增加最外层的json配置属性
@@ -84,6 +138,13 @@
 
 -(AFHTTPRequestOperationManager*)getAFHTTPRequestOperationManager{
     AFHTTPRequestOperationManager *httpRequestOM = [[AFHTTPRequestOperationManager alloc] initWithBaseURL:[NSURL URLWithString:KS_MANWU_BASE_URL]];
+    httpRequestOM.shouldUseCredentialStorage = NO;
+    /**** SSL Pinning ****/
+    KSSecurityPolicyAdapter *securityPolicy = [KSSecurityPolicyAdapter policyWithPinningMode:AFSSLPinningModeCertificate];
+    securityPolicy.allowInvalidCertificates = YES;
+    [httpRequestOM setSecurityPolicy:securityPolicy];
+    /**** SSL Pinning ****/
+    
     [httpRequestOM.requestSerializer setQueryStringSerializationWithBlock:^NSString *(NSURLRequest *request, NSDictionary *parameters, NSError *__autoreleasing *error) {
         if ([parameters isKindOfClass:[NSString class]]) {
             return (NSString*)parameters;

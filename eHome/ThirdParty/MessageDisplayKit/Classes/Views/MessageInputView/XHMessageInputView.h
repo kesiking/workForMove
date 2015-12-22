@@ -55,6 +55,10 @@ typedef NS_ENUM(NSInteger, XHMessageInputViewStyle) {
 - (void)didSelectedMultipleMediaAction;
 
 /**
+ *  点击+号按钮Action
+ */
+- (void)didSelectedPhoneCallAction;
+/**
  *  按下錄音按鈕 "準備" 錄音
  */
 - (void)prepareRecordingVoiceActionWithCompletion:(BOOL (^)(void))completion;
@@ -116,6 +120,10 @@ typedef NS_ENUM(NSInteger, XHMessageInputViewStyle) {
  *  是否支持发送表情
  */
 @property (nonatomic, assign) BOOL allowsSendFace; // default is YES
+/**
+ *  是否支持拨打电话
+ */
+@property (nonatomic, assign) BOOL allowsPhoneCall; // default is YES
 
 /**
  *  切换文本和语音的按钮
@@ -136,6 +144,10 @@ typedef NS_ENUM(NSInteger, XHMessageInputViewStyle) {
  *  语音录制按钮
  */
 @property (nonatomic, weak, readonly) UIButton *holdDownButton;
+/**
+ *  当手指在录音按钮范围之内离开屏幕所触发的事件，这时候是完成录音
+ */
+- (void)holdDownButtonTouchUpInside;
 
 #pragma mark - Message input view
 

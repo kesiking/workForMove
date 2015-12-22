@@ -17,6 +17,8 @@
 @property (nonatomic, strong) UIImageView           *babyImageView;
 @property (nonatomic, strong) UILabel               *babyLabel;
 
+@property (nonatomic, strong) UIImageView           *redPointImageView;
+
 @property (nonatomic, strong) UIImage               *selectImage;
 
 @property (nonatomic, strong) UIImage               *unSelectImage;
@@ -114,6 +116,10 @@
     [_babyLabel setTextColor:EH_cor4];
     [self addSubview:_babyLabel];
 
+    _redPointImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"public_icon_message_propmpt"]];
+    _redPointImageView.frame = CGRectMake(CGRectGetMaxX(_babyImageView.frame) - 10, CGRectGetMinY(_babyImageView.frame) + 3, 8, 8);
+    _redPointImageView.hidden = YES;
+    [self addSubview:_redPointImageView];
 }
 
 -(void)initNotification{
@@ -147,7 +153,10 @@
         self.babyButtonClicedBlock(self);
     }
 }
-
+-(void)setBtnRedPointHidden:(BOOL)hidden
+{
+    self.redPointImageView.hidden = hidden;
+}
 -(void)babyOutLineNotification:(NSNotification*)notification{
     
     NSUInteger currentBabyId = [[[EHBabyListDataCenter sharedCenter] currentBabyId] integerValue];

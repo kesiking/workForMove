@@ -13,7 +13,8 @@
 @property (nonatomic, strong)UIImageView *backgroundView;
 
 @property (nonatomic, strong)UIImageView *thumbView;
-
+@property (nonatomic,strong)UIView*showArea;
+#define MARGIN 10
 @end
 
 @implementation EHSwitch
@@ -55,15 +56,16 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     
-    CGFloat height = CGRectGetHeight(self.frame);
-    CGFloat width = MAX(height * 1.2, CGRectGetWidth(self.frame));
-    CGRect frame = self.frame;
+    self.showArea.frame=CGRectMake(MARGIN, MARGIN, CGRectGetWidth(self.frame)-2*MARGIN, CGRectGetHeight(self.frame)-2*MARGIN);
+    CGFloat height = CGRectGetHeight(self.showArea.frame);
+    CGFloat width = MAX(height * 1.2, CGRectGetWidth(self.showArea.frame));
+    CGRect frame = self.showArea.frame;
     frame.size.width = width;
-    self.frame = frame;
+    self.showArea.frame = frame;
     
-    CGFloat thumbViewWidth = CGRectGetHeight(self.frame) - _space * 2;
+    CGFloat thumbViewWidth = CGRectGetHeight(self.showArea.frame) - _space * 2;
     if (self.on) {
-        self.thumbView.frame = CGRectMake(CGRectGetWidth(self.frame) - thumbViewWidth - _space, _space, thumbViewWidth, thumbViewWidth);
+        self.thumbView.frame = CGRectMake(CGRectGetWidth(self.showArea.frame) - thumbViewWidth - _space, _space, thumbViewWidth, thumbViewWidth);
     }
     else {
         self.thumbView.frame = CGRectMake(_space, _space, thumbViewWidth, thumbViewWidth);
@@ -71,13 +73,17 @@
     self.thumbView.layer.cornerRadius = thumbViewWidth / 2.0;
     self.thumbView.layer.masksToBounds = YES;
     
-    self.backgroundView.frame = CGRectMake(0, 0, CGRectGetWidth(self.frame), CGRectGetHeight(self.frame));
+    self.backgroundView.frame = CGRectMake(0, 0, CGRectGetWidth(self.showArea.frame), CGRectGetHeight(self.showArea.frame));
 }
 
 #pragma mark - Events Response
 - (void)tap:(UITapGestureRecognizer *)tap {
-    [self setOn:!self.on animated:YES];
-    !self.switchChangedBlock?:self.switchChangedBlock(self.on);
+    if (self.shouldChangeSwitchImmediately) {
+        [self setOn:!self.on animated:YES];
+    }
+    if (self.switchChangedBlock) {
+        self.switchChangedBlock(self.on);
+    }
 }
 
 
@@ -86,13 +92,17 @@
 - (void)setUp {
     _space = 4;
     self.on = YES;
+    self.shouldChangeSwitchImmediately = YES;
+    [self addSubview:self.showArea];
     
-    [self addSubview:self.backgroundView];
-    [self addSubview:self.thumbView];
+    [self.showArea addSubview:self.backgroundView];
+    [self.showArea addSubview:self.thumbView];
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tap:)];
     [self addGestureRecognizer:tap];
 }
+
+
 
 - (void)setOn:(BOOL)on animated:(BOOL)animated {
     _on = on;
@@ -107,7 +117,7 @@
 
 - (void)showOnAnimated:(BOOL)animated {
     CGFloat thumbViewWidth = CGRectGetWidth(self.thumbView.frame);
-    CGRect onFrame = CGRectMake(CGRectGetWidth(self.frame) - thumbViewWidth - _space, _space, thumbViewWidth, thumbViewWidth);
+    CGRect onFrame = CGRectMake(CGRectGetWidth(self.showArea.frame) - thumbViewWidth - _space, _space, thumbViewWidth, thumbViewWidth);
     UIColor *onColor = [UIColor colorWithRed:28/255.0 green:89/255.0 blue:248/255.0 alpha:1];
         
     if (animated) {
@@ -115,6 +125,7 @@
             self.thumbView.frame = onFrame;
             self.thumbView.backgroundColor = onColor;
         } completion:^(BOOL finished) {
+            self.thumbView.backgroundColor = onColor;
         }];
     }
     else {
@@ -133,6 +144,7 @@
             self.thumbView.frame = offFrame;
             self.thumbView.backgroundColor = offColor;
         } completion:^(BOOL finished) {
+            self.thumbView.backgroundColor = offColor;
         }];
     }
     else {
@@ -161,4 +173,10 @@
     return _backgroundView;
 }
 
+-(UIView *)showArea{
+    if (!_showArea) {
+        _showArea=[[UIView alloc]init];
+    }
+    return _showArea;
+}
 @end

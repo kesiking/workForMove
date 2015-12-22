@@ -20,9 +20,10 @@
         self.textEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 0);
         self.leftViewEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 0);
         self.rightViewEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0);
+//        self.delegate = self;
         
-        UIImage *backgroundImage = [UIImage imageNamed:@"inputbox.png"];
-        backgroundImage = [backgroundImage stretchableImageWithLeftCapWidth:floorf(backgroundImage.size.width/2) topCapHeight:floorf(backgroundImage.size.height/2)];
+//        UIImage *backgroundImage = [UIImage imageNamed:@"inputbox.png"];
+//        backgroundImage = [backgroundImage stretchableImageWithLeftCapWidth:floorf(backgroundImage.size.width/2) topCapHeight:floorf(backgroundImage.size.height/2)];
         //[self setBackground:backgroundImage];
     }
     return self;
@@ -71,5 +72,11 @@
     iconRect.origin.x -= self.clearButtonEdgeInsets.right;// 右偏10	return iconRect;
     return iconRect;
 }
+
+//- (BOOL)textFieldShouldReturn:(UITextField *)textField
+//{
+//    [textField resignFirstResponder];
+//    return YES;
+//}
 
 @end

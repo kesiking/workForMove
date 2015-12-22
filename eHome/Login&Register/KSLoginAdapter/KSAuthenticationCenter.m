@@ -12,7 +12,7 @@
 #import "EHAleatView.h"
 
 #define ISNotFirstLoadApplication  @"isNotFirstLoadApplication"
-
+#define TestAccountUserId @"1"
 @interface KSAuthenticationCenter(){
     
 }
@@ -44,7 +44,7 @@
 
 + (NSString*)userId{
     if (![self isLogin]) {
-        return nil;
+        return TestAccountUserId;
     }
     id userIdObj = [KSLoginComponentItem sharedInstance].userId;
     if (userIdObj) {
@@ -207,7 +207,12 @@
     NSString* accountName = [[KSLoginComponentItem sharedInstance] getAccountName];
     NSString* password = [[KSLoginComponentItem sharedInstance] getPassword];
     if (accountName == nil || password == nil || ![KSAuthenticationCenter isLogin]) {
-        TBOpenURLFromTargetWithNativeParams(loginURL, [UIApplication sharedApplication].keyWindow.rootViewController, @{@"needNavigationBar":@"false"}, nil);
+        NSMutableDictionary* callBacks = [NSMutableDictionary dictionary];
+
+        if (completeBlock) {
+            [callBacks setObject:completeBlock forKey:kLoginCancelBlock];
+        }
+        TBOpenURLFromTargetWithNativeParams(loginURL, [UIApplication sharedApplication].keyWindow.rootViewController, @{@"needNavigationBar":@"false"}, callBacks);
     }else{
         [self.autoLoginService loginWithAccountName:accountName password:password];
     }
@@ -215,15 +220,17 @@
 
 - (void)repeatLoginAleatViewWithMessage:(NSString*)message loginActionBlock:(loginActionBlock)loginActionBlock cancelActionBlock:(cancelActionBlock)cancelActionBlock{
     __weak __block UIViewController* weakVC = [UIApplication sharedApplication].keyWindow.rootViewController;
-    EHAleatView* aleatView = [[EHAleatView alloc] initWithTitle:nil message:message clickedButtonAtIndexBlock:^(EHAleatView * alertView, NSUInteger index){
-        __strong UIViewController* strongVC = weakVC;
-        if (index == 0) {
-            [KSAuthenticationCenter logoutWithCompleteBolck:^{
-                [[KSAuthenticationCenter sharedCenter] authenticateWithLoginActionBlock:loginActionBlock cancelActionBlock:cancelActionBlock source:strongVC];
-            }];
-        }
-    } cancelButtonTitle:nil otherButtonTitles:@"确认", nil];
-    [aleatView show];
+    
+    [KSAuthenticationCenter logoutWithCompleteBolck:^{
+        [[KSAuthenticationCenter sharedCenter] authenticateWithLoginActionBlock:loginActionBlock cancelActionBlock:cancelActionBlock source:weakVC];
+    }];
+//    
+//    EHAleatView* aleatView = [[EHAleatView alloc] initWithTitle:nil message:message clickedButtonAtIndexBlock:^(EHAleatView * alertView, NSUInteger index){
+//
+//    } cancelButtonTitle:nil otherButtonTitles:@"确认", nil];
+//    [aleatView show];
+    
+    [WeAppToast toast:message];
 }
 
 -(void)showAlertWithReachabilityStatus{

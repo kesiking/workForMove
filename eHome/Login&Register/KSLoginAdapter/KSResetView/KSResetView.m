@@ -184,7 +184,7 @@
             [WeAppToast toast:LOGIN_INPUT_ACCOUNTNAME_UNLOGGICAL_INFO];
             return NO;
         }
-        [strongSelf showLoadingView];
+        //[strongSelf showLoadingView];
         // 检查是否注册
         [strongSelf.checkRegister checkRegisterWithAccountName:((KSResetViewCtl*)resetViewCtl).text_phoneNum.text checkRegister:^(BOOL isRegister,NSError* error) {
             if (isRegister) {

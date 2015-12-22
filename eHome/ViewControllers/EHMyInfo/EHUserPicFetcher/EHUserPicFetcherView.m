@@ -90,6 +90,10 @@ typedef NS_ENUM(NSInteger, kButtonTag) {
 }
 
 - (void)showCamera{
+    if (![EHUtils canOpenCamara]) {
+        return;
+    }
+
     EHUserPicFromCameraViewController *cvc = [[EHUserPicFromCameraViewController alloc]init];
     cvc.finishSelectedImageBlock = self.finishSelectedImageBlock;
     [_target presentViewController:cvc animated:NO completion:^{
@@ -98,6 +102,9 @@ typedef NS_ENUM(NSInteger, kButtonTag) {
 }
 
 - (void)showPhotos{
+    if (![EHUtils canOpenPhoneAlbum]) {
+        return;
+    }
     EHUserPicFromPhotosViewController *pvc = [[EHUserPicFromPhotosViewController alloc]init];
     pvc.finishSelectedImageBlock = self.finishSelectedImageBlock;
     

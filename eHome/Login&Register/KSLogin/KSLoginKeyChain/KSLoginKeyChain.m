@@ -16,6 +16,7 @@
 
 static NSString *kSSToolkitKeyChainServiceName  = @"SSToolkitKeyChainServiceName";
 static NSString *kSSToolkitKeyChainPasswordName = @"SSToolkitKeyChainPasswordName";
+static NSString *kSSToolkitKeyChainXiaoXiPasswordName = @"SSToolkitKeyChainXiaoXiPasswordName";
 static NSString *kSSToolkitKeyChainAccountName  = @"SSToolkitKeyChainAccountName";
 
 @interface KSLoginKeyChain(){
@@ -64,6 +65,14 @@ static NSString *kSSToolkitKeyChainAccountName  = @"SSToolkitKeyChainAccountName
     }
 }
 
+-(void)setXiaoxiPassword:(NSString *)xiaoxiPassword{
+    if (xiaoxiPassword && xiaoxiPassword.length > 0) {
+        [SSKeychain setPassword:xiaoxiPassword forService:kSSToolkitKeyChainServiceName account:kSSToolkitKeyChainXiaoXiPasswordName];
+        //        [_keyChainItem setObject:password forKey:(__bridge id)kSecValueData];
+    }
+}
+
+
 -(NSString*)getAccountName{
 //    return [_keyChainItem objectForKey:(__bridge id)kSecAttrAccount];
 //    return [SSKeychain passwordForService:kSSToolkitKeyChainServiceName account:kSSToolkitKeyChainAccountName];
@@ -85,10 +94,26 @@ static NSString *kSSToolkitKeyChainAccountName  = @"SSToolkitKeyChainAccountName
     return nil;
 }
 
+-(NSString*)getXiaoxiPassword{
+    //    id passwordObj = [_keyChainItem objectForKey:(__bridge id)kSecValueData];
+    id passwordObj = [SSKeychain passwordForService:kSSToolkitKeyChainServiceName account:kSSToolkitKeyChainXiaoXiPasswordName];
+    
+    if ([passwordObj isKindOfClass:[NSString class]]) {
+        return passwordObj;
+    }else if ([passwordObj isKindOfClass:[NSData class]]){
+        return [[NSString alloc] initWithData:passwordObj encoding:NSUTF8StringEncoding];
+    }else if ([passwordObj isKindOfClass:[NSNumber class]]){
+        return [(NSNumber*)passwordObj stringValue];
+    }
+    return nil;
+}
+
+
 #pragma mark - 清空记录
 -(void)clear{
 //    [_keyChainItem resetKeychainItem];
     [SSKeychain deletePasswordForService:kSSToolkitKeyChainServiceName account:kSSToolkitKeyChainPasswordName];
+    [SSKeychain deletePasswordForService:kSSToolkitKeyChainServiceName account:kSSToolkitKeyChainXiaoXiPasswordName];
 //    [SSKeychain deletePasswordForService:kSSToolkitKeyChainServiceName account:kSSToolkitKeyChainAccountName];
 
 }

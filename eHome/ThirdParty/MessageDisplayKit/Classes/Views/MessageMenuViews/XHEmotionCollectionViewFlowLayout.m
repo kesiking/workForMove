@@ -15,11 +15,12 @@
     self = [super init];
     if (self) {
         self.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-        self.itemSize = CGSizeMake(kXHEmotionImageViewSize, kXHEmotionImageViewSize);
-        int count = MDK_SCREEN_WIDTH/(kXHEmotionImageViewSize+kXHEmotionMinimumLineSpacing);
-        CGFloat spacing = MDK_SCREEN_WIDTH/count - kXHEmotionImageViewSize;
-        self.minimumLineSpacing = spacing;
-        self.sectionInset = UIEdgeInsetsMake(10, spacing/2, 0, spacing/2);
+        self.itemSize = CGSizeMake(kEHEmotionImageViewWidth, kEHEmotionImageViewHeight);
+//        int count = MDK_SCREEN_WIDTH/(kXHEmotionImageViewSize+kXHEmotionMinimumLineSpacing);
+//        CGFloat spacing = MDK_SCREEN_WIDTH/count - kXHEmotionImageViewSize;
+//        self.sectionInset = UIEdgeInsetsMake(10, spacing/2, 0, spacing/2);
+        self.minimumLineSpacing = 24 * SCREEN_SCALE;
+        self.sectionInset = UIEdgeInsetsMake(4 * SCREEN_SCALE, 24 * SCREEN_SCALE, 14 * SCREEN_SCALE, 24 * SCREEN_SCALE);
         self.collectionView.alwaysBounceVertical = YES;
     }
     return self;

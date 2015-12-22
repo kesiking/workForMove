@@ -56,6 +56,7 @@
         _newfamilyMemberTableView.sectionFooterHeight=0;
         _newfamilyMemberTableView.dataSource=self;
         _newfamilyMemberTableView.delegate=self;
+        _newfamilyMemberTableView.backgroundColor=EHBgcor1;
         _newfamilyMemberTableView.tableFooterView=[[UIView alloc]init];
     }
     return _newfamilyMemberTableView;
@@ -90,10 +91,12 @@ static BOOL babyBindingStatusListRegistered=NO;
         cell=[[[NSBundle mainBundle] loadNibNamed:NSStringFromClass([EHNewApplyFamilyMemberTableViewCell class]) owner:self options:nil] firstObject];
     }
     
-    EHBabyBindingStatusListRsp *babyBindindStatusItem=[EHBabyBindingStatusListRsp new];
+    __block EHBabyBindingStatusListRsp *babyBindindStatusItem=[EHBabyBindingStatusListRsp new];
     babyBindindStatusItem=[self.newfamilyMemberList objectAtIndex:indexPath.row];
+    WEAKSELF
     cell.agreeBtnClickBlock=^{
-        [self agreeBinding:babyBindindStatusItem.baby_id user_phone:babyBindindStatusItem.user_phone baby_nickname:@"" relationship:babyBindindStatusItem.relationship tableViewindexPath:indexPath];
+        STRONGSELF
+        [strongSelf agreeBinding:babyBindindStatusItem.baby_id user_phone:babyBindindStatusItem.user_phone baby_nickname:@"" relationship:babyBindindStatusItem.relationship tableViewindexPath:indexPath];
         
     };
     cell.titleLabel.text=babyBindindStatusItem.nick_name;

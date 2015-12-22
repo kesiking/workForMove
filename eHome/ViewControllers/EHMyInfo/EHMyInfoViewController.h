@@ -14,13 +14,13 @@
 
 
 
-
-typedef void (^LogOutBlock) ();
-
-@interface EHLogOutAlertView : KSView
-
-@property (nonatomic, strong)LogOutBlock logOutBlock;
-
-- (void)show;
-
-@end
+//
+//typedef void (^LogOutBlock) ();
+//
+//@interface EHLogOutAlertView : KSView
+//
+//@property (nonatomic, strong)LogOutBlock logOutBlock;
+//
+//- (void)show;
+//
+//@end

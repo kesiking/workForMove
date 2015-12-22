@@ -50,10 +50,10 @@
         
         NSString* message = @"宝贝的手表电量低于20%，请及时充电！";
         
-        if (deviceKWH <= EHDeviceMiddleLowKwhNumber) {
-            message = @"宝贝的手表电量不足10%，请及时充电！";
-        }else if (deviceKWH <= 5){
+        if (deviceKWH <= 5) {
             message = @"宝贝的手表电量不足5%，即将关机！";
+        }else if (deviceKWH <= EHDeviceMiddleLowKwhNumber){
+            message = @"宝贝的手表电量不足10%，请及时充电！";
         }
         
         if ([self canAttentionViewShowWithMessageAttentionType:EHMessageAttentionType_DeviceLowBattery]){

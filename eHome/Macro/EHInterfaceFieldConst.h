@@ -12,29 +12,31 @@
 #import <Foundation/Foundation.h>
 
 // API name
-static NSString * const kEHGetThisUserAllBabys = @"PersonSafeManagement/babyAction/getThisUserAllBabys.do";
+static NSString * const kEHGetThisUserAllBabys = @"babyAction/getThisUserAllBabys.do";
 static NSString * const kEHBindingBabyApiName = @"babyAction/BindingBaby.do";
 static NSString * const kEHUnBindBabyApiName = @"babyAction/cancelBabyUser.do";
-static NSString * const kEHAddBabyApiName = @"PersonSafeManagement/babyAction/addBaby.do";
-static NSString * const kEHUpdateBabyApiName = @"PersonSafeManagement/babyAction//updateBaby.do";
+static NSString * const kEHAddBabyApiName = @"babyAction/addBaby.do";
+static NSString * const kEHUpdateBabyApiName = @"babyAction//updateBaby.do";
 
-static NSString * const kEHAddBabyUserApiName = @"PersonSafeManagement/babyAction/addBabyUser.do";
-static NSString * const kEHUpdateBabyUserApiName = @"PersonSafeManagement/babyAction/updateBabyUser.do";
+static NSString * const kEHAddBabyUserApiName = @"babyAction/addBabyUser.do";
+static NSString * const kEHUpdateBabyUserApiName = @"babyAction/updateBabyUser.do";
 
-static NSString * const kEHTransferBabyManagerApiName = @"PersonSafeManagement/babyAction/transferBabeManager.do";
-static NSString * const kEHInviteBabyUserApiName = @"PersonSafeManagement/babyAction/inviteUserAttentionBaby.do";
-static NSString * const kEHDeleteBabyUserApiName = @"PersonSafeManagement/babyAction/deleteBabyUser.do";
-static NSString * const kEHCancelBabyUserApiName = @"PersonSafeManagement/babyAction/cancelBabyUser.do";
+static NSString * const kEHTransferBabyManagerApiName = @"babyAction/transferBabeManager.do";
+static NSString * const kEHInviteBabyUserApiName = @"babyAction/inviteUserAttentionBaby.do";
+static NSString * const kEHDeleteBabyUserApiName = @"babyAction/deleteBabyUser.do";
+static NSString * const kEHCancelBabyUserApiName = @"babyAction/cancelBabyUser.do";
 
-static NSString * const kEHCheckRandomNumApiName = @"PersonSafeManagement/babyAction/checkRandomNum.do";
+static NSString * const kEHCheckRandomNumApiName = @"babyAction/checkRandomNum.do";
 
-static NSString * const kEHSendRandomToManagerApiName = @"PersonSafeManagement/babyAction/getRandomNumAndSendBabyManager.do";
+static NSString * const kEHSendRandomToManagerApiName = @"babyAction/getRandomNumAndSendBabyManager.do";
 
-static NSString * const kEHGetThisBabyAllUsersApiName = @"PersonSafeManagement/babyAction/getThisBabyAllUsers.do";
+static NSString * const kEHGetThisBabyAllUsersApiName = @"babyAction/getThisBabyAllUsers.do";
 
-static NSString * const kEHGetBabyFamilyPhoneApiName = @"PersonSafeManagement/babyAction/queryPhoneById.do";
-static NSString * const kEHAddBabyFamilyPhoneApiName = @"PersonSafeManagement/babyAction/addDevicePhone.do";
-static NSString * const kEHDeleteBabyFamilyPhoneApiName = @"PersonSafeManagement/babyAction/deleteDevicePhone.do";
+static NSString * const kEHGetBabyFamilyPhoneApiName = @"babyAction/queryPhoneById.do";
+static NSString * const kEHAddBabyFamilyPhoneApiName = @"babyAction/addDevicePhone.do";
+static NSString * const kEHDeleteBabyFamilyPhoneApiName = @"babyAction/deleteDevicePhone.do";
+
+static NSString * const kEHUpdateBabyDeviceSmsCardApiName = @"babyAction/updateBabyDeviceSmsCard.do";
 
 static NSString * const kEHGetMessageInfoListApiName  =  @"MessageAction/queryMessage.do";
 
@@ -56,7 +58,7 @@ static NSString * const kEHUpdateMessageNumberApiName = @"terUserAction/updateMe
 
 static NSString * const kEHQueryForMessageNumberApiName = @"MessageAction/queryForTopMessage.do";//查询返回宝贝电量、状态等信息
 
-static NSString * const kEHQueryBabyHealthyForDayApiName =@"PersonSafeManagement/babyHealthyAction/queryBabyHealthyForDay.do";
+static NSString * const kEHQueryBabyHealthyForDayApiName =@"babyHealthyAction/queryBabyHealthyForDay.do";
 
 
 static NSString * const kEHInsertGeofenceApiName =@"geofenceAction/insertGeofence.do";
@@ -70,34 +72,37 @@ static NSString * const kEHGetGeofenceRemindApiName =@"geofenceRemindAction/getG
 static NSString * const kEHUpdateGeofenceRemindApiName =@"geofenceRemindAction/updateGeofenceRemind.do";
 static NSString * const kEHDeleteGeofenceRemindApiName =@"geofenceRemindAction/deleteGeofenceRemind.do";
 
-static NSString * const kEHGetHealthyWeekMonthInfoApiName = @"PersonSafeManagement/babyHealthyAction/queryHealthyHistory.do";
+static NSString * const kEHGetHealthyWeekMonthInfoApiName = @"babyHealthyAction/queryHealthyHistory.do";
 
-static NSString * const KEHSetLocationModeApiName=@"http://192.168.8.55:8080/PersonSafeManagement/babyAction/setWorkMode.do";
+static NSString * const KEHSetLocationModeApiName=@"babyAction/setWorkMode.do";
 static NSString * const kEHGetBabyDeviceStartUserDayApiName = @"babyHealthyAction/queryForFirstTime.do";
 
 
-static NSString * const kEHAddBabyAlarmApiName = @"PersonSafeManagement/babyAction/addBabyClock.do";
+static NSString * const kEHAddBabyAlarmApiName = @"babyAction/addBabyClock.do";
 
-static NSString * const kEHEditBabyAlarmApiName = @"PersonSafeManagement/babyAction/updateBabyClock.do";
+static NSString * const kEHEditBabyAlarmApiName = @"babyAction/updateBabyClock.do";
 
-static NSString * const kEHDeleteBabyAlarmApiName = @"PersonSafeManagement/babyAction/deleteBabyClock.do";
+static NSString * const kEHDeleteBabyAlarmApiName = @"babyAction/deleteBabyClock.do";
 
-static NSString * const kEHGetBabyAlarmApiName = @"PersonSafeManagement/babyAction/getAllBabyClock.do";
-
-
+static NSString * const kEHGetBabyAlarmApiName = @"babyAction/getAllBabyClock.do";
 
 
-static NSString * const kEHGetBabyManagerIsReadMsgApiName=@"PersonSafeManagement/babyAction/checkAdminIsReadMsg.do";
 
-static NSString *const kEHGetBabyBindingStatusListApiName=@"PersonSafeManagement/babyAction/getBabyBindingStatusList.do";
 
-static NSString *const KEHCheckBabyIsAgreeApiName=@"PersonSafeManagement/babyAction/checkBabyIsAgree.do";
+static NSString * const kEHGetBabyManagerIsReadMsgApiName=@"babyAction/checkAdminIsReadMsg.do";
 
-static NSString *const KEHGetChatMessageListApiName = @"PersonSafeManagement/querySmallVoiceCallMsg.do";
+static NSString *const kEHGetBabyBindingStatusListApiName=@"babyAction/getBabyBindingStatusList.do";
 
-static NSString *const KEHSendChatMessageApiName = @"PersonSafeManagement/addSmallVoiceCallMsg.do";
+static NSString *const KEHCheckBabyIsAgreeApiName=@"babyAction/checkBabyIsAgree.do";
+
+static NSString *const KEHGetChatMessageListApiName = @"querySmallVoiceCallMsg.do";
+
+static NSString *const KEHSendChatMessageApiName = @"addSmallVoiceCallMsg.do";
 
 static NSString *const KEHUploadVoiceCallMsgMessageApiName =@"smallVoiceCallMsgUpload/uploadSmallVoiceCallMsg.do";
+
+static NSString *const KEHGetUserSetting =@"terUserSettingAction/getUserSetting.do";
+static NSString *const KEHSetUserSetting =@"terUserSettingAction/setUserSetting.do";
 
 // 请求、响应字段名
 static NSString * const kEHOutputMsg    = @"outPut_msg";

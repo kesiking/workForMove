@@ -244,6 +244,12 @@ typedef NS_ENUM(NSInteger, RMActionStyle) {
  */
 + (instancetype)actionWithImage:(UIImage *)image style:(RMActionStyle)style andHandler:(void (^)(RMActionController *controller))handler;
 
++ (instancetype)actionWithTitleAndImage:(UIImage *)image title:(NSString *)title style:(RMActionStyle)style andHandler:(void (^)(RMActionController *controller))handler;
+
+
+
+
+
 /// @name Properties
 #pragma mark - Properties
 

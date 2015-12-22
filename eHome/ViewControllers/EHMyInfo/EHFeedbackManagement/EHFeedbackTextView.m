@@ -69,6 +69,7 @@
         if (textView.markedTextRange == nil && textView.text.length > kMaxWordCount) {
             NSString *substring = [textView.text substringToIndex:kMaxWordCount];
             textView.text = substring;
+            [WeAppToast toast:@"意见反馈最多支持280个字"];
             return;
         }
     }

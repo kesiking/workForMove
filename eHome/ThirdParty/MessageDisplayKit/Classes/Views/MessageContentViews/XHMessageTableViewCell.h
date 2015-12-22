@@ -67,6 +67,10 @@
  *  头像按钮
  */
 @property (nonatomic, weak, readonly) UIButton *avatarButton;
+/**
+ *  添加单独的头像ImageView，解决刷新头像存在的跳跃感
+ */
+@property (nonatomic, weak, readonly) UIImageView *avatarImageView;
 
 /**
  *  用户名标签

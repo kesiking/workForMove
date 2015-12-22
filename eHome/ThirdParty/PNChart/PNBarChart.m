@@ -131,13 +131,22 @@ double labelChangeheight = 0;
     int maxValue = max;
     //截断最大值，如果<500,取到500，如果<1000,取到1000(0的话怎么办??)
     if (maxValue <= 500) {
-        maxValue = 500;
+        if (maxValue == 0) {
+            maxValue = 0;
+        }else{
+            maxValue = 500;
+        }
+        
     }else if (maxValue <= 1000){
         maxValue = 1000;
     }else{
         int trail = maxValue%1000;
-        if (trail < 500) {
-            maxValue = (maxValue/1000) *1000 +500;
+        if (trail <= 500) {
+            if(trail == 0){
+                maxValue = maxValue;
+            }else{
+                maxValue = (maxValue/1000) *1000 +500;
+            }
         }else{
             maxValue = (maxValue/1000) *1000 +1000;
         }
@@ -257,8 +266,9 @@ double labelChangeheight = 0;
                 
                 
                 
-                //                label.backgroundColor = [UIColor yellowColor];
-                
+//                label.backgroundColor = [UIColor yellowColor];
+                label.numberOfLines = 1;
+                label.clipsToBounds = NO;
                 
                 [label setTextAlignment:NSTextAlignmentCenter];
                 label.text = labelText;
@@ -498,6 +508,7 @@ double labelChangeheight = 0;
     //Add bars
     //    CGFloat chartCavanHeight = self.frame.size.height - _chartMargin * 2 - kXLabelHeight;
     CGFloat chartCavanHeight = 108*SCREEN_SCALE;  //柱状图的高度171
+
     NSInteger index = 0;
     
     for (NSNumber *valueString in _yValues) {

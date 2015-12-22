@@ -16,6 +16,9 @@ typedef void(^SwitchChangedBlock)(BOOL on);
 
 @property (nonatomic, strong)SwitchChangedBlock switchChangedBlock;
 
+//默认shouldChangeSwitchImmediately = YES，无特殊情况请勿修改
+@property (nonatomic, assign)BOOL shouldChangeSwitchImmediately;
+
 - (void)setOn:(BOOL)on animated:(BOOL)animated;
 
 @end

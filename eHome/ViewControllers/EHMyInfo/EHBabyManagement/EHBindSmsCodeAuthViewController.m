@@ -156,7 +156,7 @@
         
         TBOpenURLFromSourceAndParams(tabbarURL(kEHOMETabHome), strongSelf, nil);
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:EHBindBabySuccessNotification object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:EHBabyListNeedChangeNotification object:nil];
         
     };
     

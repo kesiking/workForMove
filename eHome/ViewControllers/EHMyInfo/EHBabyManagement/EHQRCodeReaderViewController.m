@@ -31,7 +31,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.view.backgroundColor = [UIColor redColor];
+    //self.view.backgroundColor = [UIColor redColor];
     self.title = @"扫码二维码";
     UIImageView * imageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth([UIScreen mainScreen].bounds), CGRectGetHeight(self.view.frame))];
     imageView.image = [UIImage imageNamed:@"scanningthearea"];
@@ -74,6 +74,10 @@
 
 - (void)setupCamera
 {
+    if (![EHUtils canOpenCamara]) {
+        return;
+    }
+    
     // Device
     _device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     

@@ -4,6 +4,18 @@
 <array>
 	<dict>
 		<key>viewControllerClassName</key>
+		<string>EHChatTabViewController</string>
+		<key>viewControllerURL</key>
+		<string>ehome_chat_url</string>
+		<key>tabbarNormalImage</key>
+		<string>tabitem_chat_normal</string>
+		<key>tabbarSelectedImage</key>
+		<string>tabitem_chat_highlight</string>
+		<key>tabbarTitle</key>
+		<string>联系</string>
+	</dict>
+	<dict>
+		<key>viewControllerClassName</key>
 		<string>EHHomeTabViewController</string>
 		<key>viewControllerURL</key>
 		<string>ehome_home_url</string>

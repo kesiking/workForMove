@@ -11,7 +11,7 @@
 @implementation EHAddBabyFamilyPhoneService
 
 
-- (void)addBabyFamilyPhone:(NSString*)phoneNo andPhoneName:(NSString*)phoneName andPhoneType:(NSString*)phoneType byBabyId:(NSNumber*)babyId
+- (void)addBabyFamilyPhone:(NSString*)phoneNo andRelationship:(NSString*)relationship andindex:(NSNumber *)index  byBabyId:(NSNumber*)babyId
 {
     self.itemClass = [EHBabyFamilyPhone class];
     
@@ -20,7 +20,7 @@
     self.onlyUserCache = NO;
     self.jsonTopKey = @"responseData";
     
-    [self loadItemWithAPIName:kEHAddBabyFamilyPhoneApiName params:@{kEHBabyId:babyId, kEHAttentionPhone:phoneNo, kEHPhoneName:phoneName, kEHPhoneType:phoneType} version:nil];
+    [self loadItemWithAPIName:kEHAddBabyFamilyPhoneApiName params:@{@"babyId":babyId, @"phoneNumber":phoneNo, @"relationship":relationship, @"index":index} version:nil];
 }
 
 -(void)modelDidFinishLoad:(WeAppBasicRequestModel *)model{

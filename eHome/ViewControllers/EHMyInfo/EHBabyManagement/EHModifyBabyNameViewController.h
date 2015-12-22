@@ -10,7 +10,7 @@
 
 typedef void (^ModifyBabyNameSuccess)(NSString* modifiedName);
 
-@interface EHModifyBabyNameViewController : UIViewController
+@interface EHModifyBabyNameViewController : KSViewController
 
 @property(nonatomic, copy)ModifyBabyNameSuccess modifyBabyNameSuccess;
 

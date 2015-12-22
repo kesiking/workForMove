@@ -109,6 +109,7 @@
 
 -(void)didSelectItemWithComponentItem:(WeAppComponentBaseItem *)componentItem extroParams:(id)extroParams{
     [self.cellView didSelectCellWithCellView:self componentItem:componentItem extroParams:extroParams];
+    [KSTouchEvent touchWithView:self.cellView eventAttributes:@{@"indexPath":self.cellView.indexPath?:@""}];
 }
 
 -(void)configDeleteCellAtIndexPath:(NSIndexPath *)indexPath componentItem:(WeAppComponentBaseItem *)componentItem extroParams:(id)extroParams{

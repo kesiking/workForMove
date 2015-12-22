@@ -17,6 +17,10 @@
 @interface XHEmotionManagerView () <UICollectionViewDelegate, UICollectionViewDataSource, XHEmotionSectionBarDelegate>
 
 /**
+ *  表情栏顶部的分割线
+ */
+@property (nonatomic, weak) UIView *separateLineView;
+/**
  *  显示表情的collectView控件
  */
 @property (nonatomic, weak) UICollectionView *emotionCollectionView;
@@ -68,11 +72,19 @@
 - (void)setup {
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     self.backgroundColor = [UIColor colorWithWhite:0.961 alpha:1.000];
-    self.isShowEmotionStoreButton = YES;
+    self.isShowEmotionStoreButton = NO;
+    self.isShowEmotionSectionBar = NO;
     
+    if (!_separateLineView) {
+        UIView *separatelineView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.bounds), 1)];
+        separatelineView.backgroundColor = [UIColor colorWithWhite:0.9f alpha:1.0f];;
+        [self addSubview:separatelineView];
+        self.separateLineView = separatelineView;
+    }
     
     if (!_emotionCollectionView) {
-        UICollectionView *emotionCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds) - kXHEmotionPageControlHeight - kXHEmotionSectionBarHeight) collectionViewLayout:[[XHEmotionCollectionViewFlowLayout alloc] init]];
+        CGFloat emotionViewHeight = CGRectGetHeight(self.bounds) - kXHEmotionPageControlHeight - (self.isShowEmotionSectionBar ? kXHEmotionSectionBarHeight : 0);
+        UICollectionView *emotionCollectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 1, CGRectGetWidth(self.bounds), emotionViewHeight) collectionViewLayout:[[XHEmotionCollectionViewFlowLayout alloc] init]];
         emotionCollectionView.backgroundColor = self.backgroundColor;
         [emotionCollectionView registerClass:[XHEmotionCollectionViewCell class] forCellWithReuseIdentifier:kXHEmotionCollectionViewCellIdentifier];
         emotionCollectionView.showsHorizontalScrollIndicator = NO;
@@ -96,7 +108,7 @@
         self.emotionPageControl = emotionPageControl;
     }
     
-    if (!_emotionSectionBar) {
+    if (self.isShowEmotionSectionBar&&!_emotionSectionBar) {
         XHEmotionSectionBar *emotionSectionBar = [[XHEmotionSectionBar alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(self.emotionPageControl.frame), CGRectGetWidth(self.bounds), kXHEmotionSectionBarHeight) showEmotionStoreButton:self.isShowEmotionStoreButton];
         emotionSectionBar.delegate = self;
         emotionSectionBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;

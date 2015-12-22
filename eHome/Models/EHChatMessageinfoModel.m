@@ -42,6 +42,11 @@ static NSDateFormatter *dateFormatter = nil;
     chatMessageInfoModel.user_nick_name = chatMessageInfoModel.userInfoModel.user_nick_name?:(chatMessageInfoModel.babyInfoModel.user_nick_name?:chatMessageInfoModel.user_nick_name);
     
     chatMessageInfoModel.babyChatMessage.avatarUrl = chatMessageInfoModel.head_imag_small?:chatMessageInfoModel.babyChatMessage.avatarUrl;
+    //自己发送的消息，不取数据库缓存的头像url，从[KSAuthenticationCenter userComponent].user_head_img取回url
+    if (!chatMessageInfoModel.babyChatMessage.messageIsFromBaby && chatMessageInfoModel.user_phone && [chatMessageInfoModel.user_phone isEqualToString:[KSAuthenticationCenter userPhone]]) {
+        chatMessageInfoModel.babyChatMessage.avatarUrl = [KSAuthenticationCenter userComponent].user_head_img;
+    }
+
 }
 
 -(void)setFromDictionary:(NSDictionary *)dict{
@@ -84,6 +89,16 @@ static NSDateFormatter *dateFormatter = nil;
         }
         message.context = [message.context stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         babyChatMessage = [[XHBabyChatMessage alloc] initWithText:message.context sender:message.user_phone timestamp:timestamp];
+    }else if([message.context_type isEqualToString:CONTEXT_TYPE_EMOTION]){
+        NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"EHChatEmotionEncode" ofType:@"plist"];
+        NSDictionary *emotionsDic = [[NSDictionary alloc]initWithContentsOfFile:plistPath];
+        NSArray *emotionEncodings = [emotionsDic allKeys];
+        if (message.context == nil||![emotionEncodings containsObject:message.context]) {
+            //服务器返回数据有错，保护处理
+            message.context = emotionEncodings[0];
+        }
+        babyChatMessage = [[XHBabyChatMessage alloc] initWithPhoto:nil thumbnailUrl:nil originPhotoUrl:nil sender:message.user_phone timestamp:timestamp];
+        babyChatMessage.text = message.context;
     }else if ([message.context_type isEqualToString:CONTEXT_TYPE_VOICE]) {
         babyChatMessage = [[XHBabyChatMessage alloc] initWithVoicePath:nil voiceUrl:message.context voiceDuration:[NSString stringWithFormat:@"%@",message.call_duration] sender:message.user_phone timestamp:timestamp isRead:NO];
     }else{
@@ -132,7 +147,7 @@ static NSDateFormatter *dateFormatter = nil;
         message.create_time = [dateFormatter stringFromDate:babyChatMessage.timestamp];
     }
     switch (babyChatMessage.messageMediaType) {
-        case XHBubbleMessageMediaTypeVideo:{
+        case XHBubbleMessageMediaTypeVoice:{
             message.call_duration = [NSNumber numberWithInteger:[babyChatMessage.voiceDuration integerValue]];
             message.context = babyChatMessage.voicePath;
             message.context_type = CONTEXT_TYPE_VOICE;
@@ -141,6 +156,12 @@ static NSDateFormatter *dateFormatter = nil;
         case XHBubbleMessageMediaTypeText:{
             message.context = babyChatMessage.text;
             message.context_type = CONTEXT_TYPE_TEXT;
+        }
+            break;
+        //表情 使用了photo控件
+        case XHBubbleMessageMediaTypePhoto:{
+            message.context = babyChatMessage.text;
+            message.context_type = CONTEXT_TYPE_EMOTION;
         }
             break;
         default:{

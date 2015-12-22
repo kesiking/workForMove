@@ -254,7 +254,13 @@
             healthyView.distanceLabel.text=[NSString stringWithFormat:@"%.3f千米",model.mileage/1000.0];
         }
     }
-    healthyView.energyLabel.text=[NSString stringWithFormat:@"%ld千卡",model.calorie];
+    if(1000*model.calorie<10000){
+        model.calorie = model.calorie*1000;
+        healthyView.energyLabel.text=[NSString stringWithFormat:@"%ld卡",model.calorie];
+    }else{
+         healthyView.energyLabel.text=[NSString stringWithFormat:@"%ld千卡",model.calorie];
+    }
+   
     healthyView.ratioLabel.text=[NSString stringWithFormat:@"%@%%",model.percent];
     [healthyView.distanceChart updateChartByCurrent:[NSNumber numberWithInteger:[model.percent integerValue]]];
     [healthyView.energyChart updateChartByCurrent:[NSNumber numberWithInteger:[model.percent integerValue]]];
@@ -276,8 +282,12 @@
         maxValue = 1000;
     }else{
         int trail = maxValue%1000;
-        if (trail < 500) {
-            maxValue = (maxValue/1000) *1000 +500;
+        if (trail <= 500) {
+            if(trail == 0){
+                maxValue = maxValue;
+            }else{
+                maxValue = (maxValue/1000) *1000 +500;
+            }
         }else{
             maxValue = (maxValue/1000) *1000 +1000;
         }
@@ -355,6 +365,8 @@
     self.queryWeekInfoListService.needCache = NO;
     self.queryWeekInfoListService.onlyUserCache = NO;
     [self.queryWeekInfoListService getHealthWeekInfowithBabyID:[self.babyId integerValue] date:date type:@"week"];
+     
+  
 }
 - (void)reloadDataWhenViewScroll
 {
@@ -399,7 +411,7 @@
             supScrollView.scrollEnabled = YES;
             [strongSelf.healthyView.bgView removeFromSuperview];
             [strongSelf.healthyView.calendarView removeFromSuperview];
-            self.show = YES;
+            strongSelf.show = YES;
             
             
         }];

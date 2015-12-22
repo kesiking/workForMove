@@ -33,8 +33,16 @@
     _fromView.hidden = YES;
     [self.view addSubview:[self bgView]];
     [self.view addSubview:[self bigUserPicView]];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babySOSMessageNotification:) name:EHBabySOSMessageNotification object:nil];
+    
 }
-
+- (void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:EHBabySOSMessageNotification object:nil];
+}
+-(void)babySOSMessageNotification:(NSNotification*)notification{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
 - (void)viewWillAppear:(BOOL)animate{
     [super viewWillAppear:animate];
     

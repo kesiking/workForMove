@@ -14,6 +14,7 @@ typedef void (^FamilyMemberDidChanged)(BOOL bChanged);
 @property(nonatomic, copy)FamilyMemberDidChanged familyMemberDidChanged;
 @property(nonatomic, strong)NSNumber* babyId;
 @property(nonatomic, strong)NSString* babyName;
-@property(nonatomic, strong)NSString* authority;
+@property(nonatomic, strong)NSMutableString* authority;
+@property(nonatomic, strong)NSString* device_code;
 
 @end

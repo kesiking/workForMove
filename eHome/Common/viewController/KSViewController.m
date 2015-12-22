@@ -11,6 +11,8 @@
 
 @interface KSViewController ()
 
+@property(nonatomic,strong) NSDate*               pushInViewControllerTime;
+
 @end
 
 @implementation KSViewController
@@ -49,16 +51,25 @@
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     self.isViewAppeared = YES;
+    _pushInViewControllerTime = [NSDate date];
+    EHLogInfo(@"\n ----> come in %@, at time %@",NSStringFromClass([self class]),_pushInViewControllerTime);
 }
 
 -(void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     self.isViewAppeared = NO;
+    NSDate* currentDate = [NSDate date];
+    NSTimeInterval timerBucket = [currentDate timeIntervalSinceDate:_pushInViewControllerTime];
+    EHLogInfo(@"\n ----> leave %@, at time %@ \n ----> user stay in vc for %fs" ,NSStringFromClass([self class]),currentDate, timerBucket);
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(void)dealloc{
+    EHLogInfo(@"\n ----> dealloc %@",NSStringFromClass([self class]));
 }
 
 #pragma mark- TBModelStatusHandler
@@ -68,7 +79,7 @@
         KSModelStatusBasicInfo *info = [[KSModelStatusBasicInfo alloc] init];
         
         info.titleForErrorBlock=^(NSError*error){
-            return @"服务器正忙，请稍微再试";
+            return @"服务器正忙，请稍后再试";
         };
         info.subTitleForErrorBlock=^(NSError*error){
             return error.userInfo[NSLocalizedDescriptionKey];

@@ -64,13 +64,17 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
-    IQKeyboardManager *manager = [IQKeyboardManager sharedManager];
-    manager.enable = NO;
-    
     NSArray *dateArray = [self.alarmModel.time componentsSeparatedByString:@":"];
     [_pickerView  selectRow:[dateArray[0] integerValue] inComponent:0 animated:YES];
-    [_pickerView  selectRow:[dateArray[1] integerValue] inComponent:1 animated:YES];}
+    [_pickerView  selectRow:[dateArray[1] integerValue] inComponent:1 animated:YES];
+}
+
+-(void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+        IQKeyboardManager *manager = [IQKeyboardManager sharedManager];
+        manager.enable = NO;
+
+}
 
 #pragma mark - Events Response
 - (void)doneBtnClicked {
@@ -162,9 +166,11 @@
         if (indexPath.row == 0) {
             EHRemindDateTableViewCell *cell = [[EHRemindDateTableViewCell alloc]init];
             [cell selectWorkDate:self.alarmModel.work_date];
+            WEAKSELF
             cell.dateBtnClickBlock = ^(NSString *dateStr){
-                self.alarmModel.work_date = dateStr;
-                self.alarmUpdated = YES;
+                STRONGSELF
+                strongSelf.alarmModel.work_date = dateStr;
+                strongSelf.alarmUpdated = YES;
             };
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             return cell;
@@ -183,11 +189,12 @@
     else {
         EHAlarmCommentTableViewCell *cell = [[EHAlarmCommentTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
         cell.comment = self.alarmModel.context;
-        
+        WEAKSELF
         cell.commentAddBlock = ^(NSString *comment){
+            STRONGSELF
            // self.alarmModel.context = comment;
-            self.alarmModel.context = [comment stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-            self.alarmUpdated = YES;
+            strongSelf.alarmModel.context = [comment stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+            strongSelf.alarmUpdated = YES;
         };
         return cell;
         
@@ -361,13 +368,16 @@
 - (NSString *)showWorkDate {
     NSDate *date = [NSDate date];
     NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-    NSDateComponents *comps = [[NSDateComponents alloc] init];
+    NSDateComponents *comps;// = [[NSDateComponents alloc] init];
     NSInteger unitFlags = NSWeekdayCalendarUnit;
     comps = [calendar components:unitFlags fromDate:date];
     NSInteger week = [comps weekday];
     NSLog(@"week = %ld",week);
     NSMutableString *workDateStr = [[NSMutableString alloc]initWithString:@"0000000"];
     [workDateStr replaceCharactersInRange:NSMakeRange(week - 1, 1) withString:@"1"];
+    NSString *changedWorkDate = [NSString stringWithFormat:@"%@%@",[workDateStr substringFromIndex:1],[workDateStr substringToIndex:1]];
+    workDateStr = [changedWorkDate mutableCopy];
+
     return workDateStr;
 }
 

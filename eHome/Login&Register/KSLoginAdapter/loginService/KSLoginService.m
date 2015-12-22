@@ -33,7 +33,7 @@
     self.accountName = accountName;
     self.password = password;
     [self setItemClass:[KSLoginComponentItem class]];
-    [self loadItemWithAPIName:login_api_name params:@{@"user_phone":self.accountName, @"user_password":self.password} version:nil];
+    [self loadItemWithAPIName:login_api_name params:@{@"user_phone":self.accountName, @"user_password":[EHUtils tripleDES:self.password encryptOrDecrypt:kCCEncrypt]} version:nil];
 }
 
 -(void)logoutWithAccountName:(NSString*)accountName{
@@ -77,7 +77,7 @@
         return;
     }
     self.password = newPassword;
-    [self loadItemWithAPIName:modifyPwd_api_name params:@{@"user_phone":accountName,@"old_psw":oldPassword,@"new_psw":newPassword,@"flag":@"00000010"} version:nil];
+    [self loadItemWithAPIName:modifyPwd_api_name params:@{@"user_phone":accountName,@"old_psw":[EHUtils tripleDES:oldPassword encryptOrDecrypt:kCCEncrypt],@"new_psw":[EHUtils tripleDES:newPassword encryptOrDecrypt:kCCEncrypt],@"flag":@"00000010"} version:nil];
 }
 
 -(void)modifyPhoneNumberWithOldAccountName:(NSString*)oldAccountName newAccountName:(NSString*)newAccountName password:(NSString*)password validateCode:(NSString*)validateCode{
@@ -90,7 +90,7 @@
         || validateCode == nil) {
         return;
     }
-    [self loadItemWithAPIName:modifyPwd_api_name params:@{@"user_phone":newAccountName,@"old_phone":oldAccountName,@"new_phone":newAccountName,@"user_psd":password,@"securityCode":validateCode,@"flag":@"00000001"} version:nil];
+    [self loadItemWithAPIName:modifyPwd_api_name params:@{@"user_phone":newAccountName,@"old_phone":oldAccountName,@"new_phone":newAccountName,@"user_psd":[EHUtils tripleDES:password encryptOrDecrypt:kCCEncrypt],@"securityCode":validateCode,@"flag":@"00000001"} version:nil];
 }
 
 -(void)resetPasswordWithAccountName:(NSString*)accountName validateCode:(NSString*)validateCode newPassword:(NSString*)newPassword{
@@ -104,7 +104,7 @@
     }
     self.accountName = accountName;
     self.password = newPassword;
-    [self loadNumberValueWithAPIName:reset_api_name params:@{@"user_phone":accountName,@"user_password":newPassword,@"securityCode":validateCode} version:nil];
+    [self loadNumberValueWithAPIName:reset_api_name params:@{@"user_phone":accountName,@"user_password":[EHUtils tripleDES:newPassword encryptOrDecrypt:kCCEncrypt],@"securityCode":validateCode} version:nil];
 }
 
 -(void)registerWithAccountName:(NSString*)accountName password:(NSString*)password userName:(NSString*)userName validateCode:(NSString*)validateCode inviteCode:(NSString*)inviteCode{
@@ -119,7 +119,7 @@
     self.accountName = accountName;
     self.password = password;
     self.jsonTopKey = @"responseData";
-    NSMutableDictionary* params = [@{@"user_phone":accountName, @"user_password":password , @"nick_name":userName,@"user_head_img":@"",@"user_head_img_small":@""} mutableCopy];
+    NSMutableDictionary* params = [@{@"user_phone":accountName, @"user_password":[EHUtils tripleDES:password encryptOrDecrypt:kCCEncrypt] , @"nick_name":userName,@"user_head_img":@"",@"user_head_img_small":@""} mutableCopy];
     if (![WeAppUtils isEmpty:inviteCode]) {
         [params setObject:inviteCode forKey:@"code"];
     }
@@ -145,7 +145,9 @@
     if ([model.apiName isEqualToString:login_api_name]) {
         // 返回成功后记录下登陆账号与密码
         [[KSLoginComponentItem sharedInstance] setPassword:self.password];
+        [[KSLoginComponentItem sharedInstance] setXiaoxiPassword:[(KSLoginComponentItem*)model.item IMPassword]];
         [[KSLoginComponentItem sharedInstance] setAccountName:self.accountName];
+        
         // 更新userInfo信息，更新登陆信息
         [[KSLoginComponentItem sharedInstance] updateUserInfo:[model.item toDictionary]];
         [[KSLoginComponentItem sharedInstance] updateUserLogin:YES];

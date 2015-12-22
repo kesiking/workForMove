@@ -648,9 +648,12 @@ int DecodeAMRFileToWAVEFile(const char* pchAMRFileName, const char* pchWAVEFilen
 	{
         NSString* pchAMRFileNameStr = [[NSString alloc] initWithUTF8String:pchAMRFileName];
         NSData* data = [NSData dataWithContentsOfFile:pchAMRFileNameStr];
-        if (data) {
-            data = fuckAndroid3GP(data);
+        if (data == nil || data.length == 0) {
+            return 0;
         }
+        
+        data = fuckAndroid3GP(data);
+        
         const char* rfile = (const char*)[data bytes];
         // 检查amr文件头
         if (strncmp(rfile, AMR_MAGIC_NUMBER, strlen(AMR_MAGIC_NUMBER)))

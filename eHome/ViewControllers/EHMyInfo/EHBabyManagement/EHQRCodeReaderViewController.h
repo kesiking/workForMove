@@ -10,6 +10,6 @@
 
 typedef void (^QRCodeScanSuccess)(NSString* qrcode);
 
-@interface EHQRCodeReaderViewController : UIViewController
+@interface EHQRCodeReaderViewController : KSViewController
 @property(nonatomic, copy)QRCodeScanSuccess qrCodeScanSuccess;
 @end

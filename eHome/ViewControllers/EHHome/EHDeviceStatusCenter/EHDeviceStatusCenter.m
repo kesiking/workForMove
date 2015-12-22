@@ -78,7 +78,6 @@
 }
 
 -(void)initNetworkMonitoring{
-     [[AFNetworkReachabilityManager sharedManager] startMonitoring];
      [[AFNetworkReachabilityManager sharedManager] setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
         if (status != AFNetworkReachabilityStatusReachableViaWWAN && status != AFNetworkReachabilityStatusReachableViaWiFi) {
             // to do send network message
@@ -153,11 +152,10 @@
     if (self.babyId != babyId) {
         [self reset];
         self.babyId = babyId;
-        if (self.babyId)
-        {
-            [self.queryDeviceStatusService queryForTopMessageWithUserPhone:[KSAuthenticationCenter userPhone] babyId:self.babyId];
-        }
-        
+    }
+    if (self.babyId)
+    {
+        [self.queryDeviceStatusService queryForTopMessageWithUserPhone:[KSAuthenticationCenter userPhone] babyId:self.babyId];
     }
 }
 

@@ -9,8 +9,9 @@
 #import "EHBabyUserDetailViewController.h"
 #import "MWQREncode.h"
 #import "EHRightImageTableViewCell.h"
-#import "EHModifyRelationViewController.h"
+#import "NewEHModifyRelationViewController.h"
 #import "EHModifyBabyNameViewController.h"
+#import "EHModifyBabyPhoneViewController.h"
 #import "EHUserPicFetcherView.h"
 #import "EHBigUserPicShowController.h"
 #import "EHLoadingHud.h"
@@ -30,12 +31,13 @@
 #import "EHFamilyMemberViewController.h"
 #import "EHBabyLocationModeViewController.h"
 #import "EHBabyAlarmViewController.h"
+#import "EHDeviceStatusCenter.h"
 
 
 
-@interface EHBabyUserDetailViewController ()<UITabBarControllerDelegate, UITableViewDataSource, UITableViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate>
+@interface EHBabyUserDetailViewController ()<UITabBarControllerDelegate, UITableViewDataSource, UITableViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate,EHSelectRelationProtocol>
 {
-    EHLoadingHud *_loadingHud;
+    MBProgressHUD *_loadingHud;
     EHUploadUserPicService *_uploadHeadImageService;
     EHUpdateBabyInfoService* _updateBabyInfoService;
     EHGetGeofenceListService *_listService;
@@ -70,7 +72,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-
+    self.babyUser = [[EHBabyListDataCenter sharedCenter] currentBabyUserInfo];
     if ([EHUtils isAuthority:self.babyUser.authority]) {
 
         self.title = self.babyUser.babyName;
@@ -85,11 +87,19 @@
     
     [self initBabyDetailTableView];
 
-    _loadingHud = [[EHLoadingHud alloc] init];
+//    _loadingHud = [[EHLoadingHud alloc] init];
+    
+    [self initNotification];
 //    [self getGeofenceList];
 //    [self getBabyAttentionUsers];
     //[self getBabyFamilyPhoneList];
 }
+
+
+-(void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
@@ -124,10 +134,10 @@
     }];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    return 12;
-}
+//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+//{
+//    return 12;
+//}
 
 
 - (IBAction)moreBtnTapped:(id)sender
@@ -145,7 +155,22 @@
 }
 
 
+-(void)initNotification{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyInfoDidChangedNotification:) name:EHBabyListChangedNotification object:nil];
+}
+
+-(void)babyInfoDidChangedNotification:(NSNotification*)notification{
+    
+    self.babyUser = [[EHBabyListDataCenter sharedCenter] currentBabyUserInfo];
+    [self.babyDetailTableView reloadData];
+}
+
 #pragma mark - UITableViewDataSource
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    return 4;
+}
+
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     
     NSInteger rows = 0;
@@ -168,6 +193,9 @@
             rows = 4;
             break;
         case 2:
+            rows = 1;
+            break;
+        case 3:
             rows = 1;
             break;
         default:
@@ -200,9 +228,10 @@
                     defaultHead = @"headportrait_girl_160";
                 }
                
-                
+                WEAKSELF
                 cell = [self createRightImageCellForTableview:tableView withText:@"宝贝头像" andImage:self.babyUser.babyHeadImage andDefaultHeadImage:[UIImage imageNamed:defaultHead]  andClickBlock:^(UIImageView* imageView){
-                    [self showImagePreview:imageView];
+                    STRONGSELF
+                    [strongSelf showImagePreview:imageView];
                     
                 }];
                 cell.rightImageView.layer.masksToBounds = YES;
@@ -303,6 +332,16 @@
     }
     else if (indexPath.section == 2)
     {
+        if ([EHUtils isAuthority:self.babyUser.authority]) {
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        }
+        cell.textLabel.text = @"宝贝号码";
+        cell.detailTextLabel.text = self.babyUser.devicePhoneNumber;
+        
+        return cell;
+    }
+    else if (indexPath.section == 3)
+    {
         UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"unbindBabyCellID"];
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.textLabel.text = @"移除宝贝";
@@ -315,9 +354,6 @@
     return cell;
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 3;
-}
 
 
 
@@ -333,6 +369,14 @@
 //    }
 //    else return 0;
 //}
+
+
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    if (section == 3) {
+        return 50;
+    }
+    return 12;
+}
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -361,6 +405,9 @@
 //        return nil;
 //    }
 //}
+
+
+
 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -395,15 +442,15 @@
                 modifyBabyNameVC.modifyBabyNameSuccess = ^(NSString*modifiedName){
                     STRONGSELF
                     if ([EHUtils isAuthority:strongSelf.babyUser.authority]) {
-                        self.babyUser.babyName = modifiedName;
+                        strongSelf.babyUser.babyName = modifiedName;
                         
                     }
                     else
                     {
-                        self.babyUser.babyNickName = modifiedName;
+                        strongSelf.babyUser.babyNickName = modifiedName;
                     }
-                    self.title = modifiedName;
-                    [self.babyDetailTableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                    strongSelf.title = modifiedName;
+                    [strongSelf.babyDetailTableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
                     
                 };
                 
@@ -416,14 +463,17 @@
                 
             case 2:
             {
-                EHModifyRelationViewController* modifyRelationVC = [EHModifyRelationViewController new];
+                NewEHModifyRelationViewController* modifyRelationVC = [NewEHModifyRelationViewController new];
                 modifyRelationVC.babyId = self.babyUser.babyId;
                 modifyRelationVC.currentRelationShip = self.babyUser.relationShip;
                 modifyRelationVC.authority = self.babyUser.authority;
-                modifyRelationVC.modifyRelationSuccess = ^(NSString*selected){
-                    self.babyUser.relationShip = selected;
-                    [self.babyDetailTableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-                };
+                modifyRelationVC.selectedRelationdelegate = self;
+//                WEAKSELF
+//                modifyRelationVC.modifyRelationSuccess = ^(NSString*selected){
+//                    STRONGSELF
+//                    strongSelf.babyUser.relationShip = selected;
+//                    [strongSelf.babyDetailTableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+//                };
                 
                 [self.navigationController pushViewController:modifyRelationVC animated:YES];
             }
@@ -541,8 +591,27 @@
         }
         
     }
-    
     else if (indexPath.section == 2)
+    {
+        if ([EHUtils isAuthority:self.babyUser.authority] )
+        {
+            EHModifyBabyPhoneViewController* modifyBabyPhoneVC = [[EHModifyBabyPhoneViewController alloc] init];
+            modifyBabyPhoneVC.babyId = self.babyUser.babyId;
+            modifyBabyPhoneVC.babyPhone = self.babyUser.devicePhoneNumber;
+            
+            WEAKSELF
+            modifyBabyPhoneVC.modifyBabyPhoneSuccess = ^(NSString*modifiedPhone){
+                STRONGSELF
+                strongSelf.babyUser.devicePhoneNumber = modifiedPhone;
+                [strongSelf.babyDetailTableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                
+            };
+            
+            [self.navigationController pushViewController:modifyBabyPhoneVC animated:YES];
+        }
+
+    }
+    else if (indexPath.section == 3)
     {
         [self showUnBindBabyAlert];
     }
@@ -568,6 +637,13 @@
 //    
 //}
 
+#pragma mark - EHSelectRelationProtocol
+- (void)selectedRelation:(NSString*)selected
+{
+    self.babyUser.relationShip = selected;
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:2 inSection:0];
+    [self.babyDetailTableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+}
 
 #pragma mark - private Functions
 static BOOL kEHRightImageTableViewCellRegistered = NO;
@@ -601,15 +677,18 @@ static BOOL kEHRightImageTableViewCellRegistered = NO;
 }
 
 -(void)hideImagePreview:(UITapGestureRecognizer*)tap{
+    WEAKSELF
     [UIView animateWithDuration:0.3 animations:^{
-        self.imagePreview.alpha=0;
+        STRONGSELF
+        strongSelf.imagePreview.alpha=0;
     } completion:^(BOOL finished) {
+        STRONGSELF
         for(UIView *view in [self.imagePreview subviews])
         {
             [view removeFromSuperview];
         }
-        [self.imagePreview removeFromSuperview];
-        self.imagePreview = nil;
+        [strongSelf.imagePreview removeFromSuperview];
+        strongSelf.imagePreview = nil;
     }];
 }
 
@@ -623,9 +702,15 @@ static BOOL kEHRightImageTableViewCellRegistered = NO;
 
 - (void)updateBabyHeadImage:(NSData*)selectData
 {
-    [_loadingHud showWithStatus:@"正在上传中..." InView:self.view];
+    //[_loadingHud showWithStatus:@"正在上传中..." InView:self.view];
+    _loadingHud = [[MBProgressHUD alloc] initWithView:self.view];
+    [self.view addSubview:_loadingHud];
     
-    EHLoadingHud *__weak weakHud = _loadingHud;
+    //_loadingHud.delegate = self;
+    _loadingHud.labelText = @"正在上传中...";
+    [_loadingHud show:YES];
+    
+    MBProgressHUD *__weak weakHud = _loadingHud;
     _uploadHeadImageService = [EHUploadUserPicService new];
     WEAKSELF
     _uploadHeadImageService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
@@ -635,17 +720,20 @@ static BOOL kEHRightImageTableViewCellRegistered = NO;
         
     };
     _uploadHeadImageService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
-        [weakHud showErrorWithStatus:@"上传失败！" Finish:^{}];
+        weakHud.labelText = @"上传失败！";
+        weakHud.mode = MBProgressHUDModeText;
+        [weakHud hide:YES afterDelay:2];
+        //[weakHud showErrorWithStatus:@"上传失败！" Finish:^{}];
         //        NSDictionary* userInfo = error.userInfo;
         //        [WeAppToast toast:[userInfo objectForKey:NSLocalizedDescriptionKey]];
     };
     
-    [_uploadHeadImageService uploadImageWithData:selectData UserPhone:[KSLoginComponentItem sharedInstance].user_phone];
+    [_uploadHeadImageService uploadImageWithData:selectData UserPhone:self.babyUser.device_code];
 }
 
 - (void)modifyBabyHeadImageWithPicUrl:(NSString*)url andSmallUrl:(NSString*)smallUrl
 {
-    EHLoadingHud *__weak weakHud = _loadingHud;
+    MBProgressHUD *__weak weakHud = _loadingHud;
     
     _updateBabyInfoService= [EHUpdateBabyInfoService new];
     
@@ -653,17 +741,22 @@ static BOOL kEHRightImageTableViewCellRegistered = NO;
     _updateBabyInfoService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
         EHLogInfo(@"设置完成！");
         STRONGSELF
-        [weakHud showSuccessWithStatus:@"更新头像成功" Finish:^{
-            strongSelf.babyUser.babyHeadImage = url;
-            NSIndexPath *headIndex = [NSIndexPath indexPathForRow:0 inSection:0];
-            [strongSelf.babyDetailTableView reloadRowsAtIndexPaths:@[headIndex] withRowAnimation:UITableViewRowAnimationNone];
-        }];
+        weakHud.labelText = @"更新头像成功";
+        weakHud.mode = MBProgressHUDModeText;
+        [weakHud hide:YES afterDelay:2];
+//        {
+//            strongSelf.babyUser.babyHeadImage = url;
+//            NSIndexPath *headIndex = [NSIndexPath indexPathForRow:0 inSection:0];
+//            [strongSelf.babyDetailTableView reloadRowsAtIndexPaths:@[headIndex] withRowAnimation:UITableViewRowAnimationNone];
+//        };
         
         
     };
     _updateBabyInfoService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
-        [weakHud showErrorWithStatus:@"设置失败！" Finish:^{}];
-        
+        //[weakHud showErrorWithStatus:@"设置失败！" Finish:^{}];
+        weakHud.labelText = @"设置失败！";
+        weakHud.mode = MBProgressHUDModeText;
+        [weakHud hide:YES afterDelay:2];
         //        NSDictionary* userInfo = error.userInfo;
         //        [WeAppToast toast:[userInfo objectForKey:NSLocalizedDescriptionKey]];
     };
@@ -810,7 +903,7 @@ static BOOL kEHRightImageTableViewCellRegistered = NO;
         STRONGSELF
         UIPickerView *picker = ((RMPickerViewController *)controller).picker;
         NSInteger selectHeight = [picker selectedRowInComponent:0]+50;
-        if (selectHeight == [self.babyUser.babyHeight integerValue]) {
+        if (selectHeight == [strongSelf.babyUser.babyHeight integerValue]) {
             // 没有改变不更新
             return;
         }
@@ -860,7 +953,7 @@ static BOOL kEHRightImageTableViewCellRegistered = NO;
         STRONGSELF
         UIPickerView *picker = ((RMPickerViewController *)controller).picker;
         NSInteger selectWeight = [picker selectedRowInComponent:0] + 10;
-        if (selectWeight == [self.babyUser.babyWeight integerValue]) {
+        if (selectWeight == [strongSelf.babyUser.babyWeight integerValue]) {
             // 没有改变不更新
             return;
         }
@@ -939,8 +1032,6 @@ static BOOL kEHRightImageTableViewCellRegistered = NO;
     
 }
 
-
-
 - (void)updateBabySex:(NSNumber*)babySex andBabyBirthday:(NSString*)birthday andHeight:(NSNumber*)babyHeight andWeight:(NSNumber*)babyWeight
 {
     
@@ -956,7 +1047,8 @@ static BOOL kEHRightImageTableViewCellRegistered = NO;
         strongSelf.babyUser.babyHeight = [(EHBabyInfo*)service.item baby_height];
         strongSelf.babyUser.babyWeight = [(EHBabyInfo*)service.item baby_weight];
         strongSelf.babyUser.babySex=  [(EHBabyInfo*)service.item baby_sex];
-        [strongSelf.babyDetailTableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationNone];
+//        [strongSelf.babyDetailTableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationNone];
+        [strongSelf.babyDetailTableView reloadData];
         
         
     };
@@ -989,8 +1081,7 @@ static BOOL kEHRightImageTableViewCellRegistered = NO;
         STRONGSELF
         [WeAppToast toast:@"移除宝贝成功"];
         TBOpenURLFromSourceAndParams(tabbarURL(kEHOMETabHome), strongSelf, nil);
-        
-        
+        [strongSelf performSelector:@selector(checkCurrentBabyId) withObject:nil afterDelay:2.0];
     };
     _unbindBabyService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
         ;
@@ -1003,6 +1094,16 @@ static BOOL kEHRightImageTableViewCellRegistered = NO;
     [_unbindBabyService unBindBabyWithBabyId:self.babyUser.babyId userId:[NSNumber numberWithInteger:[[KSAuthenticationCenter userId] integerValue]]];
 }
 
+- (void)checkCurrentBabyId
+{
+    //服务器在暂无用户情况下不会发送消息过来，判断是不是最后一个宝贝，如果是的话发出小红点消息
+    if([[EHBabyListDataCenter sharedCenter] currentBabyId])
+    {
+        return;
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:EHRemoteMessageNotification object:nil userInfo:nil];
+    [EHDeviceStatusCenter sharedCenter].currentMessageType = [NSNumber numberWithLong:EHCurrentMessageType_systemMessage];
+}
 - (void)showUnBindBabyAlert
 {
 //    UIAlertView* unBindAlert = [[UIAlertView alloc] initWithTitle:nil message:@"是否取消关注该宝贝" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];

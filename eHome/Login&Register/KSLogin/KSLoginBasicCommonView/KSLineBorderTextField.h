@@ -14,9 +14,9 @@
 
 @property (nonatomic, assign) BOOL         isTextEditing;
 
-@property (nonatomic, assign) UIColor     *colorNotEditing;
+@property (nonatomic, strong) UIColor     *colorNotEditing;
 
-@property (nonatomic, assign) UIColor     *colorWhileEditing;
+@property (nonatomic, strong) UIColor     *colorWhileEditing;
 
 @property (nonatomic, strong) UIImage     *rightNormalImage;
 

@@ -9,5 +9,4 @@
 #import "KSTabBasicViewController.h"
 
 @interface EHHealthyTabViewController : KSTabBasicViewController
-
 @end

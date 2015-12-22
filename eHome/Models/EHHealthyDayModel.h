@@ -18,7 +18,7 @@
 @property(assign,nonatomic)NSInteger mileage;
 @property(assign,nonatomic)NSInteger steps;
 @property(strong,nonatomic)NSString *runTime;
-@property(assign,nonatomic)NSInteger target_steps;
+@property(assign,nonatomic)NSInteger targetSteps;
 @property(strong,nonatomic)NSString *percent;
 @property(strong,nonatomic)NSString *encourage;
 @end

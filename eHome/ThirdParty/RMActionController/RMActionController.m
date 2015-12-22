@@ -26,7 +26,7 @@
 
 #import "RMActionController.h"
 #import <QuartzCore/QuartzCore.h>
-
+#import "NSString+StringSize.h"
 #pragma mark - Defines
 
 #if !__has_feature(attribute_availability_app_extension)
@@ -82,6 +82,9 @@ typedef NS_ENUM(NSInteger, RMActionControllerAnimationStyle) {
 @property (nonatomic, copy) void (^handler)(RMActionController *controller);
 
 @property (nonatomic, strong) UIView *view;
+
+@property (nonatomic) BOOL isTitleWithImage;
+
 - (UIView *)loadView;
 
 - (BOOL)containsCancelAction;
@@ -895,16 +898,27 @@ typedef NS_ENUM(NSInteger, RMActionControllerAnimationStyle) {
 + (instancetype)actionWithTitle:(NSString *)title style:(RMActionStyle)style andHandler:(void (^)(RMActionController *controller))handler {
     RMAction *action = [RMAction actionWithStyle:style andHandler:handler];
     action.title = title;
-    
+    action.isTitleWithImage=NO;
     return action;
 }
 
 + (instancetype)actionWithImage:(UIImage *)image style:(RMActionStyle)style andHandler:(void (^)(RMActionController *controller))handler {
     RMAction *action = [RMAction actionWithStyle:style andHandler:handler];
     action.image = image;
-    
+    action.isTitleWithImage=NO;
     return action;
 }
+
++ (instancetype)actionWithTitleAndImage:(UIImage *)image title:(NSString *)title style:(RMActionStyle)style andHandler:(void (^)(RMActionController *controller))handler{
+    
+    RMAction *action = [RMAction actionWithStyle:style andHandler:handler];
+    action.image = image;
+    action.title=title;
+    action.isTitleWithImage=YES;
+    return action;
+}
+
+
 
 + (instancetype)actionWithStyle:(RMActionStyle)style andHandler:(void (^)(RMActionController *controller))handler {
     RMAction *action = [[RMAction alloc] init];
@@ -999,12 +1013,35 @@ typedef NS_ENUM(NSInteger, RMActionControllerAnimationStyle) {
         }
     }
     
-    if(self.title) {
-        [actionButton setTitle:self.title forState:UIControlStateNormal];
-    } else if(self.image) {
-        [actionButton setImage:self.image forState:UIControlStateNormal];
-    } else {
-        [actionButton setTitle:@"Unknown title" forState:UIControlStateNormal];
+    
+    if (self.isTitleWithImage) {
+        
+        UIView *view=[[UIView alloc]init];
+        UIImageView  *imageView=[[UIImageView alloc]initWithImage:self.image];
+        [imageView setFrame:CGRectMake(0, 9, imageView.width, imageView.height)];
+    
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(imageView.right+8, 9, 120, imageView.height)];
+        [label setText: self.title];
+        label.textAlignment=NSTextAlignmentLeft;
+        [view addSubview:imageView];
+        [view addSubview:label];
+        [actionButton addSubview:view];
+        [view mas_makeConstraints:^(MASConstraintMaker *make){
+            make.centerY.equalTo(actionButton.mas_centerY);
+            make.centerX.equalTo(actionButton.mas_centerX);
+            make.height.equalTo(actionButton.mas_height);
+            make.width.mas_equalTo(100+imageView.width);
+        }];
+        
+
+    }else{
+        if(self.title) {
+            [actionButton setTitle:self.title forState:UIControlStateNormal];
+        } else if(self.image) {
+            [actionButton setImage:self.image forState:UIControlStateNormal];
+        } else {
+            [actionButton setTitle:@"Unknown title" forState:UIControlStateNormal];
+        }
     }
     
     [actionButton addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[actionButton(44)]" options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionButton)]];

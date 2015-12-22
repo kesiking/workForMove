@@ -8,6 +8,7 @@
 
 #import "EHMapViewContainer.h"
 #import "EHDeviceStatusCenter.h"
+#import "EHMAMapViewShareInstance.h"
 #define kDefaultLocationZoomLevel       16.1
 #define kDefaultControlMargin           22
 #define kDefaultCalloutViewMargin       -8
@@ -32,13 +33,15 @@
 }
 
 -(void)dealloc{
-    _mapView.delegate = self;
+    [self resetMap];
+    // 多实例可清除 -- map多实例方案
+    [[EHMAMapViewShareInstance sharedCenter] resetMapWithMapView:_mapView];
+    _mapView.delegate = nil;
     _mapView = nil;
 }
 
 - (void)configMapView{
-    [MAMapServices sharedServices].apiKey = kMAMapAPIKey;       //设置KEY
-    _mapView = [[MAMapView alloc]initWithFrame:self.bounds];    //需要注意！3D高德地图不支持多实例，推荐使用一个公共地图对象。不过地图对象一初始化后就会使内存的使用提升30M左右大小，这里需要再斟酌。
+    _mapView = [[EHMAMapViewShareInstance sharedCenter] getMapViewWithFrame:self.bounds] ; //需要注意！3D高德地图不支持多实例，推荐使用一个公共地图对象。不过地图对象一初始化后就会使内存的使用提升30M左右大小，这里需要再斟酌。
     _mapView.delegate = self;
     
     _mapView.showsUserLocation = YES;                       //YES 为打开定位，NO为关闭定位
@@ -53,11 +56,6 @@
     _mapView.rotateEnabled = NO;                            //不支持旋转
     _mapView.rotateCameraEnabled = NO;                      //不支持相机角度旋转
     _mapView.touchPOIEnabled = NO;
-    
-    CLLocationDegrees latitude = 30.381263;
-    CLLocationDegrees longitude = 120.016321;
-    CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake(latitude, longitude);
-    [_mapView setCenterCoordinate:coordinate animated:YES];
     
     [_mapView setZoomLevel:MAP_DEFAULT_ZOOM_SCALE animated:YES];                //地图设置缩放级别，3~20
     [_mapView setUserTrackingMode:MAUserTrackingModeNone];    //地图不跟着位置移动
@@ -85,6 +83,8 @@
 }
 
 -(void)reloadData{
+    // 无需做清除操作 -- map多实例方案
+//    [self configMapView];
     [_mapView removeAnnotations:self.annotationArray];
     [_mapView addAnnotations:self.annotationArray];   //在地图上添加标注
 }

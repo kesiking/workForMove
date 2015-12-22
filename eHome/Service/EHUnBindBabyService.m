@@ -16,7 +16,7 @@
 }
 
 -(void)modelDidFinishLoad:(WeAppBasicRequestModel *)model{
-    [[NSNotificationCenter defaultCenter] postNotificationName:EHUNBindBabySuccessNotification object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:EHBabyListNeedChangeNotification object:nil];
     [super modelDidFinishLoad:model];
 }
 

@@ -9,6 +9,7 @@
 #import "EHMapServiceContainer.h"
 #import "EHUserDevicePosition.h"
 #import "EHPositionAnnotation.h"
+#import "EHDeviceStatusCenter.h"
 #import "MAAnnotationView+WebCache.h"
 #import "UIImage+Resize.h"
 #import "UIImage+RoundedCorner.h"
@@ -99,6 +100,7 @@
 }
 
 -(void)reloadData{
+    [self resetCurrentPositionIndex];
     [super reloadData];
     if ([self.positionArray count] > 0 && self.currentPositionIndex >= [self.positionArray count]) {
         self.currentPositionIndex = [self.positionArray count] - 1;
@@ -124,6 +126,14 @@
     if (self.shouldSelectAnnotationViewAfterRefreshMap == nil
         || (self.shouldSelectAnnotationViewAfterRefreshMap && self.shouldSelectAnnotationViewAfterRefreshMap(self))) {
         [self selectAnnotationViewWithIndex:self.currentPositionIndex];
+    }else{
+        [self selectCurrentCoordinatePosition];
+    }
+}
+
+-(void)selectCurrentCoordinatePosition{
+    if([[EHDeviceStatusCenter sharedCenter] didGetCurrentLoaction]){
+        [_mapView setCenterCoordinate:[[EHDeviceStatusCenter sharedCenter] currentPhoneCoordinate] animated:YES];
     }
 }
 
@@ -141,6 +151,7 @@
 
 -(void)selectAnnotationViewWithIndex:(NSUInteger)index withAnimation:(BOOL)animation{
     if (index >= [self.annotationArray count]) {
+        [self selectCurrentCoordinatePosition];
         return;
     }
     EHPositionAnnotation *pointAnnotation = [self.annotationArray objectAtIndex:index];
@@ -160,8 +171,18 @@
     [self.annotationArray removeAllObjects];
 }
 
+-(void)resetCurrentPositionIndex{
+    self.currentPositionIndex = 0;;
+}
+
+-(void)resetHistoryPositionArray{
+    self.positionArray = nil;;
+}
+
+
 -(void)resetMap{
     [super resetMap];
+    [self resetCurrentPositionIndex];
     [self resetMapAnnotation];
 }
 
@@ -213,13 +234,17 @@
             STRONGSELF
             if (service && service.dataList) {
                 strongSelf.positionArray = service.dataList;
-                [strongSelf resetMapAnnotation];
-                [strongSelf setupMapAnnotation];
-                [strongSelf reloadData];
+                if ([(KSViewController*)strongSelf.viewController isViewAppeared]) {
+                    [strongSelf resetMapAnnotation];
+                    [strongSelf setupMapAnnotation];
+                    [strongSelf reloadData];
+                }
             }else{
                 strongSelf.positionArray = nil;
+                if ([(KSViewController*)strongSelf.viewController isViewAppeared]) {
                 [strongSelf resetMapAnnotation];
                 [strongSelf reloadData];
+                }
             }
             [strongSelf hideLoadingView];
             if (strongSelf.finishedRefreshService) {

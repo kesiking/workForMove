@@ -11,7 +11,7 @@
 #import "XHMacro.h"
 
 #define kXHEmotionPerRowItemCount (kIsiPad ? 10 : 4)
-#define kXHEmotionPageControlHeight 38
+#define kXHEmotionPageControlHeight 18
 #define kXHEmotionSectionBarHeight 36
 
 @protocol XHEmotionManagerViewDelegate <NSObject>
@@ -64,8 +64,11 @@
 /**
  *  是否显示表情商店的按钮
  */
-@property (nonatomic, assign) BOOL isShowEmotionStoreButton; // default is YES
-
+@property (nonatomic, assign) BOOL isShowEmotionStoreButton; // default is NO
+/**
+ *  是否显示表情底部sectionBar
+ */
+@property (nonatomic, assign) BOOL isShowEmotionSectionBar; // default is NO
 /**
  *  根据数据源刷新UI布局和数据
  */

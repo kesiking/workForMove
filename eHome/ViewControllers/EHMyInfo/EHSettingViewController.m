@@ -10,6 +10,8 @@
 #import "EHMyInfoViewController.h"
 #import "SevenSwitch.h"
 #import "EHSwitch.h"
+#import "EHGetUserSettingService.h"
+#import "EHUpdateUserSettingService.h"
 
 #define kEHShakeNoticeKey @"shakeNoticeKey"     //震动
 #define kEHVoiceNoticeKey @"voiceNoticeKey"     //声音
@@ -19,13 +21,17 @@
 #define kSwitchTag 100
 
 @interface EHSettingViewController ()<UITableViewDataSource,UITableViewDelegate>
+@property(nonatomic,strong)    GroupedTableView *tableView;
 @end
 
 @implementation EHSettingViewController
 {
-    GroupedTableView *_tableView;
+
     NSMutableArray *_titleArray;
     NSMutableArray *_sliderStatueArray;
+    
+    EHGetUserSettingService* _getUserSettingService;
+    EHUpdateUserSettingService* _updateUserSettingService;
 }
 
 #pragma mark - Life Circle
@@ -33,14 +39,11 @@
     [super viewDidLoad];
     self.title = @"设置";
     
-    _titleArray = [[NSMutableArray alloc]initWithObjects:@"接受信息通知", @"震动", @"声音", nil];
-    _sliderStatueArray = [self arrayOfNotice];
-    if(![_sliderStatueArray[0] boolValue]) {
-        [_titleArray removeLastObject];
-        [_titleArray removeLastObject];
-    }
-    
+    [self initUserSetting];
     [self initTableView];
+    
+    [self getUserSettingFromServer];
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -49,6 +52,91 @@
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
+    [self updateUserSettingToServer];
+}
+
+-(void)initUserSetting
+{
+    _titleArray = [[NSMutableArray alloc]initWithObjects:@"接收信息通知", @"震动", @"声音", nil];
+    _sliderStatueArray = [self arrayOfNotice];
+    if(![_sliderStatueArray[0] boolValue]) {
+        [_titleArray removeLastObject];
+        [_titleArray removeLastObject];
+    }
+}
+
+- (void)updateUserSettingToServer
+{
+    if (!_updateUserSettingService)
+    {
+        _updateUserSettingService = [EHUpdateUserSettingService new];
+        WEAKSELF
+        _updateUserSettingService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
+            STRONGSELF
+            if (!service.item) {
+                EHLogError(@"EHGetUserSettingService rsp parser error!");
+                return;
+            }
+            
+            EHUserSettingModel* setting = (EHUserSettingModel*)service.item;
+            [strongSelf updateNotice:[setting.isReceiveMesg boolValue]];
+            [strongSelf updateVoiceNotice:[setting.isSoundOn boolValue]];
+            [strongSelf updateShakeNotice:[setting.isShakeOn boolValue]];
+            
+            [strongSelf initUserSetting];
+            [strongSelf.tableView reloadData];
+        };
+        
+        // service 返回失败 block
+        _updateUserSettingService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
+            
+            NSDictionary* userInfo = error.userInfo;
+            EHLogError(@"%@", [userInfo objectForKey:NSLocalizedDescriptionKey]);
+        };
+    }
+    
+    EHUserSettingModel* setting = [EHUserSettingModel new];
+    setting.user_id = [NSNumber numberWithInt:[[KSAuthenticationCenter userId] intValue]];
+    NSMutableArray* userSettings = [self arrayOfNotice];
+    setting.isReceiveMesg = [NSNumber numberWithInt:[userSettings[0] intValue]];
+    setting.isShakeOn = [NSNumber numberWithInt:[userSettings[1] intValue]];
+    setting.isSoundOn = [NSNumber numberWithInt:[userSettings[2] intValue]];
+   
+    [_updateUserSettingService updateUserSetting:setting];
+
+}
+
+- (void)getUserSettingFromServer
+{
+    if (!_getUserSettingService)
+    {
+        _getUserSettingService = [EHGetUserSettingService new];
+        WEAKSELF
+        _getUserSettingService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
+            STRONGSELF
+            if (!service.item) {
+                EHLogError(@"EHGetUserSettingService rsp parser error!");
+                return;
+            }
+            
+            EHUserSettingModel* setting = (EHUserSettingModel*)service.item;
+            [strongSelf updateNotice:[setting.isReceiveMesg boolValue]];
+            [strongSelf updateVoiceNotice:[setting.isSoundOn boolValue]];
+            [strongSelf updateShakeNotice:[setting.isShakeOn boolValue]];
+            
+            [strongSelf initUserSetting];
+            [strongSelf.tableView reloadData];
+        };
+        
+        // service 返回失败 block
+        _getUserSettingService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
+            
+            NSDictionary* userInfo = error.userInfo;
+            EHLogError(@"%@", [userInfo objectForKey:NSLocalizedDescriptionKey]);
+        };
+    }
+    
+    [_getUserSettingService getUserSetting:[NSNumber numberWithInt:[[KSAuthenticationCenter userId] intValue]]];
 }
 
 #pragma mark - UITableViewDataSource
@@ -91,10 +179,10 @@
     return cell;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    return 12;
-}
-
+//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+//    return 12;
+//}
+//
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
     return 45;
 }
@@ -102,7 +190,7 @@
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
     if (section == 0) {
         UIView *footerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(_tableView.frame), [self tableView: _tableView heightForFooterInSection:section])];
-        NSString *text = @"关闭接受消息通知，您将无法接收“宝贝进出围栏”、“设备低电量报警”等通知信息。";
+        NSString *text = @"关闭接收消息通知，您将无法接收“宝贝进出围栏”、“设备低电量报警”等通知信息。";
         
         CGFloat spaceX = tableView.separatorInset.left;
         
@@ -281,13 +369,15 @@
     [self.view addSubview:_tableView];
     
     [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.view).with.insets(UIEdgeInsetsMake(0, 10, 0, 10));
+        make.edges.equalTo(self.view).with.insets(UIEdgeInsetsMake(0, 10, 49, 10));
     }];
     
     return;
 }
 - (EHSwitch *)switchWithTag:(NSInteger)tag{
-    EHSwitch *swit = [[EHSwitch alloc]initWithFrame:CGRectMake(CGRectGetWidth(_tableView.frame) - 12 - 50, 12.5, 50, 25)];
+    EHSwitch *swit = [[EHSwitch alloc]initWithFrame:CGRectMake(CGRectGetWidth(_tableView.frame) - 61, (kCellHeight-44)/2, 59, 44)];
+    
+    
     EHLogInfo(@"_sliderStatueArray.tag = %@",_sliderStatueArray[tag]);
     swit.on = [_sliderStatueArray[tag] boolValue];
     swit.tag = kSwitchTag + tag;

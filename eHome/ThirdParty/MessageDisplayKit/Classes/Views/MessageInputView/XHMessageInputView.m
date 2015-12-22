@@ -23,6 +23,8 @@
 
 @property (nonatomic, weak, readwrite) UIButton *faceSendButton;
 
+@property (nonatomic, weak, readwrite) UIButton *phoneCallButton;
+
 @property (nonatomic, weak, readwrite) UIButton *holdDownButton;
 
 /**
@@ -114,6 +116,8 @@
     switch (index) {
         case 0: {
             sender.selected = !sender.selected;
+            //只要有语音按钮的点击，faceSendButton的selected为NO
+            self.faceSendButton.selected = NO;
             if (sender.selected) {
                 self.inputedText = self.inputTextView.text;
                 self.inputTextView.text = @"";
@@ -139,7 +143,8 @@
         }
         case 1: {
             sender.selected = !sender.selected;
-            self.voiceChangeButton.selected = !sender.selected;
+            //只要有表情按钮的点击，voiceChangeButton的selected属性为NO
+            self.voiceChangeButton.selected = NO;
             
             if (!sender.selected) {
                 [UIView animateWithDuration:0.2 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
@@ -166,6 +171,12 @@
             self.faceSendButton.selected = NO;
             if ([self.delegate respondsToSelector:@selector(didSelectedMultipleMediaAction)]) {
                 [self.delegate didSelectedMultipleMediaAction];
+            }
+            break;
+        }
+        case 3:{
+            if ([self.delegate respondsToSelector:@selector(didSelectedPhoneCallAction)]) {
+                [self.delegate didSelectedPhoneCallAction];
             }
             break;
         }
@@ -202,6 +213,7 @@
     if (self.isRecording) {
         if ([self.delegate respondsToSelector:@selector(didCancelRecordingVoiceAction)]) {
             [self.delegate didCancelRecordingVoiceAction];
+            self.isRecording = NO;
         }
     } else {
         self.isCancelled = YES;
@@ -214,6 +226,7 @@
     if (self.isRecording) {
         if ([self.delegate respondsToSelector:@selector(didFinishRecoingVoiceAction)]) {
             [self.delegate didFinishRecoingVoiceAction];
+            self.isRecording = NO;
         }
     } else {
         self.isCancelled = YES;
@@ -247,7 +260,7 @@
 #pragma mark - layout subViews UI
 
 - (UIButton *)createButtonWithImage:(UIImage *)image HLImage:(UIImage *)hlImage {
-    UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, [XHMessageInputView textViewLineHeight], [XHMessageInputView textViewLineHeight])];
+    UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, [XHMessageInputView textViewIconSize].width, [XHMessageInputView textViewIconSize].height)];
     if (image)
         [button setBackgroundImage:image forState:UIControlStateNormal];
     if (hlImage)
@@ -263,13 +276,13 @@
     CGFloat allButtonWidth = 0.0;
     
     // 水平间隔
-    CGFloat horizontalPadding = 8;
+    CGFloat horizontalPadding = 12;
     
     // 垂直间隔
-    CGFloat verticalPadding = 5;
+    CGFloat verticalPadding = 7;
     
     // 输入框
-    CGFloat textViewLeftMargin = ((style == XHMessageInputViewStyleFlat) ? 6.0 : 4.0);
+    CGFloat textViewLeftMargin = ((style == XHMessageInputViewStyleFlat) ? 12.0 : 4.0);
     
     // 每个按钮统一使用的frame变量
     CGRect buttonFrame;
@@ -277,39 +290,20 @@
     // 按钮对象消息
     UIButton *button;
     
-    // 允许发送语音
-    if (self.allowsSendVoice) {
-        NSString *voiceNormalImageName = [[XHConfigurationHelper appearance].messageInputViewStyle objectForKey:kXHMessageInputViewVoiceNormalImageNameKey];
-        if (!voiceNormalImageName) {
-            voiceNormalImageName = @"voice";
-        }
-        NSString *voiceHLImageName = [[XHConfigurationHelper appearance].messageInputViewStyle objectForKey:kXHMessageInputViewVoiceHLImageNameKey];
-        if (!voiceHLImageName) {
-            voiceHLImageName = @"voice_HL";
-        }
-        NSString *keyboardNormalImageName = [[XHConfigurationHelper appearance].messageInputViewStyle objectForKey:kXHMessageInputViewKeyboardNormalImageNameKey];
-        if (!keyboardNormalImageName) {
-            keyboardNormalImageName = @"keyboard";
-        }
-        NSString *keyboardHLImageName = [[XHConfigurationHelper appearance].messageInputViewStyle objectForKey:kXHMessageInputViewKeyboardHLImageNameKey];
-        if (!keyboardHLImageName) {
-            keyboardHLImageName = @"keyboard_HL";
-        }
-        
-        button = [self createButtonWithImage:[UIImage imageNamed:voiceNormalImageName] HLImage:[UIImage imageNamed:voiceHLImageName]];
+    //允许拨打电话
+    if(self.allowsPhoneCall){
+        button = [self createButtonWithImage:[UIImage imageNamed:@"icon_call_n"] HLImage:[UIImage imageNamed:@"icon_call_h"]];
         [button addTarget:self action:@selector(messageStyleButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-        button.tag = 0;
-        [button setBackgroundImage:[UIImage imageNamed:keyboardNormalImageName] forState:UIControlStateSelected];
+        button.tag = 3;
         buttonFrame = button.frame;
         buttonFrame.origin = CGPointMake(horizontalPadding, verticalPadding);
         button.frame = buttonFrame;
         [self addSubview:button];
-        allButtonWidth += CGRectGetMaxX(buttonFrame) + horizontalPadding * 2.5;
+        allButtonWidth += (CGRectGetMaxX(buttonFrame) + horizontalPadding);
         textViewLeftMargin += CGRectGetMaxX(buttonFrame);
         
-        self.voiceChangeButton = button;
+        self.phoneCallButton = button;
     }
-    
     // 允许发送多媒体消息，为什么不是先放表情按钮呢？因为布局的需要！
     if (self.allowsSendMultiMedia) {
         NSString *extensionNormalImageName = [[XHConfigurationHelper appearance].messageInputViewStyle objectForKey:kXHMessageInputViewExtensionNormalImageNameKey];
@@ -329,22 +323,42 @@
         buttonFrame.origin = CGPointMake(CGRectGetWidth(self.bounds) - horizontalPadding - CGRectGetWidth(buttonFrame), verticalPadding);
         button.frame = buttonFrame;
         [self addSubview:button];
-        allButtonWidth += CGRectGetWidth(buttonFrame) + horizontalPadding * 2.5;
+        allButtonWidth += CGRectGetWidth(buttonFrame) + horizontalPadding * 2;
         
         self.multiMediaSendButton = button;
     }
     
     // 允许发送表情
     if (self.allowsSendFace) {
-        NSString *emotionNormalImageName = [[XHConfigurationHelper appearance].messageInputViewStyle objectForKey:kXHMessageInputViewEmotionNormalImageNameKey];
-        if (!emotionNormalImageName) {
-            emotionNormalImageName = @"face";
-        }
-        NSString *emotionHLImageName = [[XHConfigurationHelper appearance].messageInputViewStyle objectForKey:kXHMessageInputViewEmotionHLImageNameKey];
-        if (!emotionHLImageName) {
-            emotionHLImageName = @"face_HL";
-        }
         
+        button = [self createButtonWithImage:[UIImage imageNamed:@"icon_expression_n"] HLImage:[UIImage imageNamed:@"icon_expression_h"]];
+        button.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+        [button setBackgroundImage:[UIImage imageNamed:@"icon_keyboard_n"] forState:UIControlStateSelected];
+        [button addTarget:self action:@selector(messageStyleButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+        button.tag = 1;
+        buttonFrame = button.frame;
+        if (self.allowsSendMultiMedia) {
+            buttonFrame.origin = CGPointMake(CGRectGetMinX(self.multiMediaSendButton.frame) - CGRectGetWidth(buttonFrame) - horizontalPadding, verticalPadding);
+            allButtonWidth += CGRectGetWidth(buttonFrame) + horizontalPadding * 1.5;
+        } else {
+            buttonFrame.origin = CGPointMake(CGRectGetWidth(self.bounds) - horizontalPadding - CGRectGetWidth(buttonFrame), verticalPadding);
+            allButtonWidth += CGRectGetWidth(buttonFrame) + horizontalPadding;
+        }
+        button.frame = buttonFrame;
+        [self addSubview:button];
+        
+        self.faceSendButton = button;
+    }
+    // 允许发送语音
+    if (self.allowsSendVoice) {
+        NSString *voiceNormalImageName = [[XHConfigurationHelper appearance].messageInputViewStyle objectForKey:kXHMessageInputViewVoiceNormalImageNameKey];
+        if (!voiceNormalImageName) {
+            voiceNormalImageName = @"voice";
+        }
+        NSString *voiceHLImageName = [[XHConfigurationHelper appearance].messageInputViewStyle objectForKey:kXHMessageInputViewVoiceHLImageNameKey];
+        if (!voiceHLImageName) {
+            voiceHLImageName = @"voice_HL";
+        }
         NSString *keyboardNormalImageName = [[XHConfigurationHelper appearance].messageInputViewStyle objectForKey:kXHMessageInputViewKeyboardNormalImageNameKey];
         if (!keyboardNormalImageName) {
             keyboardNormalImageName = @"keyboard";
@@ -354,25 +368,26 @@
             keyboardHLImageName = @"keyboard_HL";
         }
         
-        button = [self createButtonWithImage:[UIImage imageNamed:emotionNormalImageName] HLImage:[UIImage imageNamed:emotionHLImageName]];
-        button.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-        [button setBackgroundImage:[UIImage imageNamed:keyboardNormalImageName] forState:UIControlStateSelected];
+        button = [self createButtonWithImage:[UIImage imageNamed:@"icon_voice03_n"] HLImage:[UIImage imageNamed:@"icon_voice03_h"]];
         [button addTarget:self action:@selector(messageStyleButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-        button.tag = 1;
+        button.tag = 0;
+        [button setBackgroundImage:[UIImage imageNamed:@"icon_keyboard_n"] forState:UIControlStateSelected];
         buttonFrame = button.frame;
-        if (self.allowsSendMultiMedia) {
+        if (self.allowsSendFace) {
+            buttonFrame.origin = CGPointMake(CGRectGetMinX(self.faceSendButton.frame) - CGRectGetWidth(buttonFrame) - horizontalPadding, verticalPadding);
+            allButtonWidth += CGRectGetWidth(buttonFrame) + horizontalPadding * 2;
+        } else if (!self.allowsSendFace && self.allowsSendMultiMedia){
             buttonFrame.origin = CGPointMake(CGRectGetMinX(self.multiMediaSendButton.frame) - CGRectGetWidth(buttonFrame) - horizontalPadding, verticalPadding);
-            allButtonWidth += CGRectGetWidth(buttonFrame) + horizontalPadding * 1.5;
-        } else {
+            allButtonWidth += CGRectGetWidth(buttonFrame) + horizontalPadding * 2;
+        } else{
             buttonFrame.origin = CGPointMake(CGRectGetWidth(self.bounds) - horizontalPadding - CGRectGetWidth(buttonFrame), verticalPadding);
-            allButtonWidth += CGRectGetWidth(buttonFrame) + horizontalPadding * 2.5;
+            allButtonWidth += CGRectGetWidth(buttonFrame) + horizontalPadding * 2;
         }
         button.frame = buttonFrame;
         [self addSubview:button];
         
-        self.faceSendButton = button;
+        self.voiceChangeButton = button;
     }
-    
     // 输入框的高度和宽度
     CGFloat width = CGRectGetWidth(self.bounds) - (allButtonWidth ? allButtonWidth : (textViewLeftMargin * 2));
     CGFloat height = [XHMessageInputView textViewLineHeight];
@@ -427,6 +442,7 @@
             }
             
             _inputTextView.frame = CGRectMake(textViewLeftMargin, 4.5f, width, height);
+            _inputTextView.autoresizingMask = UIViewAutoresizingNone;
             _inputTextView.backgroundColor = [UIColor clearColor];
             _inputTextView.layer.borderColor = borderColor.CGColor;
             _inputTextView.layer.borderWidth = borderWidth;
@@ -481,10 +497,19 @@
     _allowsSendVoice = YES;
     _allowsSendFace = YES;
     _allowsSendMultiMedia = YES;
+    _allowsPhoneCall = YES;
     
+    //Bug修复EHOMEIOS-347 当录音时APP被迫进入后台（如电话打入等），直接发送已经录制的语音
     _messageInputViewStyle = XHMessageInputViewStyleFlat;
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillResignActive:)
+                                                 name:UIApplicationWillResignActiveNotification
+                                               object:nil];
 }
-
+- (void)applicationWillResignActive:(id)sender
+{
+    [self holdDownButtonTouchUpInside];
+}
 - (void)awakeFromNib {
     [self setup];
 }
@@ -499,6 +524,7 @@
 }
 
 - (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     self.inputedText = nil;
     _inputTextView.delegate = nil;
     _inputTextView = nil;
@@ -549,7 +575,9 @@
 + (CGFloat)textViewLineHeight {
     return 36.0f; // for fontSize 16.0f
 }
-
++ (CGSize)textViewIconSize {
+    return CGSizeMake(30.0f, 30.0f); // for fontSize 16.0f
+}
 + (CGFloat)maxLines {
     return ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) ? 3.0f : 8.0f;
 }

@@ -17,10 +17,12 @@
 
     if (!baby_id) {
         EHLogError(@"baby_id is nil");
+        return;
     }
     
     if(!manager_phone){
         EHLogError(@"phone is nil");
+        return;
     }
     
     [self loadDataListWithAPIName:kEHGetBabyBindingStatusListApiName params:@{@"baby_id":baby_id,@"gardian_phone":manager_phone} version:nil];

@@ -85,14 +85,14 @@
     CGRect workDataLabelFrame = CGRectMake(CGRectGetMaxX(timeLabelFrame) + kSpace, _subViewY1, workDataLabelWidth, _subViewHeight);
     
     //开关
-    CGRect isActiveSwitchFrame = CGRectMake(CGRectGetWidth(self.frame) - kSpace - 45, (cellHeight - 25) / 2.0, 45, 25);
+    CGRect isActiveSwitchFrame = CGRectMake(CGRectGetWidth(self.frame) - kSpace - 53, (cellHeight - 45) / 2.0, 65, 45);
 
     //重复、备注
     CGRect isRepeatLabelFrame;
-    CGRect commentsLabelFrame;
+    //CGRect commentsLabelFrame;
  //   if (_remindType == EHRemindTypeGeofence) {
         isRepeatLabelFrame = CGRectMake(CGRectGetMaxX(timeLabelFrame) + kSpace, _subViewY2, 60, _subViewHeight);
-        commentsLabelFrame = CGRectZero;
+        //commentsLabelFrame = CGRectZero;
 //    }
 //    else {
 //        isRepeatLabelFrame = CGRectMake(CGRectGetMaxX(workDataLabelFrame) + kSpace, _subViewY1, 60, _subViewHeight);

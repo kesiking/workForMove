@@ -16,4 +16,5 @@ typedef void(^PhoneEditBlock)(EHBabyFamilyPhone *phoneModel);
 @property (nonatomic, strong) NSNumber *babyId;
 @property (nonatomic, copy) PhoneEditBlock editBlock;
 @property (nonatomic, strong) EHBabyFamilyPhone *phoneModel;
+@property (nonatomic, strong) NSString *relationShip;
 @end

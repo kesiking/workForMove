@@ -100,7 +100,7 @@
             if (strongSelf.transferManagerSuccess) {
                 strongSelf.transferManagerSuccess(attentionUser.user.user_phone);
             }
-            [[NSNotificationCenter defaultCenter] postNotificationName:EHBabyInfoChangedNotification object:nil];
+//            [[NSNotificationCenter defaultCenter] postNotificationName:EHBabyInfoChangedNotification object:nil];
             [strongSelf.navigationController popViewControllerAnimated:YES];
             
         };

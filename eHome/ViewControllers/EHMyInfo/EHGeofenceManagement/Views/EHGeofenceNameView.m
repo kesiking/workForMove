@@ -22,10 +22,11 @@
         
         self.returnKeyType = UIReturnKeyDone;
         self.clearButtonMode = UITextFieldViewModeWhileEditing;
-        self.delegate = self;
+        //self.delegate = self;
         self.font = EHFont2;
         self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"输入围栏名称" attributes:@{NSForegroundColorAttributeName: EHCor3}];
         [self addTarget:self action:@selector(textFieldValueChanged:) forControlEvents:UIControlEventEditingChanged];
+        [self addTarget:self action:@selector(textFieldEditingDidEndOnExit:) forControlEvents:UIControlEventEditingDidEndOnExit];
         
         NSString *labelText = @"围栏名称：";
         CGFloat leftViewWidth = [labelText sizeWithFontSize:EHSiz2 Width:MAXFLOAT].width;
@@ -73,10 +74,16 @@
     !self.geofenceNameFieldChangedBlock?:self.geofenceNameFieldChangedBlock();
 }
 
-- (BOOL)textFieldShouldReturn:(UITextField *)theTextField {
-    [theTextField resignFirstResponder];
-    return YES;
+//- (BOOL)textFieldShouldReturn:(UITextField *)theTextField {
+//    [theTextField resignFirstResponder];
+//    return YES;
+//}
+
+- (void)textFieldEditingDidEndOnExit:(id)sender{
+    UITextField *textField = (UITextField *)sender;
+    [textField resignFirstResponder];
 }
+
 
 #pragma mark - Getters And Setters
 - (NSString *)geofenceName {

@@ -29,12 +29,14 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
 
 @property (nonatomic, strong) EHGeofenceRemindModel *needUpdateModel;
 
+@property (nonatomic, strong) EHUpdateGeofenceRemindService *updateRemindService;
+
 @end
 
 @implementation EHGeofenceRemindListViewController
 {
     EHGetGeofenceRemindService *_getRemindService;
-    EHUpdateGeofenceRemindService *_updateRemindService;
+
 }
 
 #pragma mark - Life Cycle
@@ -65,6 +67,14 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
 
 #pragma mark - Events Response
 - (void)rightItemClick:(id)sender {
+    if (![KSAuthenticationCenter isLogin]) {
+        void(^loginActionBlock)(BOOL loginSuccess) = ^(BOOL loginSuccess){
+            // 如果登陆成功就回到主界面
+            TBOpenURLFromTargetWithNativeParams(tabbarURL(kEHOMETabHome), self, @{ACTION_ANIMATION_KEY:@(NO)} ,nil);
+        };
+        [[KSAuthenticationCenter sharedCenter] authenticateWithAlertViewMessage:LOGIN_ALERTVIEW_MESSAGE LoginActionBlock:loginActionBlock cancelActionBlock:nil source:self];
+        return;
+    }
     if (self.geofenceRemindList.count == 5) {
         [WeAppToast toast:@"您的围栏提醒数量已经到5个，无法继续新增围栏提醒"];
         return;
@@ -79,7 +89,7 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
         STRONGSELF
         strongSelf.needUpdateModel = remindModel;
         [strongSelf updateRemindList:EHRemindListStatusTypeAdd];
-        [self checkGeofenceRemindList];
+        [strongSelf checkGeofenceRemindList];
     };
     [self.navigationController pushViewController:grdVC animated:YES];
 }
@@ -257,8 +267,8 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
             //进行状态更新请求再排序显示
             [strongSelf showLoadingView];
             
-            [self configUpdateRemindService];
-            [_updateRemindService UpdateGeofenceRemind:model];
+            [strongSelf configUpdateRemindService];
+            [strongSelf.updateRemindService UpdateGeofenceRemind:model];
         };
         return cell;
     }
@@ -317,7 +327,7 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
         STRONGSELF
         strongSelf.needUpdateModel = remindModel;
         [strongSelf updateRemindList:EHRemindListStatusTypeDelete];
-        [self checkGeofenceRemindList];
+        [strongSelf checkGeofenceRemindList];
     };
     [self.navigationController pushViewController:greVC animated:YES];
     
@@ -427,7 +437,7 @@ static NSString * const kEHGeofenceRemindStr = @"开启主动提醒状态，如�
         _noDataView.backgroundColor = [UIColor clearColor];
         
         UIImageView *clockImv = [[UIImageView alloc]initWithFrame:CGRectMake((CGRectGetWidth(_noDataView.frame) - imageHeight) / 2.0, 137 / 2.0, imageHeight, imageHeight)];
-        clockImv.image = [UIImage imageNamed:@"icon_clock"];
+        clockImv.image = [UIImage imageNamed:@"icon_remind"];
         
         UILabel * remindLabel = [[UILabel alloc]initWithFrame:CGRectMake(kSpaceX, viewHeight - labelHeight, CGRectGetWidth(_noDataView.frame) - kSpaceX * 2, labelHeight)];
         remindLabel.text = kEHGeofenceRemindStr;

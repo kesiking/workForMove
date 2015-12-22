@@ -169,8 +169,8 @@
   //  UIImageView *sharedBtnBgView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_share_wechatanefriend"]];
     UIImageView *sharedBtnBgView=[[UIImageView alloc]init];
     [self.view addSubview:sharedBtnBgView];
-    CGFloat labelHeight = [self heightForString:@"微信" fontSize:12.0f andWidth
-                                               :imageWidth];
+//    CGFloat labelHeight = [self heightForString:@"微信" fontSize:12.0f andWidth
+//                                               :imageWidth];
     [sharedBtnBgView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.equalTo(self.view.mas_bottom);
         make.centerX.equalTo(self.view.mas_centerX);

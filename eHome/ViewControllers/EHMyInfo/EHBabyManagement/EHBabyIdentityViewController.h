@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface EHBabyIdentityViewController : UIViewController
+@interface EHBabyIdentityViewController : KSViewController
 - (instancetype)initWithDeviceCode:(NSString*)deviceCode;
 @end

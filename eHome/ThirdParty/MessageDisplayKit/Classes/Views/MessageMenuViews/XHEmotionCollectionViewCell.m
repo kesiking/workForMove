@@ -16,6 +16,11 @@
 @property (nonatomic, weak) UIImageView *emotionImageView;
 
 /**
+ *  显示表情的文本注释label
+ */
+@property (nonatomic, weak) UILabel     *emotionLabel;
+
+/**
  *  配置默认控件和参数
  */
 - (void)setup;
@@ -30,16 +35,25 @@
     
     // TODO:
     self.emotionImageView.image = emotion.emotionConverPhoto;
+    self.emotionLabel.text = emotion.text;
 }
 
 #pragma mark - Life cycle
 
 - (void)setup {
     if (!_emotionImageView) {
-        UIImageView *emotionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, kXHEmotionImageViewSize, kXHEmotionImageViewSize)];
-        emotionImageView.backgroundColor = [UIColor colorWithRed:0.000 green:0.251 blue:0.502 alpha:1.000];
+        UIImageView *emotionImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, kEHEmotionImageViewWidth, kEHEmotionImageViewHeight)];
+        emotionImageView.backgroundColor = [UIColor clearColor];
         [self.contentView addSubview:emotionImageView];
         self.emotionImageView = emotionImageView;
+    }
+    if (!_emotionLabel) {
+        UILabel *emotionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(self.emotionImageView.frame) + 2, kEHEmotionLabelWidth, kEHEmotionLabelHeight)];
+        emotionLabel.font = [UIFont systemFontOfSize:11];
+        emotionLabel.textColor = [UIColor colorWithRed:0x33/255.0 green:0x33/255.0 blue:0x33/255.0 alpha:1.0];
+        emotionLabel.textAlignment = NSTextAlignmentCenter;
+        [self.contentView addSubview:emotionLabel];
+        self.emotionLabel = emotionLabel;
     }
 }
 

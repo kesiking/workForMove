@@ -129,9 +129,9 @@ typedef NS_ENUM(NSInteger, EHCollentionItemType) {
 }
 
 -(void)initNotification{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHBindBabySuccessNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHUNBindBabySuccessNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHBabyInfoChangedNotification object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHBindBabySuccessNotification object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHUNBindBabySuccessNotification object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHBabyListChangedNotification object:nil];
 }
 
 
@@ -194,6 +194,16 @@ typedef NS_ENUM(NSInteger, EHCollentionItemType) {
     
 }
 
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    return 12;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
+    return 10;
+}
+
+
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     if (_currentSelectBaby)
     {
@@ -251,6 +261,8 @@ static NSString * kEHBabyDetailTableViewCellId = @"kEHBabyDetailTableViewCellId"
             }
             
             cell.textLabel.text = [dic objectForKey:@"name"];
+            cell.textLabel.textColor = EHCor5;
+            cell.textLabel.font = EHFont2;
             cell.imageView.image = [UIImage imageNamed:[dic objectForKey:@"image"]];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
@@ -329,7 +341,7 @@ static NSString * kEHBabyDetailTableViewCellId = @"kEHBabyDetailTableViewCellId"
     {
         if (indexPath.section == 0) {
             EHBabyUserDetailViewController* babyUserDetailVC = [[EHBabyUserDetailViewController alloc] init];
-            babyUserDetailVC.babyUser = _currentSelectBaby;
+            //babyUserDetailVC.babyUser = _currentSelectBaby;
             babyUserDetailVC.name=babyUserDetailVC.babyUser.babyName;
             [self.navigationController pushViewController:babyUserDetailVC animated:YES];
         }
@@ -346,7 +358,7 @@ static NSString * kEHBabyDetailTableViewCellId = @"kEHBabyDetailTableViewCellId"
         else if (indexPath.section == 4)
         {
             if (indexPath.row == 0) {
-                [EHSocialShareHandle presentWithTypeArray:@[EHShareToWechatSession,EHShareToWechatTimeline,EHShareToSms,EHShareToQRCode] Title:[NSString stringWithFormat:@"%@ %@",kEH_APP_NAME,kEH_WEBSITE_URL] Image:[UIImage imageNamed:kEH_LOGO_IMAGE_NAME] FromTarget:self];
+                [EHSocialShareHandle presentWithTypeArray:@[EHShareToWechatSession,EHShareToWechatTimeline,EHShareToSms,EHShareToQRCode] Title:[NSString stringWithFormat:@"%@ %@",kEH_APP_NAME,kEH_WEBSITE_URL] Image:nil FromTarget:self];
             }
             else {
                 EHAboutViewController *aboutViewController = [[EHAboutViewController alloc]init];
@@ -375,7 +387,7 @@ static NSString * kEHBabyDetailTableViewCellId = @"kEHBabyDetailTableViewCellId"
         else
         {
             if (indexPath.row == 0) {
-                [EHSocialShareHandle presentWithTypeArray:@[EHShareToWechatSession,EHShareToWechatTimeline,EHShareToSms,EHShareToQRCode] Title:[NSString stringWithFormat:@"%@ %@",kEH_APP_NAME,kEH_WEBSITE_URL] Image:[UIImage imageNamed:kEH_LOGO_IMAGE_NAME] FromTarget:self];
+                [EHSocialShareHandle presentWithTypeArray:@[EHShareToWechatSession,EHShareToWechatTimeline,EHShareToSms,EHShareToQRCode] Title:[NSString stringWithFormat:@"%@ %@",kEH_APP_NAME,kEH_WEBSITE_URL] Image:nil FromTarget:self];
             }
             else {
                 EHAboutViewController *aboutViewController = [[EHAboutViewController alloc]init];
@@ -406,10 +418,10 @@ static NSString * kEHBabyDetailTableViewCellId = @"kEHBabyDetailTableViewCellId"
     }
 
 }
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    return 12;
-}
+//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+//{
+//    return 12;
+//}
 
 //- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
 //    if (section == 0) {
@@ -468,14 +480,14 @@ static NSString * kEHBabyDetailTableViewCellId = @"kEHBabyDetailTableViewCellId"
 }
 #pragma mark - 添加或是接触宝贝消息响应
 
--(void)babyDidChangedNotification:(NSNotification*)notification{
-    BOOL isNeedForceRefreshData = [[notification.userInfo objectForKey:EHFORCE_REFRESH_DATA] boolValue];
-    if (isNeedForceRefreshData) {
-        [self refreshBabyList];
-    }else{
-        [self refreshDataRequest];
-    }
-}
+//-(void)babyDidChangedNotification:(NSNotification*)notification{
+//    BOOL isNeedForceRefreshData = [[notification.userInfo objectForKey:EHFORCE_REFRESH_DATA] boolValue];
+//    if (isNeedForceRefreshData) {
+//        [self refreshBabyList];
+//    }else{
+//        [self refreshDataRequest];
+//    }
+//}
 
 #pragma mark - EHSocialShareViewDelegate
 - (void)shareWithType:(NSInteger)type Title:(NSString *)title Image:(UIImage *)image{
@@ -576,6 +588,7 @@ static NSString * kEHBabyDetailTableViewCellId = @"kEHBabyDetailTableViewCellId"
             familyMemberVC.babyName = [EHUtils isEmptyString:_currentSelectBaby.babyNickName] ? _currentSelectBaby.babyName : _currentSelectBaby.babyNickName;
             familyMemberVC.babyId = _currentSelectBaby.babyId;
             familyMemberVC.authority = _currentSelectBaby.authority;
+            familyMemberVC.device_code=_currentSelectBaby.device_code;
 //                familyMemberVC.familyMemberDidChanged = ^(BOOL bChanged){
 //                    if (bChanged) {
 //                        [self getBabyAttentionUsers];
@@ -652,6 +665,9 @@ static NSString * kEHBabyDetailTableViewCellId = @"kEHBabyDetailTableViewCellId"
     WEAKSELF
     return [self alertViewCheckLoginWithCompleteBlock:^{
         STRONGSELF
+        if ([KSAuthenticationCenter isLogin]) {
+            return;
+        }
         [strongSelf doLogin];
     }];
 }

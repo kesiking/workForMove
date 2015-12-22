@@ -11,6 +11,6 @@
 
 @interface EHAddBabyFamilyPhoneService : KSAdapterService
 
-- (void)addBabyFamilyPhone:(NSString*)phoneNo andPhoneName:(NSString*)phoneName andPhoneType:(NSString*)phoneType byBabyId:(NSNumber*)babyId;
+- (void)addBabyFamilyPhone:(NSString*)phoneNo andRelationship:(NSString*)relationship andindex:(NSNumber*)index byBabyId:(NSNumber*)babyId;
 
 @end

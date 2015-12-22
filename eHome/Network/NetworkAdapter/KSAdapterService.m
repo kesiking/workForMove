@@ -21,7 +21,7 @@
 }
 
 -(void)setupService{
-    KSAdapterNetWork* network = [[KSAdapterNetWork alloc] init];
+    KSAdapterNetWork* network = [KSAdapterNetWork sharedAdapterNetWork];
     [self setNetwork:network];
     [self setPageListClass:[KSPageList class]];
     KSAdapterCacheService* cacheService = [KSAdapterCacheService new];

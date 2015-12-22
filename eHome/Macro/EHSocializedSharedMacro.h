@@ -26,8 +26,6 @@
 //分享网站url
 #define kEH_WEBSITE_URL             @"http://www.5ifamily.net"
 
-#define kEH_APP_NAME                @"贯众·爱家"
-
-#define kEH_LOGO_IMAGE_NAME         @"logo_120"
+#define kEH_APP_NAME                @"下载贯众爱家APP，关心孩子，关注老人，关爱家庭"
 
 #endif

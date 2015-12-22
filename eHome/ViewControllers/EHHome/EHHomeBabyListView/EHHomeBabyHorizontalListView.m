@@ -26,7 +26,10 @@
 
 -(void)refreshDataRequest{
     [super refreshDataRequest];
-    [self.babyListService loadData];
+    //[self.babyListService loadData];
+    [self setupBabyDataWithDataList:[[EHBabyListDataCenter sharedCenter] babyList]];
+    [self switchToBabyWithBabyId:[EHBabyListDataCenter sharedCenter].currentBabyUserInfo.babyId];
+    
 }
 
 -(void)reloadData{
@@ -52,6 +55,8 @@
             strongSelf.babyListArray = service.dataList;
             [strongSelf setupBabyDataWithDataList:service.dataList];
             [strongSelf hideLoadingView];
+            [[NSNotificationCenter defaultCenter] postNotificationName:EHBabyListChangedNotification object:nil userInfo:nil];
+
         };
         // service 缓存返回成功 block
         _babyListService.serviceCacheDidLoadBlock = ^(WeAppBasicService* service,NSArray* componentItems){
@@ -152,5 +157,37 @@
         [babyBtn setBtnClicked];
     }
 }
-
+- (void)hasUnselectedBabyChatMessageWithBabyId:(NSNumber *)babyId
+{
+    if (babyId == nil) {
+        return;
+    }
+    NSInteger selectBabyIndex = self.selectIndex;
+    for (EHBabyButton* babyBtn in self.babyViewListArray) {
+        EHGetBabyListRsp* babyItem = (EHGetBabyListRsp*)babyBtn.babyItem;
+        if (babyItem == nil || ![babyItem isKindOfClass:[EHGetBabyListRsp class]]) {
+            continue;
+        }
+        if (babyItem.babyId == nil) {
+            continue;
+        }
+        if ([babyItem.babyId integerValue] == [babyId integerValue]) {
+            selectBabyIndex = [self.babyViewListArray indexOfObject:babyBtn];
+            break;
+        }
+    }
+    if (selectBabyIndex != NSNotFound
+        && selectBabyIndex != self.selectIndex
+        && selectBabyIndex >= 0
+        && selectBabyIndex < [self.babyViewListArray count]) {
+        EHBabyButton* babyBtn = [self.babyViewListArray objectAtIndex:selectBabyIndex];
+        [babyBtn setBtnRedPointHidden:NO];
+    }
+}
+- (void)clearListViewRedPoints
+{
+    for (EHBabyButton* babyBtn in self.babyViewListArray) {
+        [babyBtn setBtnRedPointHidden:YES];
+    }
+}
 @end

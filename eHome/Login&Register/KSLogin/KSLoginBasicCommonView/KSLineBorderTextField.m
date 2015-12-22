@@ -34,6 +34,7 @@
     return self;
 }
 
+
 -(void)setupView{
     
     self.lineEdgeInsets = UIEdgeInsetsZero;
@@ -94,7 +95,10 @@
 }
 
 -(void)rightBtnClicked:(id)sender{
+    //self.enabled = NO;
     self.secureTextEntry = !self.secureTextEntry;
+    //self.enabled = YES;
+    [self becomeFirstResponder];
     [self setupRightViewImage];
 }
 
@@ -139,5 +143,6 @@
     CGContextStrokePath(context);
      */
 }
+
 
 @end

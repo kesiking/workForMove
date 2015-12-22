@@ -22,12 +22,12 @@
 
 #define rightOperationLayerView_Number          (4)
 
-#define rightOperationLayerView_width           (35.0)
+#define rightOperationLayerView_width           (42.0)
 #define rightOperationLayerView_height          (rightOperationLayerView_width * rightOperationLayerView_Number + 20 * (rightOperationLayerView_Number - 1))
 #define rightOperationLayerView_rightBorder     (20.0)
 #define rightOperationLayerView_bottomBorder    (rightOperationLayerView_rightBorder)
 
-#define leftRefreshLocationLayerView_width          (50.0)
+#define leftRefreshLocationLayerView_width          (54.0)
 #define leftRefreshLocationLayerView_height         (leftRefreshLocationLayerView_width)
 #define leftRefreshLocationLayerView_leftBorder     (15.0)
 #define leftRefreshLocationLayerView_bottomBorder   (leftRefreshLocationLayerView_leftBorder)
@@ -53,10 +53,12 @@
 // 当前选中的宝贝
 @property (nonatomic, strong) EHGetBabyListRsp             *currentBabyUserInfo;
 
-@property (nonatomic, assign) BOOL                          didSendDeviceBindingMessage;
+//@property (nonatomic, assign) BOOL                          didSendDeviceBindingMessage;
 
 // sos消息中宝贝收到的地理位置
 @property (nonatomic, strong) NSString*                     babySOSMessagTimer;
+
+@property (nonatomic, strong)NSDictionary* switchBabyParams;
 
 @end
 
@@ -65,9 +67,14 @@
 #pragma mark - UIViewControllerKSNavigator protocol method
 - (void)setupNavigatorURL:(NSURL*)URL query:(NSDictionary*)query nativeParams:(NSDictionary *)nativeParams{
     [super setupNavigatorURL:URL query:query nativeParams:nativeParams];
-    if ([self needSwitchToBabyWithNativeParams:nativeParams]) {
-        [self switchToBabyWithNativeParams:nativeParams];
-    }else if ([self needLoginWithNativeParams:nativeParams]){
+    
+    self.switchBabyParams = nativeParams;
+    [self refreshDataRequest];
+    
+//    if ([self needSwitchToBabyWithNativeParams:nativeParams]) {
+//        [self switchToBabyWithNativeParams:nativeParams];
+//    }else
+    if ([self needLoginWithNativeParams:nativeParams]){
         [self loginWithNativeParams:nativeParams];
     }
 }
@@ -112,15 +119,21 @@
         });
     }
 }
-
+//-(void)initMessageManager{
+//    
+//    [EHMessageManager sharedManager].sourceTarget = self.navigationController.viewControllers.firstObject;
+//}
 -(void)switchToBabyWithBabyId:(NSNumber *)babyId{
     if (babyId == nil) {
+        EHLogError(@"babyid is nil");
         return;
     }
     // 与当前的宝贝相同，则不切换
     if ([self isBabyIdEquelCurrentBabyIdWithBabyId:babyId]) {
+        EHLogInfo(@"babyid is the same as current");
         return;
     }
+    EHLogInfo(@"babyid  = %@", babyId);
     // 与当前的宝贝不同，则切换到指定的宝贝
     [self.babyHorizontalListView switchToBabyWithBabyId:babyId];
 }
@@ -136,11 +149,15 @@
     // Do any additional setup after loading the view.
     // 初始化
     [self initHomeSubViews];
-    [self initStatusCenter];
-    [self initMessageManager];
+    //[self initStatusCenter];
+    //[self initMessageManager];
     [self initNotification];
-    [self initBabyHorizontalListViewBlock];
+    //[self initBabyHorizontalListViewBlock];
+    
+    EHLogInfo(@"view load end");
 }
+
+
 
 -(void)dealloc{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -169,24 +186,24 @@
     
 }
 
--(void)initMessageManager{
-    [EHMessageManager sharedManager].sourceTarget = self.view;
-}
-
 -(void)initNotification{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHBindBabySuccessNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHUNBindBabySuccessNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHBabyInfoChangedNotification object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHBindBabySuccessNotification object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHUNBindBabySuccessNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHBabyListNeedChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(geofenceDidChangedNotification:) name:EHGeofenceChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyLocationDidChangedNotification:) name:EHBabyLocationNotification object:nil];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark - 设备状态管理器控制 method
 -(void)resetStatusCenter{
+    EHLogInfo(@"reset Status Center");
     [[EHDeviceStatusCenter sharedCenter] stop];
 }
 
 -(void)configStatusCenter{
+    EHLogInfo(@"currentBabyid = %@", [EHBabyListDataCenter sharedCenter].currentBabyUserInfo.babyId);
+    
     if ([EHBabyListDataCenter sharedCenter].currentBabyUserInfo.babyId) {
         [[EHDeviceStatusCenter sharedCenter] setupDeviceCenterWithBabyId:[NSString stringWithFormat:@"%@",[EHBabyListDataCenter sharedCenter].currentBabyUserInfo.babyId]];
     }
@@ -202,8 +219,14 @@
 -(void)refreshDataRequest{
     // 如果isViewAppeared则表示当前VC正在展示，收到消息则直接刷新，如果不在展示则_needRefreshBabyList置为YES
     if (self.isViewAppeared) {
+        EHLogInfo(@"babylist refresh now");
         [self refreshBabyList];
+        if (self.switchBabyParams && [self needSwitchToBabyWithNativeParams:self.switchBabyParams])
+        {
+            [self switchToBabyWithNativeParams:self.switchBabyParams];
+        }
     }else{
+        EHLogInfo(@"set need refresh flag");
         _needRefreshBabyList = YES;
     }
 }
@@ -229,6 +252,11 @@
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
+    // 无需做清除操作 -- map多实例方案
+//    [self.mapView resetMap];
+//    [self.mapView setupMapAnnotation];
+//    [self.mapView setupMapGeoFenceOverLay];
+//    [self.mapView reloadData];
     // 收到登录、登出、添加宝贝等消息后标记需要刷新
     if (_needRefreshBabyList) {
         _needRefreshBabyList = NO;
@@ -237,10 +265,26 @@
         _needRefreshGeofengList = NO;
         [self refreshMaoGeofenceList];
     }
+    
+    if (self.switchBabyParams && [self needSwitchToBabyWithNativeParams:self.switchBabyParams])
+    {
+        [self switchToBabyWithNativeParams:self.switchBabyParams];
+    }
+    
+    EHLogInfo(@"viewWillAppear");
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    // 无需做清除操作 -- map多实例方案
+//    [self.mapView resetMap];
+    self.switchBabyParams = nil;
+    EHLogInfo(@"viewWillDisappear");
 }
 
 -(BOOL)needSetupBabyData{
-    return NO;
+    return YES;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -365,74 +409,134 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#pragma mark - 懒加载  babyHorizontalListViewBlock（下拉宝贝列表）及动画操作
--(void)initBabyHorizontalListViewBlock{
-    [self refreshBabyList];
-    WEAKSELF
-    self.babyHorizontalListView.babyListViewClickedBlock = ^(EHBabyHorizontalBasicListView* babyListView,NSInteger index, NSInteger preIndex, EHGetBabyListRsp* babyUserInfo){
-        STRONGSELF
-        if (preIndex != index && babyUserInfo && babyUserInfo.babyId > 0) {
-            // 重置message展示
-            EHNoneMessageModel* messageModel = [EHNoneMessageModel new];
-            [[EHMessageManager sharedManager] sendMessage:messageModel];
-            // 更新当前选中的宝贝
-            strongSelf.currentBabyUserInfo = babyUserInfo;
-            // 更新宝贝数据中心的数据
-            [[EHBabyListDataCenter sharedCenter] setCurrentBabyUserInfo:babyUserInfo];
-            [[EHBabyListDataCenter sharedCenter] setCurrentBabyId:[NSString stringWithFormat:@"%@",babyUserInfo.babyId]];
-            // 选中后更新各层数据并调整样式
-            [strongSelf.mapView loadBabyMapListWithBabyUserInfo:babyUserInfo];
-            [strongSelf.navBarTitleView setBtnTitle:babyUserInfo.babyNickName];
-            [strongSelf.rightOperationLayerView setBabyUserInfo:babyUserInfo];
-            [strongSelf.leftRefreshLocationLayerView setBabyUserInfo:babyUserInfo];
-            [strongSelf.leftRefreshLocationLayerView setHidden:NO];
-            // 重置设备状态管理中心
-            [strongSelf configStatusCenter];
-        }
-        if (preIndex != EHBabyNonFoundNum) {
-            [strongSelf.navBarTitleView setButtonSelected:YES];
-        }
-    };
+-(void)babyHorizontalListViewBabyCliced:(EHGetBabyListRsp*)babyUserInfo
+{
     
-    self.babyHorizontalListView.hasBabyDataBlock = ^(EHBabyHorizontalBasicListView* babyListView, BOOL hasBabyData){
-        STRONGSELF
-        if (!hasBabyData) {
-            [strongSelf.navBarTitleView setBtnTitle:@"暂无用户"];
-            [strongSelf.mapView resetMapAnnotation];
-            [strongSelf.mapView resetMapGeoFenceOverLay];
-            [strongSelf.rightOperationLayerView setBabyUserInfo:nil];
-            [strongSelf.leftRefreshLocationLayerView setHidden:YES];
-            // 更新宝贝数据中心的数据
-            [[EHBabyListDataCenter sharedCenter] setCurrentBabyUserInfo:nil];
-            [[EHBabyListDataCenter sharedCenter] setCurrentBabyId:nil];
-            [[EHBabyListDataCenter sharedCenter] setBabyList:nil];
-            strongSelf.currentBabyUserInfo = nil;
-            // 重置设备状态管理中心
-            [strongSelf configStatusCenter];
-            
-            // 重置message展示
-            EHNoneMessageModel* messageModel = [EHNoneMessageModel new];
-            [[EHMessageManager sharedManager] sendMessage:messageModel];
-            // 重置消息提示小红点
-            [[NSNotificationCenter defaultCenter] postNotificationName:EHClearRemoteMessageAttentionNotification object:nil userInfo:nil];
-            // to do show 未绑定 提醒
-            if (!strongSelf.didSendDeviceBindingMessage) {
-                strongSelf.didSendDeviceBindingMessage = YES;
-                EHDeviceBindingMessageModel* messageModel = [EHDeviceBindingMessageModel new];
-                [[EHMessageManager sharedManager] sendMessage:messageModel];
-            }
-        }else{
-            [[EHBabyListDataCenter sharedCenter] setBabyList:((EHHomeBabyHorizontalListView*)babyListView).babyListArray];
+
+    if (babyUserInfo) {
+        
+        if ([self isBabyIdEquelCurrentBabyIdWithBabyId:babyUserInfo.babyId]) {
+            // the same， do not switch
+            return;
         }
-    };
+        if (self.currentBabyUserInfo != nil) {
+            [self.navBarTitleView setButtonSelected:YES];
+        }
+        // 重置message展示
+//        EHNoneMessageModel* messageModel = [EHNoneMessageModel new];
+//        [[EHMessageManager sharedManager] sendMessage:messageModel];
+        // 更新当前选中的宝贝
+        self.currentBabyUserInfo = babyUserInfo;
+        // 更新宝贝数据中心的数据
+//        [[EHBabyListDataCenter sharedCenter] setCurrentBabyUserInfo:babyUserInfo];
+//        [[EHBabyListDataCenter sharedCenter] setCurrentBabyId:[NSString stringWithFormat:@"%@",babyUserInfo.babyId]];
+        // 选中后更新各层数据并调整样式
+        [self.mapView loadBabyMapListWithBabyUserInfo:babyUserInfo];
+        [self.navBarTitleView setBtnTitle:babyUserInfo.babyNickName];
+        [self.rightOperationLayerView setBabyUserInfo:babyUserInfo];
+        [self.leftRefreshLocationLayerView setBabyUserInfo:babyUserInfo];
+        [self.leftRefreshLocationLayerView setHidden:NO];
+        // 重置设备状态管理中心
+//        [self configStatusCenter];
+    }
+    else
+    {
+        [self.navBarTitleView setBtnTitle:@"暂无宝贝"];
+        [self.mapView resetMap];
+        [self.mapView resetHistoryPositionArray];
+        [self.rightOperationLayerView setBabyUserInfo:nil];
+        [self.leftRefreshLocationLayerView setHidden:YES];
+        // 更新宝贝数据中心的数据
+//        [[EHBabyListDataCenter sharedCenter] setCurrentBabyUserInfo:nil];
+//        [[EHBabyListDataCenter sharedCenter] setCurrentBabyId:nil];
+//        [[EHBabyListDataCenter sharedCenter] setBabyList:nil];
+        self.currentBabyUserInfo = nil;
+        // 重置设备状态管理中心
+//        [self configStatusCenter];
+        
+        // 重置message展示
+//        EHNoneMessageModel* messageModel = [EHNoneMessageModel new];
+//        [[EHMessageManager sharedManager] sendMessage:messageModel];
+        // 重置消息提示小红点
+        //[[NSNotificationCenter defaultCenter] postNotificationName:EHClearRemoteMessageAttentionNotification object:nil userInfo:nil];
+        // to do show 未绑定 提醒
+//        if (!self.didSendDeviceBindingMessage) {
+//            self.didSendDeviceBindingMessage = YES;
+//            EHDeviceBindingMessageModel* messageModel = [EHDeviceBindingMessageModel new];
+//            [[EHMessageManager sharedManager] sendMessage:messageModel];
+//        }
+    }
+    
 }
 
--(void)setBabyHorizontalListViewShow:(BOOL)show{
-    EHAttentionMessageModel* messageModel = [EHAttentionMessageModel new];
-    messageModel.hideAttentionView = show;
-    [[EHMessageManager sharedManager] sendMessage:messageModel];
-    [super setBabyHorizontalListViewShow:show];
-}
+#pragma mark - 懒加载  babyHorizontalListViewBlock（下拉宝贝列表）及动画操作
+//-(void)initBabyHorizontalListViewBlock{
+//    [self refreshBabyList];
+//    WEAKSELF
+//    self.babyHorizontalListView.babyListViewClickedBlock = ^(EHBabyHorizontalBasicListView* babyListView,NSInteger index, NSInteger preIndex, EHGetBabyListRsp* babyUserInfo){
+//        STRONGSELF
+//        if (preIndex != index && babyUserInfo && babyUserInfo.babyId > 0) {
+//            // 重置message展示
+//            EHNoneMessageModel* messageModel = [EHNoneMessageModel new];
+//            [[EHMessageManager sharedManager] sendMessage:messageModel];
+//            // 更新当前选中的宝贝
+//            strongSelf.currentBabyUserInfo = babyUserInfo;
+//            // 更新宝贝数据中心的数据
+//            [[EHBabyListDataCenter sharedCenter] setCurrentBabyUserInfo:babyUserInfo];
+//            [[EHBabyListDataCenter sharedCenter] setCurrentBabyId:[NSString stringWithFormat:@"%@",babyUserInfo.babyId]];
+//            // 选中后更新各层数据并调整样式
+//            [strongSelf.mapView loadBabyMapListWithBabyUserInfo:babyUserInfo];
+//            [strongSelf.navBarTitleView setBtnTitle:babyUserInfo.babyNickName];
+//            [strongSelf.rightOperationLayerView setBabyUserInfo:babyUserInfo];
+//            [strongSelf.leftRefreshLocationLayerView setBabyUserInfo:babyUserInfo];
+//            [strongSelf.leftRefreshLocationLayerView setHidden:NO];
+//            // 重置设备状态管理中心
+//            [strongSelf configStatusCenter];
+//        }
+//        if (preIndex != EHBabyNonFoundNum) {
+//            [strongSelf.navBarTitleView setButtonSelected:YES];
+//        }
+//    };
+//    
+//    self.babyHorizontalListView.hasBabyDataBlock = ^(EHBabyHorizontalBasicListView* babyListView, BOOL hasBabyData){
+//        STRONGSELF
+//        if (!hasBabyData) {
+//            [strongSelf.navBarTitleView setBtnTitle:@"暂无用户"];
+//            [strongSelf.mapView resetMap];
+//            [strongSelf.mapView resetHistoryPositionArray];
+//            [strongSelf.rightOperationLayerView setBabyUserInfo:nil];
+//            [strongSelf.leftRefreshLocationLayerView setHidden:YES];
+//            // 更新宝贝数据中心的数据
+//            [[EHBabyListDataCenter sharedCenter] setCurrentBabyUserInfo:nil];
+//            [[EHBabyListDataCenter sharedCenter] setCurrentBabyId:nil];
+//            [[EHBabyListDataCenter sharedCenter] setBabyList:nil];
+//            strongSelf.currentBabyUserInfo = nil;
+//            // 重置设备状态管理中心
+//            [strongSelf configStatusCenter];
+//            
+//            // 重置message展示
+//            EHNoneMessageModel* messageModel = [EHNoneMessageModel new];
+//            [[EHMessageManager sharedManager] sendMessage:messageModel];
+//            // 重置消息提示小红点
+//            [[NSNotificationCenter defaultCenter] postNotificationName:EHClearRemoteMessageAttentionNotification object:nil userInfo:nil];
+//            // to do show 未绑定 提醒
+//            if (!strongSelf.didSendDeviceBindingMessage) {
+//                strongSelf.didSendDeviceBindingMessage = YES;
+//                EHDeviceBindingMessageModel* messageModel = [EHDeviceBindingMessageModel new];
+//                [[EHMessageManager sharedManager] sendMessage:messageModel];
+//            }
+//        }else{
+//            [[EHBabyListDataCenter sharedCenter] setBabyList:((EHHomeBabyHorizontalListView*)babyListView).babyListArray];
+//        }
+//    };
+//}
+
+//-(void)setBabyHorizontalListViewShow:(BOOL)show{
+//    EHAttentionMessageModel* messageModel = [EHAttentionMessageModel new];
+//    messageModel.hideAttentionView = show;
+//    [[EHMessageManager sharedManager] sendMessage:messageModel];
+//    [super setBabyHorizontalListViewShow:show];
+//}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark - 登录相关操作
@@ -447,8 +551,8 @@
      *  @solve [self.babyHorizontalListView refreshDataRequest];
      */
     self.currentBabyUserInfo = nil;
-    _didSendDeviceBindingMessage = NO;
-    [self refreshBabyList];
+//    _didSendDeviceBindingMessage = NO;
+    //[self refreshBabyList];
 }
 
 -(void)userDidLogout:(NSDictionary*)userInfo{
@@ -484,6 +588,16 @@
     }
 }
 
+
+-(void)babyLocationDidChangedNotification:(NSNotification*)notification{
+    
+    EHLogInfo(@"%@", notification.userInfo);
+    NSNumber*babyId = [notification.userInfo objectForKey:@"babyId"];
+    if ([self isBabyIdEquelCurrentBabyIdWithBabyId:babyId]) {
+        EHLogInfo(@"refresh baby location");
+        [self.mapView loadBabyMapListWithBabyUserInfo:self.currentBabyUserInfo];
+    }
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark - 重置HomeVC的数据
 
@@ -494,9 +608,10 @@
      *  @solve
      */
     [self resetStatusCenter];
-    [self.mapView resetMapAnnotation];
-    [self.navBarTitleView setBtnTitle:@"暂无用户"];
-    [self.babyHorizontalListView resetBabyHorizontailListView];
+    [self.mapView resetMap];
+    [self.mapView resetHistoryPositionArray];
+    //[self.navBarTitleView setBtnTitle:@"暂无用户"];
+    //[self.babyHorizontalListView resetBabyHorizontailListView];
     self.currentBabyUserInfo = nil;
     // 重置message展示
     EHNoneMessageModel* messageModel = [EHNoneMessageModel new];

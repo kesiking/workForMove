@@ -103,6 +103,7 @@
             // 存储当前选中宝贝
             [EHUserDefaultData setCurrentSelectBabyId:[((EHGetBabyListRsp*)babyBtn.babyItem).babyId integerValue]];
             // 回调
+            [babyBtn setBtnRedPointHidden:YES];
             if (strongSelf.babyListViewClickedBlock) {
                 strongSelf.babyListViewClickedBlock(strongSelf,strongSelf.selectIndex, preIndex, (EHGetBabyListRsp*)babyBtn.babyItem);
             }

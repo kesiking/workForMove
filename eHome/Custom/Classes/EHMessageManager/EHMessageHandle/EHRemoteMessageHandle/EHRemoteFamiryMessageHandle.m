@@ -17,7 +17,7 @@
         NSMutableDictionary* userInfo = [NSMutableDictionary dictionary];
         [userInfo setObject:@YES forKey:EHFORCE_REFRESH_DATA];
 
-        [[NSNotificationCenter defaultCenter] postNotificationName:EHBabyInfoChangedNotification object:nil userInfo:userInfo];
+        [[NSNotificationCenter defaultCenter] postNotificationName:EHBabyListNeedChangeNotification object:nil userInfo:userInfo];
     }
 }
 

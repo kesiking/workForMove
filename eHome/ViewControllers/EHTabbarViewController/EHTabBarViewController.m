@@ -206,6 +206,14 @@
     return [super selectViewControllerRectForBounds:bounds];
 }
 
+- (NSInteger)indexForViewController:(UIViewController *)viewController {
+    
+    if ([self.viewControllers containsObject:viewController] && viewController != nil) {
+    return [[self viewControllers] indexOfObject:viewController];
+    }
+    return 0;
+}
+
 -(NSMutableDictionary *)urltoClassInstrance{
     if (_urltoClassInstrance == nil) {
         _urltoClassInstrance = [[NSMutableDictionary alloc] init];

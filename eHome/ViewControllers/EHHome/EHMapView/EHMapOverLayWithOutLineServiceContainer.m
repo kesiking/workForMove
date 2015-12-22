@@ -32,7 +32,7 @@
 
 -(void)reloadData{
     [super reloadData];
-    EHPositionAnnotation* positionAnnotation = [self getCurrentPositionAnnotation];
+    //EHPositionAnnotation* positionAnnotation = [self getCurrentPositionAnnotation];
     // 根据当前位置设定设备状态
 //    [self setupDeviceStatusWithPosition:positionAnnotation.position];
 }

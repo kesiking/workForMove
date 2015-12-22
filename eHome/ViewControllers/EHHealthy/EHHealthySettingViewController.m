@@ -181,6 +181,7 @@
         _lazyBtn = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetWidth(_tableView.frame) - 12 - 44, 0, 44, 44)];
         _lazyBtn.tag = 1000;
         _lazyBtn.imageEdgeInsets = UIEdgeInsetsMake(11, 22, 11, 0);
+        _lazyBtn.userInteractionEnabled=NO;
 //        [_lazyBtn addTarget:self action:@selector(buttonSelected:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _lazyBtn;
@@ -191,6 +192,7 @@
         _normalBtn = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetWidth(_tableView.frame) - 12 - 44, 0, 44, 44)];
         _normalBtn.tag = 1001;
         _normalBtn.imageEdgeInsets = UIEdgeInsetsMake(11, 22, 11, 0);
+        _normalBtn.userInteractionEnabled=NO;
 //        [_normalBtn addTarget:self action:@selector(buttonSelected:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _normalBtn;
@@ -201,6 +203,7 @@
         _crazyBtn = [[UIButton alloc]initWithFrame:CGRectMake(CGRectGetWidth(_tableView.frame) - 12 - 44, 0, 44, 44)];
         _crazyBtn.tag = 1002;
         _crazyBtn.imageEdgeInsets = UIEdgeInsetsMake(11, 22, 11, 0);
+        _crazyBtn.userInteractionEnabled=NO;
 //        [_crazyBtn addTarget:self action:@selector(buttonSelected:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _crazyBtn;

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="15A284" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
@@ -16,25 +16,29 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6Lf-MN-BCb">
-                        <rect key="frame" x="15" y="20" width="40" height="40"/>
+                        <rect key="frame" x="15" y="16" width="48" height="48"/>
+                        <animations/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="40" id="S0C-8l-ZEB"/>
-                            <constraint firstAttribute="width" constant="40" id="Wn7-30-Duc"/>
+                            <constraint firstAttribute="height" constant="48" id="S0C-8l-ZEB"/>
+                            <constraint firstAttribute="width" constant="48" id="Wn7-30-Duc"/>
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7F0-U4-Z8i">
-                        <rect key="frame" x="65" y="20" width="234" height="18"/>
+                        <rect key="frame" x="73" y="20" width="226" height="18"/>
+                        <animations/>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="i2Z-lx-eSw">
-                        <rect key="frame" x="65" y="44" width="234" height="15"/>
+                        <rect key="frame" x="73" y="44" width="226" height="15"/>
+                        <animations/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
+                <animations/>
                 <constraints>
                     <constraint firstAttribute="trailingMargin" secondItem="i2Z-lx-eSw" secondAttribute="trailing" constant="13" id="2Zk-oL-3P9"/>
                     <constraint firstItem="6Lf-MN-BCb" firstAttribute="top" secondItem="7F0-U4-Z8i" secondAttribute="top" id="5a3-Z1-Nlo"/>
@@ -42,10 +46,17 @@
                     <constraint firstAttribute="trailingMargin" secondItem="7F0-U4-Z8i" secondAttribute="trailing" constant="13" id="97y-eg-Q2U"/>
                     <constraint firstItem="i2Z-lx-eSw" firstAttribute="top" secondItem="7F0-U4-Z8i" secondAttribute="bottom" constant="6" id="AYH-cw-dzt"/>
                     <constraint firstItem="7F0-U4-Z8i" firstAttribute="leading" secondItem="6Lf-MN-BCb" secondAttribute="trailing" constant="10" id="DcW-Tk-N0j"/>
+                    <constraint firstItem="6Lf-MN-BCb" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" constant="0.5" id="Mlz-Os-cWA"/>
                     <constraint firstItem="i2Z-lx-eSw" firstAttribute="leading" secondItem="6Lf-MN-BCb" secondAttribute="trailing" constant="10" id="SNA-az-Jhn"/>
                     <constraint firstItem="7F0-U4-Z8i" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="12" id="XNf-eD-eGe"/>
                 </constraints>
+                <variation key="default">
+                    <mask key="constraints">
+                        <exclude reference="5a3-Z1-Nlo"/>
+                    </mask>
+                </variation>
             </tableViewCellContentView>
+            <animations/>
             <connections>
                 <outlet property="babyDetalLabel" destination="i2Z-lx-eSw" id="CbE-Er-GvJ"/>
                 <outlet property="babyHeadImageView" destination="6Lf-MN-BCb" id="gly-VC-eMt"/>

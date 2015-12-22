@@ -42,7 +42,7 @@ static NSDateFormatter* inputFormatter = nil;
         return NO;
     }
     for (EHBabyFamilyPhone* familyPhone in self.devicePhoneList) {
-        if ([familyPhone.attention_phone isEqualToString:phoneNumber]) {
+        if ([familyPhone.phoneNumber isEqualToString:phoneNumber]) {
             return YES;
         }
     }

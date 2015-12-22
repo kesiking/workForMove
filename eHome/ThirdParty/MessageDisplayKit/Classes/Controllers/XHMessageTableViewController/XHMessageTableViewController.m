@@ -176,9 +176,10 @@
 /**
  *  根据第三方gif表情路径开始发送表情消息
  *
- *  @param emotionPath 目标gif表情路径
+ *  @param emotionPath    目标gif表情路径
+ *  @param encodingNumber 目标gif表情的编码
  */
-- (void)didSendEmotionMessageWithEmotionPath:(NSString *)emotionPath;
+- (void)didSendEmotionMessageWithEmotionPath:(NSString *)emotionPath indexPath:(NSIndexPath*)indexPath;
 /**
  *  根据地理位置信息和地理经纬度开始发送地理位置消息
  *
@@ -223,23 +224,37 @@
     dispatch_async(dispatch_get_main_queue(), queue);
 }
 
+//- (void)addMessage:(XHMessage *)addedMessage {
+//    WEAKSELF
+//    [self exChangeMessageDataSourceQueue:^{
+//        NSMutableArray *messages = [NSMutableArray arrayWithArray:weakSelf.messages];
+//        NSLog(@"111message count:%ld",(long)messages.count - 1);
+//        [messages addObject:addedMessage];
+//        NSLog(@"222message count:%ld",(long)messages.count - 1);
+//        
+//        STRONGSELF
+//        [weakSelf exMainQueue:^{
+//            weakSelf.messages = [messages mutableCopy];
+//            [strongSelf.messageTableView beginUpdates];
+//            NSIndexPath *indexPath=[NSIndexPath indexPathForRow:[weakSelf.messages count] - 1 inSection:0];
+//            EHLogInfo(@"current indexPath row:%ld",(long)indexPath.row);
+//            [strongSelf.messageTableView insertRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationBottom];
+//            [strongSelf.messageTableView endUpdates];
+//            EHLogInfo(@"-------------------------");
+//            [weakSelf scrollToBottomAnimated:YES];
+//        }];
+//    }];
+//}
 - (void)addMessage:(XHMessage *)addedMessage {
-    WEAKSELF
-    [self exChangeMessageDataSourceQueue:^{
-        NSMutableArray *messages = [NSMutableArray arrayWithArray:weakSelf.messages];
-        [messages addObject:addedMessage];
-        
-        NSMutableArray *indexPaths = [NSMutableArray arrayWithCapacity:1];
-        [indexPaths addObject:[NSIndexPath indexPathForRow:messages.count - 1 inSection:0]];
-        
-        [weakSelf exMainQueue:^{
-            weakSelf.messages = messages;
-            [weakSelf.messageTableView reloadData];
-            [weakSelf scrollToBottomAnimated:YES];
-        }];
-    }];
+    
+            NSMutableArray *messages = [NSMutableArray arrayWithArray:self.messages];
+            [messages addObject:addedMessage];
+    
+            self.messages = messages;
+            NSIndexPath *indexPath=[NSIndexPath indexPathForRow:[messages count] - 1 inSection:0];
+            [self.messageTableView insertRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationBottom];
+            [self scrollToBottomAnimated:YES];
 }
-
 - (void)removeMessageAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row >= self.messages.count)
         return;
@@ -349,7 +364,7 @@ static CGPoint  delayOffset = {0.0};
         XHEmotionManagerView *emotionManagerView = [[XHEmotionManagerView alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds), self.keyboardViewHeight)];
         emotionManagerView.delegate = self;
         emotionManagerView.dataSource = self;
-        emotionManagerView.backgroundColor = [UIColor colorWithWhite:0.961 alpha:1.000];
+        emotionManagerView.backgroundColor = [UIColor clearColor];
         emotionManagerView.alpha = 0.0;
         [self.view addSubview:emotionManagerView];
         _emotionManagerView = emotionManagerView;
@@ -485,16 +500,26 @@ static CGPoint  delayOffset = {0.0};
     
     return YES;
 }
-
+- (void)tapGestureRecognizerHandle:(UITapGestureRecognizer *)tapGestureRecognizer {
+    
+    UIMenuController *menu = [UIMenuController sharedMenuController];
+    if (menu.isMenuVisible) {
+        [menu setMenuVisible:NO animated:YES];
+    }
+        if ([self.delegate respondsToSelector:@selector(didRecognizertapGesture)]) {
+        [self.delegate didRecognizertapGesture];
+    }
+}
 #pragma mark - Life Cycle
 
 - (void)setup {
     // iPhone or iPad keyboard view height set here.
-    self.keyboardViewHeight = (kIsiPad ? 264 : 216);
+    self.keyboardViewHeight = (kIsiPad ? 264 : 180*SCREEN_SCALE);
     _allowsPanToDismissKeyboard = NO;
     _allowsSendVoice = YES;
     _allowsSendMultiMedia = YES;
     _allowsSendFace = YES;
+    _allowsPhoneCall = YES;
     _inputViewStyle = XHMessageInputViewStyleFlat;
     
     self.delegate = self;
@@ -540,6 +565,10 @@ static CGPoint  delayOffset = {0.0};
     if (shouldLoadMoreMessagesScrollToTop) {
         messageTableView.tableHeaderView = self.headerContainerView;
     }
+    //tableView添加单击手势操作
+    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureRecognizerHandle:)];
+    tapGestureRecognizer.numberOfTapsRequired = 1;
+    [messageTableView addGestureRecognizer:tapGestureRecognizer];
     [self.view addSubview:messageTableView];
     [self.view sendSubviewToBack:messageTableView];
     _messageTableView = messageTableView;
@@ -635,6 +664,7 @@ static CGPoint  delayOffset = {0.0};
     inputView.allowsSendFace = self.allowsSendFace;
     inputView.allowsSendVoice = self.allowsSendVoice;
     inputView.allowsSendMultiMedia = self.allowsSendMultiMedia;
+    inputView.allowsPhoneCall = self.allowsPhoneCall;
     inputView.delegate = self;
     [self.view addSubview:inputView];
     [self.view bringSubviewToFront:inputView];
@@ -663,6 +693,7 @@ static CGPoint  delayOffset = {0.0};
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
+    [self.messageInputView holdDownButtonTouchUpInside];
     if (self.textViewInputViewType != XHInputViewTypeNormal) {
         [self layoutOtherMenuViewHiden:YES];
     }
@@ -673,6 +704,7 @@ static CGPoint  delayOffset = {0.0};
     // remove KVO
     [self.messageInputView.inputTextView removeObserver:self forKeyPath:@"contentSize"];
     [self.messageInputView.inputTextView setEditable:NO];
+    self.messageInputView.inputTextView.text = nil;
 }
 
 - (void)viewDidLoad {
@@ -861,10 +893,10 @@ static CGPoint  delayOffset = {0.0};
     }
 }
 
-- (void)didSendEmotionMessageWithEmotionPath:(NSString *)emotionPath {
+- (void)didSendEmotionMessageWithEmotionPath:(NSString *)emotionPath indexPath:(NSIndexPath *)indexPath{
     DLog(@"send emotionPath : %@", emotionPath);
-    if ([self.delegate respondsToSelector:@selector(didSendEmotion:fromSender:onDate:)]) {
-        [self.delegate didSendEmotion:emotionPath fromSender:self.messageSender onDate:[NSDate date]];
+    if ([self.delegate respondsToSelector:@selector(didSendEmotion:indexPath:fromSender:onDate:)]) {
+        [self.delegate didSendEmotion:emotionPath indexPath:indexPath fromSender:self.messageSender onDate:[NSDate date]];
     }
 }
 
@@ -891,6 +923,7 @@ static CGPoint  delayOffset = {0.0};
         void (^EmotionManagerViewAnimation)(BOOL hide) = ^(BOOL hide) {
             otherMenuViewFrame = self.emotionManagerView.frame;
             otherMenuViewFrame.origin.y = (hide ? CGRectGetHeight(self.view.frame) : (CGRectGetHeight(self.view.frame) - CGRectGetHeight(otherMenuViewFrame)));
+            self.messageInputView.faceSendButton.selected = !hide;
             self.emotionManagerView.alpha = !hide;
             self.emotionManagerView.frame = otherMenuViewFrame;
         };
@@ -942,8 +975,9 @@ static CGPoint  delayOffset = {0.0};
         
         [self setTableViewInsetsWithBottomValue:self.view.frame.size.height
          - self.messageInputView.frame.origin.y];
-        
-        [self scrollToBottomAnimated:NO];
+        if (!hide) {
+            [self scrollToBottomAnimated:YES];
+        }
     } completion:^(BOOL finished) {
         if (hide) {
             self.textViewInputViewType = XHInputViewTypeNormal;
@@ -1023,7 +1057,12 @@ static CGPoint  delayOffset = {0.0};
     self.textViewInputViewType = XHInputViewTypeShareMenu;
     [self layoutOtherMenuViewHiden:NO];
 }
-
+- (void)didSelectedPhoneCallAction {
+    EHLogInfo(@"didSelectedMultipleMediaAction");
+    if ([self.delegate respondsToSelector:@selector(didPhoneCall)]) {
+        [self.delegate didPhoneCall];
+    }
+}
 - (void)didSendFaceAction:(BOOL)sendFace {
     if (sendFace) {
         self.textViewInputViewType = XHInputViewTypeEmotion;
@@ -1129,7 +1168,8 @@ static CGPoint  delayOffset = {0.0};
 #pragma mark - XHEmotionManagerView Delegate
 
 - (void)didSelecteEmotion:(XHEmotion *)emotion atIndexPath:(NSIndexPath *)indexPath {
-    [self didSendEmotionMessageWithEmotionPath:emotion.emotionPath];
+    
+    [self didSendEmotionMessageWithEmotionPath:emotion.emotionPath indexPath:indexPath];
 }
 
 #pragma mark - XHEmotionManagerView DataSource

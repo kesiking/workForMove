@@ -8,7 +8,7 @@
 
 #import "EHAttentionViewMessageHandle.h"
 
-#define kAttentionViewTag (1005)
+#define kAttentionViewTag (10005)
 
 @implementation EHAttentionViewMessageHandle
 

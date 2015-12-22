@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 typedef void (^ModifyLocationModeSuccess)(NSString* modifiedLocationMode);
-@interface EHBabyLocationModeViewController : UIViewController<UIActionSheetDelegate>
+@interface EHBabyLocationModeViewController : KSViewController<UIActionSheetDelegate>
 
 @property(nonatomic, strong)NSNumber * babyId;
 @property(nonatomic, strong)NSString * locationMode;

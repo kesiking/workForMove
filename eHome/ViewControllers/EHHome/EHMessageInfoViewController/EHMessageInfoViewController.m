@@ -84,6 +84,10 @@ typedef NS_ENUM(NSInteger, EHMessageInfoType) {
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    //隐藏navigationBar分割线
+    [self.navigationController.navigationBar setBackgroundImage:[[UIImage alloc] init] forBarMetrics:UIBarMetricsDefault];
+    self.navigationController.navigationBar.shadowImage=[[UIImage alloc]init];
+    
     if (_isSystemMessageType) {
         [self animationForSystemMsgInfoViewWithDuration:0.0];
     }
@@ -92,12 +96,14 @@ typedef NS_ENUM(NSInteger, EHMessageInfoType) {
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
 }
-
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    self.navigationController.navigationBar.shadowImage= nil;
+}
 -(void)initMessageNavBarViews{
     self.navigationItem.title = @"全部消息";
 //    self.navigationItem.titleView = self.navBarTitleView;
-    [self.navigationController.navigationBar setBackgroundImage:[[UIImage alloc] init] forBarMetrics:UIBarMetricsDefault];
-    self.navigationController.navigationBar.shadowImage=[[UIImage alloc]init];
     
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
     self.navigationItem.backBarButtonItem = item;
@@ -237,15 +243,15 @@ typedef NS_ENUM(NSInteger, EHMessageInfoType) {
 {
     [UIView animateWithDuration:0.5 animations:^{
         CGRect babyMsgFrame=self.messageInfoListView.frame;
-        babyMsgFrame.origin.x +=self.view.width;
+        babyMsgFrame.origin.x = 0;
         self.messageInfoListView.frame=babyMsgFrame;
         
         CGRect systemMsgFrame=self.systemMsgInfoListView.frame;
-        systemMsgFrame.origin.x +=self.view.width;
+        systemMsgFrame.origin.x = self.view.width;
         self.systemMsgInfoListView.frame=systemMsgFrame;
         
         CGRect lineImageViewFrame=self.lineImageView.frame;
-        lineImageViewFrame.origin.x -=self.view.width/2;
+        lineImageViewFrame.origin.x = 0;
         self.lineImageView.frame=lineImageViewFrame;
     } completion:^(BOOL finished) {
         self.currentView=self.messageInfoListView;
@@ -259,15 +265,15 @@ typedef NS_ENUM(NSInteger, EHMessageInfoType) {
 {
     [UIView animateWithDuration:duration animations:^{
         CGRect babyMsgFrame=self.messageInfoListView.frame;
-        babyMsgFrame.origin.x -=self.view.width;
+        babyMsgFrame.origin.x = - self.view.width;
         self.messageInfoListView.frame=babyMsgFrame;
         
         CGRect systemMsgFrame=self.systemMsgInfoListView.frame;
-        systemMsgFrame.origin.x -=self.view.width;
+        systemMsgFrame.origin.x = 0;
         self.systemMsgInfoListView.frame=systemMsgFrame;
         
         CGRect lineImageViewFrame=self.lineImageView.frame;
-        lineImageViewFrame.origin.x +=self.view.width/2;
+        lineImageViewFrame.origin.x = self.view.width/2;
         self.lineImageView.frame=lineImageViewFrame;
     } completion:^(BOOL finished) {
         self.currentView=self.systemMsgInfoListView;

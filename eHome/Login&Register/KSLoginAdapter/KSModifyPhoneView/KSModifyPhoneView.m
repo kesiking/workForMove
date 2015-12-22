@@ -132,7 +132,7 @@
         [strongSelf hideLoadingView];
         // 验证码获取失败需要重新获取
         [strongSelf.resetViewCtl resetSmsCodeButton];
-        NSString *errorInfo = error.userInfo[@"NSLocalizedDescription"]?:@"更改账号失败，请稍微再试";
+        NSString *errorInfo = error.userInfo[@"NSLocalizedDescription"]?:@"更改账号失败，请稍后再试";
         [WeAppToast toast:errorInfo];
     };
 }
@@ -175,7 +175,7 @@
                 [strongSelf.validateCodeService sendValidateCodeWithAccountName:((KSResetViewCtl*)resetViewCtl).text_phoneNum.text];
             }
         }];
-        [strongSelf showLoadingView];
+        //[strongSelf showLoadingView];
         return YES;
     };
     

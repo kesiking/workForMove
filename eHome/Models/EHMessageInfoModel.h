@@ -14,6 +14,7 @@ typedef NS_ENUM(NSInteger, EHMessageInfoCatergoryType) {
     EHMessageInfoCatergoryType_Location,      // 位置
     EHMessageInfoCatergoryType_SOS,           // SOS
     EHMessageInfoCatergoryType_OutOrInLine,   // 离线
+    EHMessageInfoCatergoryType_Family_ChangeBabyPhone = 2090,   // 换卡提醒
 };
 
 @interface EHMessageInfoModel : WeAppComponentBaseItem

@@ -17,6 +17,4 @@
 //@property (copy, nonatomic) PhoneListBlock phoneListBlock;
 @property (nonatomic, strong) NSMutableArray* familyNumberList;
 
-@property (nonatomic, strong) NSMutableArray * familyNumberListWithType;
-
 @end

@@ -16,12 +16,12 @@
 #import "EHAlarmHeaderTableViewCell.h"
 #import "GroupedTableView.h"
 
-static NSString * const kEHBabyAlarmStr = @"开启主动提醒状态，如果在规定时间内，宝贝不在该范围内，亦会向您发送提醒通知。";
+static NSString * const kEHBabyAlarmStr = @"点击“＋”可以为宝贝添加提醒";
 
 @interface EHBabyAlarmViewController ()<UITableViewDataSource,UITableViewDelegate>
 {
     EHGetBabyAlarmService *_getBabyAlarmService;
-    EHEditBabyAlarmService *_editBabyAlarmService;
+//    EHEditBabyAlarmService *_editBabyAlarmService;
     
 }
 
@@ -30,6 +30,8 @@ static NSString * const kEHBabyAlarmStr = @"开启主动提醒状态，如果在
 @property (strong,nonatomic) UILabel *remindLabel;
 @property (strong,nonatomic) NSIndexPath *activeChangedIndexPath;
 @property (strong,nonatomic) EHBabyAlarmModel *needUpdateModel;
+
+@property (strong,nonatomic) EHEditBabyAlarmService *editBabyAlarmService;
 
 @end
 
@@ -146,6 +148,9 @@ static NSString * const kEHBabyAlarmStr = @"开启主动提醒状态，如果在
 }
 
 - (NSMutableArray *)remindsArraySortedByTime:(NSMutableArray *)array {
+    if(!array){
+        return nil;
+    }
     for (NSInteger i = 0; i < (array.count - 1); i++) {
         for (NSInteger j = 0; j < (array.count - 1) - i; j++) {
             EHBabyAlarmModel *currentModel = array[j];
@@ -188,7 +193,7 @@ static NSString * const kEHBabyAlarmStr = @"开启主动提醒状态，如果在
             
         case EHAlarmListStatusTypeAdd: {
             [self.babyAlarmList addObject:self.needUpdateModel];
-            self.babyAlarmList = [self remindsArraySorted:self.babyAlarmList];
+            self.babyAlarmList = [self remindsArraySortedByTime:self.babyAlarmList];
             NSInteger updatedRow = [self.babyAlarmList indexOfObject:self.needUpdateModel];
             NSIndexPath *updatedIndexPath = [NSIndexPath indexPathForRow:updatedRow inSection:1];
             
@@ -204,7 +209,7 @@ static NSString * const kEHBabyAlarmStr = @"开启主动提醒状态，如果在
             EHRemindListTableViewCell *cell = [self.tableView cellForRowAtIndexPath:needUpdateIndexPath];
             [cell configWithRemindModel:viewModel RemindType:EHRemindTypeBaby];
             
-            self.babyAlarmList = [self remindsArraySorted:self.babyAlarmList];
+            self.babyAlarmList = [self remindsArraySortedByTime:self.babyAlarmList];
             NSInteger updatedRow = [self.babyAlarmList indexOfObject:self.needUpdateModel];
             NSIndexPath *updatedIndexPath = [NSIndexPath indexPathForRow:updatedRow inSection:1];
             
@@ -276,7 +281,7 @@ static NSString * const kEHBabyAlarmStr = @"开启主动提醒状态，如果在
             strongSelf.needUpdateModel = model;
 //            strongSelf.needUpdateModel.is_active = @(!([strongSelf.needUpdateModel.is_active boolValue]));
             [strongSelf configUpdateAlarmService];
-            [_editBabyAlarmService editBabyAlarm:model];
+            [strongSelf.editBabyAlarmService editBabyAlarm:model];
             EHLogInfo(@"isOn = %d",isOn);
         };
         return cell;
@@ -332,7 +337,7 @@ static NSString * const kEHBabyAlarmStr = @"开启主动提醒状态，如果在
 //            EHLogInfo(@"deleteBlock - self.babyalarmlist = \n%@",strongSelf.babyAlarmList);
             strongSelf.needUpdateModel = alarmModel;
             [strongSelf updateBabyAlarmList:EHAlarmListStatusTypeDelete];
-            [self updateAlarmList];
+            [strongSelf updateAlarmList];
             
         };
         
@@ -359,7 +364,7 @@ static NSString * const kEHBabyAlarmStr = @"开启主动提醒状态，如果在
         STRONGSELF
         
         EHLogInfo(@"%@",service.dataList);
-        strongSelf.babyAlarmList = [strongSelf remindsArraySorted:service.dataList];
+        strongSelf.babyAlarmList = [strongSelf remindsArraySortedByTime:service.dataList];
         [strongSelf updateAlarmList];
         //[strongSelf hideLoadingView];
         
@@ -407,7 +412,7 @@ static NSString * const kEHBabyAlarmStr = @"开启主动提醒状态，如果在
     [_alarmImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.view.mas_top).with.offset(69);
         make.centerX.equalTo(self.view.mas_centerX);
-        make.size.mas_equalTo(CGSizeMake(90, 90));
+        make.size.mas_equalTo(CGSizeMake(105, 105));
     }];
     
     [_remindLabel mas_makeConstraints:^(MASConstraintMaker *make) {

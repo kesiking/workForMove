@@ -60,7 +60,7 @@
     
     NSCalendar *currentCalendar = [NSCalendar currentCalendar];
     
-    NSRange daysRange = [currentCalendar rangeOfUnit:NSDayCalendarUnit inUnit:NSMonthCalendarUnit forDate:inputDate];
+    //NSRange daysRange = [currentCalendar rangeOfUnit:NSDayCalendarUnit inUnit:NSMonthCalendarUnit forDate:inputDate];
     
     NSUInteger unitFlags = NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit;
     NSDateComponents * component = [currentCalendar components:unitFlags fromDate:inputDate];

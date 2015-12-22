@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "PNChart.h"
 
-@interface EHHealthyShareViewController : UIViewController
+@interface EHHealthyShareViewController : KSViewController
 @property(strong,nonatomic)NSNumber *sharedBabyId;
 @property(strong,nonatomic)NSString *sharedBabyName;
 @property(strong,nonatomic)NSString *sharedDate;

@@ -23,13 +23,14 @@
 @property (weak, nonatomic) IBOutlet UILabel *nickNameLabel;
 
 @property (weak, nonatomic) IBOutlet UILabel *phoneLabel;
-@property (weak, nonatomic) IBOutlet UILabel *placeHolder;
 @property (weak, nonatomic) IBOutlet UIImageView *selectImage;
 @property (weak, nonatomic) IBOutlet UIImageView *rankImage;
 @property (weak, nonatomic) IBOutlet UIImageView *colorfulRankImage;
 
 @property (weak, nonatomic) IBOutlet UIImageView *line;
 
+@property (weak, nonatomic) IBOutlet UIImageView *relationImage;
+@property (weak, nonatomic) IBOutlet UIImageView *arrowImage;
 
 @property (assign,nonatomic) BOOL isCellSelected;
 

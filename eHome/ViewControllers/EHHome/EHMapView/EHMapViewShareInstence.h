@@ -17,4 +17,6 @@
 
 @property (nonatomic, strong) EHMapMovingAnnotationPolylineContainer        *mapView;
 
+- (void)resetMapWithMapContainter:(EHMapViewContainer*)mapContainer;
+
 @end

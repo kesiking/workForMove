@@ -34,7 +34,7 @@
     securityFieldView.textView.borderStyle = UITextBorderStyleRoundedRect;
 //    securityFieldView.textView.borderStyle = UITextBorderStyleNone;
 //    securityFieldView.textView.background = [UIImage imageNamed:@"bg_input_03"];
-    securityFieldView.textView.keyboardType = UIKeyboardTypeNamePhonePad;
+    securityFieldView.textView.keyboardType = UIKeyboardTypeDefault;
     securityFieldView.textView.clearButtonMode = UITextFieldViewModeWhileEditing;
     securityFieldView.textView.secureTextEntry = YES;
     securityFieldView.backgroundColor = [UIColor clearColor];

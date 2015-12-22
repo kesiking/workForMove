@@ -58,7 +58,7 @@ static KSLoginComponentItem *userInfoModel=nil;
 }
 
 -(void)setPassword:(NSString *)password{
-    [[KSLoginKeyChain sharedInstance] setPassword:password];
+    [[KSLoginKeyChain sharedInstance] setPassword:[EHUtils tripleDES:password encryptOrDecrypt:kCCEncrypt]];
 }
 
 -(void)setAccountName:(NSString*)accountName{
@@ -70,7 +70,15 @@ static KSLoginComponentItem *userInfoModel=nil;
 }
 
 -(NSString*)getPassword{
-    return [[KSLoginKeyChain sharedInstance] getPassword];
+    return [EHUtils tripleDES:[[KSLoginKeyChain sharedInstance] getPassword] encryptOrDecrypt:kCCDecrypt];
+}
+
+
+-(void)setXiaoxiPassword:(NSString *)xiaoxipPassword{
+    [[KSLoginKeyChain sharedInstance] setXiaoxiPassword:xiaoxipPassword];
+}
+-(NSString*)getXiaoxiPassword{
+    return [[KSLoginKeyChain sharedInstance] getXiaoxiPassword];
 }
 
 -(void)clearPassword{

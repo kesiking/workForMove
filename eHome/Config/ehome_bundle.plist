@@ -27,6 +27,12 @@
 			<key>class</key>
 			<string>KSTabbarURLResolver</string>
 		</dict>
+		<dict>
+			<key>name</key>
+			<string>ehome_chat_url</string>
+			<key>class</key>
+			<string>KSTabbarURLResolver</string>
+		</dict>
 	</array>
 </dict>
 </plist>

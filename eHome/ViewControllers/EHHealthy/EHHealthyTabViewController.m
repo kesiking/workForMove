@@ -41,12 +41,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // 隐藏navigationBar的下分割线
-    [self.navigationController.navigationBar
-     setBackgroundImage:[[UIImage alloc] init]
-     forBarMetrics:UIBarMetricsDefault];
-    self.navigationController.navigationBar.shadowImage = [[UIImage alloc] init];
-    
     //创建滑动视图
     self.healthScrollView = [[UIScrollView alloc]
                              initWithFrame:CGRectMake(0, 0,
@@ -64,10 +58,17 @@
     self.healthScrollView.clipsToBounds = NO;
     self.healthScrollView.bounces = NO;
     self.currentVC = self.dayVC;
+
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    // 隐藏navigationBar的下分割线
+    [self.navigationController.navigationBar
+     setBackgroundImage:[[UIImage alloc] init]
+     forBarMetrics:UIBarMetricsDefault];
+    self.navigationController.navigationBar.shadowImage = [[UIImage alloc] init];
+    
     [self initRightBarButtonItemsWithFlag:[KSAuthenticationCenter isTestAccount]];
     [self.healthScrollView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.view.mas_top).with.offset(0);
@@ -87,8 +88,17 @@
                CGRectGetWidth([UIScreen mainScreen].bounds),
                self.healthScrollView.frame.size.height);
     [self.healthScrollView addSubview:self.weekVC.view];
+    if (self.currentVC == self.dayVC) {
+        return;
+    }
+    self.previousContentoffset = CGPointMake(0, 0);
+    [self changeToDayVC];
 }
-
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    self.navigationController.navigationBar.shadowImage= nil;
+}
 //- (void)viewDidLayoutSubviews {
 //  [super viewDidLayoutSubviews];
 //
@@ -112,15 +122,18 @@
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView;
 {}
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    self.previousContentoffset = scrollView.contentOffset;
+//    self.previousContentoffset = scrollView.contentOffset;
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     if (scrollView.contentOffset.x == self.previousContentoffset.x) {
+        EHLogInfo(@"scrollView.contentOffset.x == self.previousContentoffset.x");
         return;
     }
+    self.previousContentoffset = scrollView.contentOffset;
     NSInteger page = roundf(scrollView.contentOffset.x /
                             CGRectGetWidth([UIScreen mainScreen].bounds));
+    EHLogInfo(@"scroll to page  %ld", page);
     page = MAX(page, 0);
     page = MIN(page, 1);
     
@@ -140,6 +153,7 @@
 
 -(void)babyHorizontalListViewBabyCliced:(EHGetBabyListRsp*)babyUserInfo{
     if (babyUserInfo.babyId == nil) {
+        TBOpenURLFromSourceAndParams(tabbarURL(kEHOMETabHome), self, nil);
         return;
     }
     [self.dayVC reloadDataWhenCurrentBabyChangedWithBabyInfo:babyUserInfo];
@@ -148,11 +162,13 @@
 #pragma mark - 私有函数
 - (void)changeToDayVC
 {
+    EHLogInfo(@"change to DayVC");
     self.dayButton.enabled=NO;
     self.weekButton.enabled=NO;
     [UIView animateWithDuration:0.2 animations:^{
         CGRect lineViewFrame=self.underlineView.frame;
-        lineViewFrame.origin.x -= 44;
+//        lineViewFrame.origin.x -= 44;
+        lineViewFrame.origin.x = 12;
         self.underlineView.frame=lineViewFrame;
     } completion:^(BOOL finished) {
         self.currentVC = self.dayVC;
@@ -166,11 +182,13 @@
 }
 - (void)changeToWeekVC
 {
+    EHLogInfo(@"change to WeekVC");
     self.dayButton.enabled=NO;
     self.weekButton.enabled=NO;
     [UIView animateWithDuration:0.2 animations:^{
         CGRect lineViewFrame=self.underlineView.frame;
-        lineViewFrame.origin.x += 44;
+//        lineViewFrame.origin.x += 44;
+        lineViewFrame.origin.x = 56;
         self.underlineView.frame=lineViewFrame;
     } completion:^(BOOL finished) {
         self.currentVC = self.weekVC;
@@ -204,6 +222,8 @@
                  [self.navigationController
                   pushViewController:self.settingVC
                   animated:YES];
+//                 self.dayVC.previousIndex = -1;
+//             
              }
              if (index == 1) {
                  [self presentSharedViewController];
@@ -255,10 +275,12 @@
     }
     switch ([sender tag]) {
         case 1: {
+            self.previousContentoffset = CGPointMake(0, 0);
             [self changeToDayVC];
             break;
         }
         case 2: {
+            self.previousContentoffset = CGPointMake(SCREEN_WIDTH, 0);
             [self changeToWeekVC];
             break;
         }
@@ -322,7 +344,7 @@
         //大圆圈步数
         sharedVC.finishedSteps.text =
         [NSString stringWithFormat:@"%ld", (long)self.dayVC.dayVCmodel.steps];
-        sharedVC.babyTargetSteps.text = [NSString stringWithFormat:@"目标：%ld步",self.dayVC.dayVCmodel.target_steps];
+        sharedVC.babyTargetSteps.text = [NSString stringWithFormat:@"目标：%ld步",self.dayVC.dayVCmodel.targetSteps];
         //距离
         
         if (self.dayVC.dayVCmodel.mileage == 0) {
@@ -339,8 +361,15 @@
         }
 
         //热量
-        sharedVC.energyDigitLabel.text = [NSString
-                                          stringWithFormat:@"%ld千卡", (long)self.dayVC.dayVCmodel.calorie];
+        if (1000*self.dayVC.dayVCmodel.calorie<10000) {
+            self.dayVC.dayVCmodel.calorie = self.dayVC.dayVCmodel.calorie*1000;
+            sharedVC.energyDigitLabel.text = [NSString
+                                              stringWithFormat:@"%ld卡", (long)self.dayVC.dayVCmodel.calorie];
+        }else{
+            sharedVC.energyDigitLabel.text = [NSString
+                                              stringWithFormat:@"%ld千卡", (long)self.dayVC.dayVCmodel.calorie];
+        }
+        
         //完成
         sharedVC.finishDigitRateLabel.text =
         [NSString stringWithFormat:@"%@%%", self.dayVC.dayVCmodel.percent];
@@ -375,11 +404,16 @@
             
         }
         
+        if (1000*self.weekVC.weekVCmodel.calorie<10000) {
+            self.weekVC.weekVCmodel.calorie = self.weekVC.weekVCmodel.calorie *1000;
+            sharedVC.energyDigitLabel.text =
+            [NSString stringWithFormat:@"%ld卡", self.weekVC.weekVCmodel.calorie];
+        }else{
+            sharedVC.energyDigitLabel.text =[NSString stringWithFormat:@"%ld千卡", self.weekVC.weekVCmodel.calorie];
+            
+        }
         
-        
-        //热量
-        sharedVC.energyDigitLabel.text =
-        [NSString stringWithFormat:@"%ld千卡", self.weekVC.weekVCmodel.calorie];
+  
         //完成
         sharedVC.finishDigitRateLabel.text =
         [NSString stringWithFormat:@"%@%%", self.weekVC.weekVCmodel.percent];

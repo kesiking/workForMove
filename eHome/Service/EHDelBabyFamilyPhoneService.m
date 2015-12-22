@@ -18,7 +18,7 @@
     self.onlyUserCache = NO;
     self.jsonTopKey = @"responseData";
     
-    [self loadItemWithAPIName:kEHDeleteBabyFamilyPhoneApiName params:@{kEHBabyId:babyId, kEHGardianPhone:adminPhone, kEHFamilyPhoneList:phoneList} version:nil];
+    [self loadItemWithAPIName:kEHDeleteBabyFamilyPhoneApiName params:@{@"babyId":babyId, @"gardianPhone":adminPhone, kEHFamilyPhoneList:phoneList} version:nil];
 }
 
 -(void)modelDidFinishLoad:(WeAppBasicRequestModel *)model{

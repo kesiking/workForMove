@@ -97,6 +97,7 @@
 //APP在前台时，小溪消息回调->分流
 -(void)xiaoXiReedMessageCallBackProcess{
     void(^successCompleteBlock)(MessageModel *model) = ^(MessageModel *model){
+        EHLogInfo(@"chatType = %ld, msgid = %@, msg = %@", (long)model.chatType, model.msgid, model.msg);
         if (!(model.chatType == EHMessageChatType_single)) {
             return;
         }
@@ -204,12 +205,16 @@ messageSuccessBlock:(void(^)(void))messageSuccessBlock
 #pragma login xiaoxi method
 -(void)loginXIAOXI{
     WEAKSELF
-    [[XMPPManager defaultManager] loginWithUserName:[[KSLoginComponentItem sharedInstance] getAccountName] password:[[KSLoginComponentItem sharedInstance] getPassword] loginblockSucessful:^{
-        EHLogInfo(@"登录成功");
+    if ([EHUtils isEmptyString:[[KSLoginComponentItem sharedInstance] getAccountName]] || [EHUtils isEmptyString:[[KSLoginComponentItem sharedInstance] getXiaoxiPassword]]) {
+        EHLogError(@"xiaoxi username or pwd is nil");
+        return;
+    }
+    [[XMPPManager defaultManager] loginWithUserName:[[KSLoginComponentItem sharedInstance] getAccountName] password:[[KSLoginComponentItem sharedInstance] getXiaoxiPassword] loginblockSucessful:^{
+        EHLogInfo(@"loginXIAOXI成功");
         [weakSelf subscribePushNotification];
         weakSelf.isXiaoXiOnline = YES;
     } loginFail:^(NSString *error) {
-        EHLogInfo(@"登录失败，错误码：@％");
+        EHLogInfo(@"loginXIAOXI失败，错误码：%@", error);
         weakSelf.isXiaoXiOnline = NO;
     }];
 }

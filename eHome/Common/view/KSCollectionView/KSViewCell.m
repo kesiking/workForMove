@@ -10,6 +10,11 @@
 
 @implementation KSViewCell
 
+// override, do not need super class touch event log
+-(BOOL)needTouchEventLog{
+    return NO;
+}
+
 // 对于girdCell等不能变高的重定向为WeAppRefreshDataModelType_All
 - (BOOL)checkCellLegalWithWithCellView:(id<KSViewCellProtocol>)cell componentItem:(WeAppComponentBaseItem *)componentItem{
     if (cell == nil || ![cell isKindOfClass:[UIView class]]) {

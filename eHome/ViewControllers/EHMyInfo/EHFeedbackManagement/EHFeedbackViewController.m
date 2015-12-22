@@ -137,11 +137,11 @@
 
 //发送内容
 - (void)sendContent:(NSString *)content{
-    BOOL stringContainsEmoji = [EHUtils stringContainsEmoji:content];
-    if (stringContainsEmoji) {
-        [WeAppToast toast:@"暂时不支持表情符号哦"];
-        return;
-    }
+//    BOOL stringContainsEmoji = [EHUtils stringContainsEmoji:content];
+//    if (stringContainsEmoji) {
+//        [WeAppToast toast:@"暂时不支持表情符号哦"];
+//        return;
+//    }
     
     [_insertSuggestionService insertSuggestionWithUserID:[[KSLoginComponentItem sharedInstance].userId intValue] sugContent:content];
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
@@ -271,7 +271,7 @@
 #pragma mark - Getters And Setters
 - (UITableView *)tableView{
     if (!_tableView) {
-        CGRect frame = CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame) - kTextViewHeight - 64);
+        CGRect frame = CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame) - kTextViewHeight);
         _tableView = [[UITableView alloc]initWithFrame:frame style:UITableViewStylePlain];
         _tableView.backgroundColor = EHBgcor1;
         _tableView.delegate = self;
@@ -280,13 +280,15 @@
         
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tableViewTap:)];
         [_tableView addGestureRecognizer:tap];
+        
+        [self setRefreshHeaderOnTableView:_tableView];  //首页加载后再懒加载->下拉刷新控件
     }
     return _tableView;
 }
 
 - (EHFeedbackTextView *)textView{
     if (!_textView) {
-        CGRect frame = CGRectMake(0, CGRectGetHeight(self.view.frame) - kTextViewHeight - 64, CGRectGetWidth(self.view.frame), kTextViewHeight);
+        CGRect frame = CGRectMake(0, CGRectGetHeight(self.view.frame) - kTextViewHeight, CGRectGetWidth(self.view.frame), kTextViewHeight);
         WEAKSELF
         typeof(NSArray *) __weak weakArray = _dataArray;
 
@@ -383,7 +385,6 @@
         
         if (self.pageNum == 1) {
             [strongSelf scrollTableViewToEnd];
-            [strongSelf setRefreshHeaderOnTableView:strongSelf.tableView];  //首页加载后再懒加载->下拉刷新控件
         }
         else {
             if (self.pageNum == (kCacheRows / kDefaultRows)) {
@@ -396,17 +397,19 @@
             if (service.dataList.count != 0) {
                 [strongSelf scrollTableViewToLastPosition];
             }
-            [strongSelf.tableView.header endRefreshing];
         }
-        
+        [strongSelf.tableView.header endRefreshing];
         weakService.needCache = NO;         //只缓存首页一次就取消缓存
         strongSelf.pageNum++;
         if (service.dataList.count != kDefaultRows) {
             strongSelf.tableView.header = nil;
         }
     };
+    
     _getQueryForFeedbackService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
         NSLog(@"serviceDidFailLoadBlock");
+        STRONGSELF
+        [strongSelf.tableView.header endRefreshing];
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         [WeAppToast toast:UISYSTEM_NETWORK_ERROR_TITLE];
     };

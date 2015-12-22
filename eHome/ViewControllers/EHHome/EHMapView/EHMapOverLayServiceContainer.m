@@ -121,14 +121,22 @@
         _geofencelistService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
             STRONGSELF
             strongSelf.geofenceArray = service.dataList;
-            [strongSelf resetMapGeoFenceOverLay];
-            [strongSelf setupMapGeoFenceOverLay];
-            [strongSelf reloadGeofenceOverLayData];
+            if ([(KSViewController*)strongSelf.viewController isViewAppeared])
+            {
+                [strongSelf resetMapGeoFenceOverLay];
+                [strongSelf setupMapGeoFenceOverLay];
+                [strongSelf reloadGeofenceOverLayData];
+            }
+            
         };
         _geofencelistService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
             STRONGSELF
-            [strongSelf resetMapGeoFenceOverLay];
-            [strongSelf reloadGeofenceOverLayData];
+            if ([(KSViewController*)strongSelf.viewController isViewAppeared])
+            {
+                [strongSelf resetMapGeoFenceOverLay];
+                [strongSelf reloadGeofenceOverLayData];
+            }
+            
         };
     }
     return _geofencelistService;

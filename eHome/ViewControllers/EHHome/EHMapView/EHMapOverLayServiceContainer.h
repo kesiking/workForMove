@@ -22,5 +22,5 @@
 -(void)loadGeofenceListWithBabyUserInfo:(EHGetBabyListRsp*)babyUserInfo;
 
 -(void)resetMapGeoFenceOverLay;
-
+-(void)setupMapGeoFenceOverLay;
 @end

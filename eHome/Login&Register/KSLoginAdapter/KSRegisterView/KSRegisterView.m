@@ -9,6 +9,7 @@
 #import "KSRegisterView.h"
 #import "KSLoginComponentItem.h"
 #import "EHUtils.h"
+#import "KSCheckRegisterService.h"
 
 #define account_label_description  @"账户"
 #define password_label_description @"登陆密码"
@@ -16,9 +17,10 @@
 #define text_label_width  (caculateNumber(200.0))
 #define text_label_height (caculateNumber(15.0))
 
-@interface KSRegisterView()
+@interface KSRegisterView()<UITextFieldDelegate>
 
 @property (nonatomic, strong) UILabel                   *registerDescriptionLabel;
+@property (nonatomic, strong)      KSCheckRegisterService*                 checkRegister;
 
 @end
 
@@ -54,14 +56,16 @@
          */
         [strongSelf checkNextBtnEnable];
     };
-    
+    self.registerViewCtl.text_phoneNum.aDelegate = self;
+    _checkRegister = [KSCheckRegisterService new];
+
     [self addSubview:self.registerViewCtl];
     
     _registerDescriptionLabel = [UILabel new];
     _registerDescriptionLabel.font = EHFont5;
     _registerDescriptionLabel.textColor = EHCor3;
-    _registerDescriptionLabel.textAlignment = NSTextAlignmentCenter;
-    _registerDescriptionLabel.text = @"请确保输入的密码为6-20位数字或字母组合";
+    _registerDescriptionLabel.textAlignment = NSTextAlignmentLeft;
+    _registerDescriptionLabel.text = @"密码为6-20位数字、字母或字符的组合";
     _registerDescriptionLabel.frame = CGRectMake(kSpaceX, self.registerViewCtl.text_psw.bottom + 12, self.width - 2*kSpaceX, text_label_height);
     [self addSubview:_registerDescriptionLabel];
 
@@ -208,5 +212,27 @@
     BOOL loginBtnEnable = [EHUtils isNotEmptyString:self.registerViewCtl.text_phoneNum.text] && [EHUtils isNotEmptyString:self.registerViewCtl.text_psw.text];
     self.registerViewCtl.btn_next.enabled = loginBtnEnable;
 }
+#pragma mark - UITextField Delegate
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    [self.checkRegister checkRegisterWithAccountName:textField.text checkRegister:^(BOOL isRegister,NSError* error) {
+        if (isRegister) {
+            // 已经注册过弹出提示
+            [WeAppToast toast:ALREADY_HAS_REGISTER_ACCOUNT_INFO];
+        }else{
+            return;
+        }
+    }];
+}
 
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    if (self.registerViewCtl.text_phoneNum.textView == textField) {
+        if (![EHUtils isEmptyString:string] && (![EHUtils isPureInt:string] || string.length > 11 || range.location > 10)) {
+            [WeAppToast toast:@"请输入正确的手机号码"];
+            return NO;
+        }
+    }
+    return YES;
+}
 @end

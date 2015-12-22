@@ -10,6 +10,7 @@
 #import "AFHTTPRequestOperationManager.h"
 #import "EHAudioPlayResponseSerializer.h"
 #import "XHVoiceRecordHelper.h"
+#import "KSSecurityPolicyAdapter.h"
 
 @interface EHAudioPlayDownLoader ()
 
@@ -76,10 +77,17 @@
         }else {
             WEAKSELF
             AFHTTPRequestOperationManager *httpRequestOM = [[AFHTTPRequestOperationManager alloc] init];
+            httpRequestOM.shouldUseCredentialStorage = NO;
+            /**** SSL Pinning ****/
+            KSSecurityPolicyAdapter *securityPolicy = [KSSecurityPolicyAdapter policyWithPinningMode:AFSSLPinningModeCertificate];
+            securityPolicy.allowInvalidCertificates = YES;
+            [httpRequestOM setSecurityPolicy:securityPolicy];
+            /**** SSL Pinning ****/
+            
             [httpRequestOM setResponseSerializer:[EHAudioPlayResponseSerializer new]];
-            [httpRequestOM POST:url.absoluteString parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            [httpRequestOM GET:url.absoluteString parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
                 STRONGSELF
-                if (responseObject) {
+                if (responseObject && [responseObject isKindOfClass:[NSData class]] && [responseObject length] > 0) {
                     // amr转wav 然后存储在缓存中
                     NSData* audioData = nil;
                     NSString* amrPath = [XHVoiceRecordHelper getRecorderPathofType:@"amr"];

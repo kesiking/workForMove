@@ -180,7 +180,7 @@
     self.relationTextField.font = [UIFont systemFontOfSize:EHSiz2];
     self.relationTextField.textColor = EHCor3;
     self.relationTextField.textAlignment = NSTextAlignmentRight;
-    self.relationTextField.placeholder = @"请选择";
+    self.relationTextField.placeholder = @"家人";
     self.relationTextField.leftView = self.relationLabel;
     self.relationTextField.leftViewMode = UITextFieldViewModeAlways;
     self.relationTextField.rightView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"public_arrow_list"]];
@@ -216,12 +216,14 @@
 
 - (IBAction)commitBabyInfo:(id)sender
 {
-    if ([EHUtils isEmptyString:self.inputNameTextField.text])
+    
+    if ([EHUtils isEmptyString:[self.inputNameTextField.text stringByTrimmingCharactersInSet:
+                                [NSCharacterSet whitespaceAndNewlineCharacterSet]]])
     {
+        self.inputNameTextField.text=@"";
         [WeAppToast toast:(@"请输入宝贝名字!")];
         return;
     }
-    
     
     // 管理员添加宝贝信息
     [self addBabyInfo];
@@ -237,7 +239,7 @@
     
     EHSelectRelationToBabyViewController* selectRelationVC = [[EHSelectRelationToBabyViewController alloc] init];
     selectRelationVC.selectedRelationdelegate = self;
-    selectRelationVC.currentRelation = [EHUtils isEmptyString:self.relationTextField.text] ? @"家人" : self.relationTextField.text ;
+    selectRelationVC.currentRelationShip = [EHUtils isEmptyString:self.relationTextField.text] ? @"家人" : self.relationTextField.text ;
     [self.navigationController pushViewController:selectRelationVC animated:YES];
 }
 
@@ -334,7 +336,7 @@
         
         TBOpenURLFromSourceAndParams(tabbarURL(kEHOMETabHome), strongSelf, nil);
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:EHBindBabySuccessNotification object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:EHBabyListNeedChangeNotification object:nil];
         
     };
     
@@ -349,7 +351,7 @@
     babyUser.baby_id = babayid;
     babyUser.user_id = [NSNumber numberWithInteger:[[KSAuthenticationCenter userId] integerValue]];
     babyUser.baby_nickname = self.inputNameTextField.text;
-    babyUser.relationship = self.selectRelationLabel.text;
+    babyUser.relationship = [EHUtils isEmptyString:self.relationTextField.text] ? @"家人" : self.relationTextField.text;
     [_addBabyUserService addBabyUser:babyUser];
     
 }

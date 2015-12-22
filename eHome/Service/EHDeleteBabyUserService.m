@@ -7,6 +7,7 @@
 //
 
 #import "EHDeleteBabyUserService.h"
+#import "EHDeviceStatusCenter.h"
 
 @implementation EHDeleteBabyUserService
 
@@ -18,5 +19,10 @@
     }
     
     [self loadItemWithAPIName:kEHDeleteBabyUserApiName params:@{kEHBabyId:babyId, kEHGardianPhone:adminPhone, kEHFamilyPhoneList:userPhoneList} version:nil];
+}
+-(void)modelDidFinishLoad:(WeAppBasicRequestModel *)model{
+    [super modelDidFinishLoad:model];
+    [[NSNotificationCenter defaultCenter] postNotificationName:EHRemoteMessageNotification object:nil userInfo:nil];
+    [EHDeviceStatusCenter sharedCenter].currentMessageType = [NSNumber numberWithLong:EHCurrentMessageType_systemMessage];
 }
 @end

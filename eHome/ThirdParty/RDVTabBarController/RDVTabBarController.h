@@ -67,6 +67,8 @@
 // override by subclass
 - (CGRect)selectViewControllerRectForBounds:(CGRect)bounds;
 
+- (NSInteger)indexForViewController:(UIViewController *)viewController;
+
 /**
  * Changes the visibility of the tab bar.
  */

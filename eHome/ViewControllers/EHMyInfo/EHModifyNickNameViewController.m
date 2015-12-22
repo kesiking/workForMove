@@ -62,7 +62,7 @@
     _nickNameField.text = nickName;
     
     if (nickName.length > EHPersonNameLength) {
-        [WeAppToast toast:(@"昵称超过最大长度!")];
+        [WeAppToast toast:(@"昵称超过最大长度20!")];
         return;
     }
     

@@ -160,7 +160,17 @@
     
     _loginViewCtl.registerBlock = ^(KSLoginViewCtl* loginViewCtl){
         STRONGSELF
-        TBOpenURLFromSourceAndParams(internalURL(kRegisterView), strongSelf, nil);
+        NSMutableDictionary* params = [NSMutableDictionary dictionary];
+
+        [params setObject:^(BOOL registerSuccess){
+            if (registerSuccess) {
+                [strongSelf showLoadingView];
+                
+                [strongSelf.service loginWithAccountName:[[KSLoginComponentItem sharedInstance] getAccountName] password:[[KSLoginComponentItem sharedInstance] getPassword]];
+            }
+            
+        } forKey:@"registerActionBlock"];
+        TBOpenURLFromSourceAndParams(internalURL(kRegisterView), strongSelf, params);
     };
     
     _loginViewCtl.resetPwdBlock = ^(KSLoginViewCtl* loginViewCtl){

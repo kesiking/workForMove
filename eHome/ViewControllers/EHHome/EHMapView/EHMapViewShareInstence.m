@@ -39,7 +39,7 @@
 }
 
 -(void)dealloc{
-
+    [self resetMapWithMapContainter:_mapView];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,11 +51,16 @@
     return self.mapView;
 }
 
--(EHMapMovingAnnotationPolylineContainer *)mapView{
+- (EHMapMovingAnnotationPolylineContainer *)mapView{
     if (_mapView == nil) {
         _mapView = [[EHMapMovingAnnotationPolylineContainer alloc] initWithFrame:self.frame];
     }
     return _mapView;
+}
+
+- (void)resetMapWithMapContainter:(EHMapViewContainer*)mapContainer{
+    // 多实例可清除 -- map多实例方案
+    mapContainer = nil;
 }
 
 

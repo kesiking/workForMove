@@ -64,6 +64,14 @@ typedef NS_ENUM(NSInteger, EHGeofenceType){
  */
 - (void)moreItemButtonClick:(id)sender{
     [EHPopMenuLIstView showMenuViewWithTitleTextArray:@[@"编辑围栏",@"取消围栏"] menuSelectedBlock:^(NSUInteger index, EHPopMenuModel *selectItem) {
+        if (![KSAuthenticationCenter isLogin]) {
+            void(^loginActionBlock)(BOOL loginSuccess) = ^(BOOL loginSuccess){
+                // 如果登陆成功就回到主界面
+                TBOpenURLFromTargetWithNativeParams(tabbarURL(kEHOMETabHome), self, @{ACTION_ANIMATION_KEY:@(NO)} ,nil);
+            };
+            [[KSAuthenticationCenter sharedCenter] authenticateWithAlertViewMessage:LOGIN_ALERTVIEW_MESSAGE LoginActionBlock:loginActionBlock cancelActionBlock:nil source:self];
+            return;
+        }
         if (index == 0) {
             [self changeGeofenceType:EHGeofenceTypeModify];
         }

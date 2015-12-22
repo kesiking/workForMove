@@ -24,6 +24,8 @@ static const CGFloat kXHUserNameLabelHeight = 20;
 
 @property (nonatomic, weak, readwrite) UIButton *avatarButton;
 
+@property (nonatomic, weak, readwrite) UIImageView *avatarImageView;
+
 @property (nonatomic, weak, readwrite) UILabel *userNameLabel;
 
 @property (nonatomic, weak, readwrite) LKBadgeView *timestampLabel;
@@ -204,7 +206,7 @@ static const CGFloat kXHUserNameLabelHeight = 20;
         if (avatarURL) {
             [self configAvatarWithPhotoURLString:avatarURL];
         }
-    } else if (avatarURL) {
+    }else if (avatarURL) {
         [self configAvatarWithPhotoURLString:avatarURL];
     } else {
         UIImage *avatarPhoto = [self getAvatarPlaceholderImage];
@@ -221,7 +223,8 @@ static const CGFloat kXHUserNameLabelHeight = 20;
 }
 
 - (void)configAvatarWithPhoto:(UIImage *)photo {
-    [self.avatarButton setImage:photo forState:UIControlStateNormal];
+    //[self.avatarButton setImage:photo forState:UIControlStateNormal];
+    [self.avatarImageView setImage:photo];
 }
 
 - (void)configAvatarWithPhotoURLString:(NSString *)photoURLString {
@@ -229,7 +232,9 @@ static const CGFloat kXHUserNameLabelHeight = 20;
     if (!customLoadAvatarNetworkImage) {
         XHMessageAvatarType avatarType = [[[XHConfigurationHelper appearance].messageTableStyle objectForKey:kXHMessageTableAvatarTypeKey] integerValue];
         self.avatarButton.messageAvatarType = avatarType;
-        [self.avatarButton setImageWithURL:[NSURL URLWithString:photoURLString] placeholer:[self getAvatarPlaceholderImage]];
+        //[self.avatarButton setImageWithURL:[NSURL URLWithString:photoURLString] placeholer:[self getAvatarPlaceholderImage]];
+        //[self.avatarButton sd_setImageWithURL:[NSURL URLWithString:photoURLString] forState:UIControlStateNormal placeholderImage:[self getAvatarPlaceholderImage] options:SDWebImageRefreshCached | SDWebImageDelayPlaceholder];
+        [self.avatarImageView sd_setImageWithURL:[NSURL URLWithString:photoURLString] placeholderImage:[self getAvatarPlaceholderImage] options:SDWebImageDelayPlaceholder];
     }
 }
 
@@ -409,12 +414,13 @@ static const CGFloat kXHUserNameLabelHeight = 20;
     self.accessoryView = nil;
     
     UILongPressGestureRecognizer *recognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressGestureRecognizerHandle:)];
-    [recognizer setMinimumPressDuration:0.4f];
+    [recognizer setMinimumPressDuration:0.5f];
     [self addGestureRecognizer:recognizer];
     
     
-    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureRecognizerHandle:)];
-    [self addGestureRecognizer:tapGestureRecognizer];
+//    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureRecognizerHandle:)];
+//    tapGestureRecognizer.numberOfTapsRequired = 1;
+//    [self addGestureRecognizer:tapGestureRecognizer];
 }
 
 - (instancetype)initWithMessage:(id <XHMessageModel>)message
@@ -465,16 +471,26 @@ static const CGFloat kXHUserNameLabelHeight = 20;
         }
         
         UIButton *avatarButton = [[UIButton alloc] initWithFrame:avatarButtonFrame];
+        UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:avatarButtonFrame];
         //圆角头像
-        avatarButton.layer.shouldRasterize = YES;
-        avatarButton.layer.rasterizationScale = [UIScreen mainScreen].scale;
-        avatarButton.layer.masksToBounds = YES;
-        avatarButton.layer.cornerRadius = avatarButtonFrame.size.width/2;
+//        avatarButton.layer.shouldRasterize = YES;
+//        avatarButton.layer.rasterizationScale = [UIScreen mainScreen].scale;
+//        avatarButton.layer.masksToBounds = YES;
+//        avatarButton.layer.cornerRadius = avatarButtonFrame.size.width/2;
+        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:avatarButton.bounds cornerRadius:avatarButtonFrame.size.width/2];
+        CAShapeLayer *maskLayer = [[CAShapeLayer alloc]init];
+        maskLayer.frame = avatarButton.bounds;
+        maskLayer.path = maskPath.CGPath;
+        avatarButton.layer.mask = maskLayer;
+        avatarImageView.layer.mask = maskLayer;
         
-        [avatarButton setImage:[self getAvatarPlaceholderImage] forState:UIControlStateNormal];
+        //[avatarButton setImage:[self getAvatarPlaceholderImage] forState:UIControlStateNormal];
+        [avatarImageView setImage:[self getAvatarPlaceholderImage]];
         [avatarButton addTarget:self action:@selector(avatarButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
         [self.contentView addSubview:avatarButton];
+        [self.contentView addSubview:avatarImageView];
         self.avatarButton = avatarButton;
+        self.avatarImageView = avatarImageView;
         
         // 3、配置用户名
         UILabel *userNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.avatarButton.bounds) + 20, kXHUserNameLabelHeight)];
@@ -521,6 +537,7 @@ static const CGFloat kXHUserNameLabelHeight = 20;
     avatarButtonFrame.origin.y = layoutOriginY;
     avatarButtonFrame.origin.x = ([self bubbleMessageType] == XHBubbleMessageTypeReceiving) ? kXHAvatarPaddingX : ((CGRectGetWidth(self.bounds) - kXHAvatarPaddingX - kXHAvatarImageSize));
     self.avatarButton.frame = avatarButtonFrame;
+    self.avatarImageView.frame = avatarButtonFrame;
     
     
     
@@ -577,7 +594,7 @@ static const CGFloat kXHUserNameLabelHeight = 20;
     self.messageBubbleView.geolocationsLabel.text = nil;
     
     self.userNameLabel.text = nil;
-    [self.avatarButton setImage:nil forState:UIControlStateNormal];
+//    [self.avatarButton setImage:nil forState:UIControlStateNormal];
     self.timestampLabel.text = nil;
 }
 

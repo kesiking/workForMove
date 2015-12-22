@@ -10,7 +10,7 @@
 
 typedef void (^FinishSelectedImageBlock) (NSData *selectedImageData);
 
-@interface EHUserPicFromCameraViewController : UIViewController
+@interface EHUserPicFromCameraViewController : KSViewController
 
 @property(nonatomic,strong)FinishSelectedImageBlock finishSelectedImageBlock;
 

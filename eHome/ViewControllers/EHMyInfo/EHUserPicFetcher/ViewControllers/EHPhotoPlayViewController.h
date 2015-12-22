@@ -10,7 +10,7 @@
 
 typedef void (^FinishSelectedImageBlock) (NSData *selectedImageData);
 
-@interface EHPhotoPlayViewController : UIViewController
+@interface EHPhotoPlayViewController : KSViewController
 
 @property(nonatomic,strong)UIImage *bigImage;
 @property(nonatomic,strong)UIImageView *imageView;

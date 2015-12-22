@@ -54,15 +54,16 @@
     return self;
 }
 
+
 //work_date格式为"1111111"，从周日开始到周六
 - (void)selectWorkDate:(NSString *)work_date {
     //先将第一天的周日移到最后方便处理
-    NSString *changedWorkDate = [NSString stringWithFormat:@"%@%@",[work_date substringFromIndex:1],[work_date substringToIndex:1]];
-    _changedDateStr = [changedWorkDate mutableCopy];
-
+//    NSString *changedWorkDate = [NSString stringWithFormat:@"%@%@",[work_date substringFromIndex:1],[work_date substringToIndex:1]];
+//    _changedDateStr = [changedWorkDate mutableCopy];
+    _changedDateStr=[work_date mutableCopy];
     for (NSInteger i = 1; i < 8; i++) {
         NSRange range = NSMakeRange(i-1, 1);
-        BOOL selectedStatus = [[changedWorkDate substringWithRange:range] integerValue];
+        BOOL selectedStatus = [[work_date substringWithRange:range] integerValue];
         UIButton *btn = (UIButton *)[self.contentView viewWithTag:(kSubViewTag + i)];
         btn.selected = selectedStatus;
     }
@@ -74,8 +75,8 @@
 
     NSRange range = NSMakeRange(btn.tag - kSubViewTag - 1, 1);
     [_changedDateStr replaceCharactersInRange:range withString:[@(btn.selected) stringValue]];
-    NSString *dateStr = [NSString stringWithFormat:@"%@%@",[_changedDateStr substringFromIndex:6],[_changedDateStr substringToIndex:6]];
-    !self.dateBtnClickBlock?:self.dateBtnClickBlock((NSString *)dateStr);
+  //  NSString *dateStr = [NSString stringWithFormat:@"%@%@",[_changedDateStr substringFromIndex:6],[_changedDateStr substringToIndex:6]];
+    !self.dateBtnClickBlock?:self.dateBtnClickBlock(_changedDateStr);
 }
 
 - (void)layoutSubviews {

@@ -38,4 +38,6 @@
 
 -(void)hideEmptyView;
 
+-(BOOL)needTouchEventLog;
+
 @end

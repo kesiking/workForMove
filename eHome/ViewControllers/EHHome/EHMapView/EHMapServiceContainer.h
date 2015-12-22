@@ -33,6 +33,8 @@ typedef BOOL (^shouldSelectAnnotationViewAfterRefreshMapBlock) (EHMapServiceCont
 // position足迹数据库
 @property (nonatomic, strong) NSArray           *            positionArray;
 
+-(void)resetHistoryPositionArray;
+
 /*!
  *  @brief  position数据
  *

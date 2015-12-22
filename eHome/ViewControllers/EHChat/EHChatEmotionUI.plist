@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>1</key>
+	<dict>
+		<key>imageName</key>
+		<string>icon_praise</string>
+		<key>textName</key>
+		<string>赞</string>
+	</dict>
+	<key>2</key>
+	<dict>
+		<key>imageName</key>
+		<string>icon_come on</string>
+		<key>textName</key>
+		<string>加油</string>
+	</dict>
+	<key>3</key>
+	<dict>
+		<key>imageName</key>
+		<string>icon_momoda</string>
+		<key>textName</key>
+		<string>么么哒</string>
+	</dict>
+	<key>4</key>
+	<dict>
+		<key>imageName</key>
+		<string>icon_angry</string>
+		<key>textName</key>
+		<string>生气</string>
+	</dict>
+	<key>5</key>
+	<dict>
+		<key>imageName</key>
+		<string>icon_miss you</string>
+		<key>textName</key>
+		<string>想你</string>
+	</dict>
+	<key>6</key>
+	<dict>
+		<key>imageName</key>
+		<string>icon_a face</string>
+		<key>textName</key>
+		<string>鬼脸</string>
+	</dict>
+	<key>7</key>
+	<dict>
+		<key>imageName</key>
+		<string>icon_eat</string>
+		<key>textName</key>
+		<string>吃饭啦</string>
+	</dict>
+	<key>8</key>
+	<dict>
+		<key>imageName</key>
+		<string>icon_obedient</string>
+		<key>textName</key>
+		<string>听话</string>
+	</dict>
+	<key>9</key>
+	<dict>
+		<key>imageName</key>
+		<string>icon_good night</string>
+		<key>textName</key>
+		<string>晚安</string>
+	</dict>
+	<key>10</key>
+	<dict>
+		<key>imageName</key>
+		<string>icon_come</string>
+		<key>textName</key>
+		<string>快过来</string>
+	</dict>
+	<key>11</key>
+	<dict>
+		<key>imageName</key>
+		<string>icon_near</string>
+		<key>textName</key>
+		<string>别走远</string>
+	</dict>
+	<key>12</key>
+	<dict>
+		<key>imageName</key>
+		<string>icon_come soon</string>
+		<key>textName</key>
+		<string>马上到</string>
+	</dict>
+	<key>13</key>
+	<dict>
+		<key>imageName</key>
+		<string>icon_go home</string>
+		<key>textName</key>
+		<string>回家啦</string>
+	</dict>
+	<key>14</key>
+	<dict>
+		<key>imageName</key>
+		<string>icon_homework</string>
+		<key>textName</key>
+		<string>做作业</string>
+	</dict>
+	<key>15</key>
+	<dict>
+		<key>imageName</key>
+		<string>icon_get up</string>
+		<key>textName</key>
+		<string>起床啦</string>
+	</dict>
+	<key>16</key>
+	<dict>
+		<key>imageName</key>
+		<string>icon_listen</string>
+		<key>textName</key>
+		<string>听课</string>
+	</dict>
+</dict>
+</plist>

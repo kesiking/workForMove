@@ -14,6 +14,8 @@
 
 @property (nonatomic,strong,getter = getPassword)    NSString * password;
 
+@property (nonatomic,strong,getter = getXiaoxiPassword)    NSString * xiaoxiPassword;
+
 +(KSLoginKeyChain *)sharedInstance;
 
 -(void)clear;

@@ -20,8 +20,7 @@
     self.nickNameLabel.font = [UIFont systemFontOfSize:EHSiz2];
     self.phoneLabel.textColor = EHCor6;
     self.phoneLabel.font = [UIFont systemFontOfSize:EHSiz5];
-    self.placeHolder.textColor = EHCor3;
-    self.placeHolder.font = [UIFont systemFontOfSize:EHSiz2];
+    self.phoneLabel.text=@"";
  //   self.rankImage.image = [UIImage imageNamed:@"bg_familyphone"];
     self.rankImage.backgroundColor=EHCor23;
     self.rankLabel.font = [UIFont boldSystemFontOfSize: EH_siz6];
@@ -32,6 +31,9 @@
     self.selectImage.hidden = YES;
     self.line.image=[UIImage imageNamed:@"line_606"];
     self.selectionStyle=UITableViewCellSelectionStyleNone;
+    self.arrowImage.hidden=NO;
+    self.arrowImage.image=[UIImage imageNamed:@"public_icon_arrow"];
+    self.relationImage.image=[UIImage imageNamed:@"icon_family100"];
 }
 
 //-(void)layoutSubviews{
@@ -76,19 +78,21 @@
         EHBabyFamilyPhone *model = (EHBabyFamilyPhone *)data;
         self.nickNameLabel.hidden = NO;
         self.phoneLabel.hidden = NO;
-        self.placeHolder.hidden = YES;
        // self.rankImage.hidden = YES;
         self.selectImage.hidden = hide;
         //self.markButton.hidden = hide;
-        self.nickNameLabel.text = model.phone_name;
-        self.phoneLabel.text = model.attention_phone;
+        self.nickNameLabel.text = model.relationship;
+        self.phoneLabel.text = model.phoneNumber;
+        self.arrowImage.hidden=!hide;
     }else {
         self.nickNameLabel.hidden = YES;
         self.phoneLabel.hidden = YES;
-        self.placeHolder.hidden = NO;
      //   self.rankImage.hidden = NO;
         self.selectImage.hidden = YES;
+        self.arrowImage.hidden=NO;
         //self.markButton.hidden = YES;
+        self.nickNameLabel.text = @"";
+        self.phoneLabel.text = @"";
     }
 }
 

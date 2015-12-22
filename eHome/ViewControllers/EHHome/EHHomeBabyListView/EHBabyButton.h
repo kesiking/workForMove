@@ -33,4 +33,5 @@ typedef void (^doBabyButtonClicedBlock)        (EHBabyButton* babyButton);
 
 -(void)setBtnClicked;
 
+-(void)setBtnRedPointHidden:(BOOL)hidden;
 @end

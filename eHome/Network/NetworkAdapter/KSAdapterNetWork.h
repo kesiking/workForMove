@@ -9,7 +9,8 @@
 #import "BasicNetWorkAdapter.h"
 
 @interface KSAdapterNetWork : BasicNetWorkAdapter
-
++ (instancetype)sharedAdapterNetWork;
 @property(nonatomic, assign) BOOL                needLogin;
+@property (nonatomic, assign)BOOL isStartNetWorkMonitor;
 
 @end

@@ -57,9 +57,9 @@
 }
 
 -(void)initNotification{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHBindBabySuccessNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHUNBindBabySuccessNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHBabyInfoChangedNotification object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHBabyListNeedChangeNotification object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHUNBindBabySuccessNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babyDidChangedNotification:) name:EHBabyListNeedChangeNotification object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLogoutNotification:) name:kUserLogoutSuccessNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLoginNotification:) name:kUserLoginSuccessNotification object:nil];
@@ -122,10 +122,12 @@
 #pragma mark - refreshDataRequest 刷新数据
 -(void)refreshDataRequest{
     // 如果isViewAppeared则表示当前VC正在展示，收到消息则直接刷新，如果不在展示则_needRefreshBabyList置为YES
-//    [self.babyListService loadData];
+    [self.babyListService loadData];
 }
 
 -(void)setupBabyDataWithDataList:(NSArray*)dataList{
+    self.currentBabyId  = nil;
+    self.currentBabyUserInfo = nil;
     NSInteger preSelectBabyId = [EHUserDefaultData getCurrentSelectBabyId];
     BOOL fineBaby = NO;
     for (EHGetBabyListRsp *babyUser in dataList) {
@@ -166,6 +168,9 @@
             strongSelf.isServiceFailed = NO;
             strongSelf.babyList = service.dataList;
             [strongSelf setupBabyDataWithDataList:strongSelf.babyList];
+            //[[NSNotificationCenter defaultCenter] postNotificationName:EHBabyAuthorityChangedNotification object:nil userInfo:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:EHBabyListChangedNotification object:nil userInfo:nil];
+
         };
         // service 返回失败 block
         _babyListService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){

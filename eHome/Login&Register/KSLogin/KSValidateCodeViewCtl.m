@@ -9,7 +9,7 @@
 #import "KSValidateCodeViewCtl.h"
 #import "KSLoginMaroc.h"
 
-@interface KSValidateCodeViewCtl(){
+@interface KSValidateCodeViewCtl()<UITextFieldDelegate>{
     dispatch_source_t _timer;
 }
 
@@ -61,8 +61,10 @@
     if (!_text_smsCode) {
         _text_smsCode = [WeAppBasicFieldView getCommonFieldView];
         _text_smsCode.textView.borderStyle = UITextBorderStyleRoundedRect;
+        _text_smsCode.textView.keyboardType = UIKeyboardTypeNumberPad;
         _text_smsCode.frame = CGRectMake(kSpaceX, 40, view_width-130, text_height);
         _text_smsCode.textView.placeholder = @"请输入验证码";
+        _text_smsCode.aDelegate = self;
         [_text_smsCode setBackgroundColor:[UIColor clearColor]];
         [self addSubview:_text_smsCode];
     }
@@ -202,4 +204,15 @@
     }
 }
 
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    if (_text_smsCode.textView == textField) {
+        if (![EHUtils isEmptyString:string] && (![EHUtils isPureInt:string] || string.length > 4 || range.location > 3)) {
+            [WeAppToast toast:@"请输入4位数字验证码"];
+            return NO;
+        }
+    }
+    return YES;
+}
 @end

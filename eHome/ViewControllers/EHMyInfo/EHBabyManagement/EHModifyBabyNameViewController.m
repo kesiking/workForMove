@@ -62,15 +62,15 @@
     NSString* babyName = [EHUtils trimmingHeadAndTailSpaceInstring:self.babyNameTextField.text];
     
     if ([babyName length] > EHPersonNameLength) {
-        [WeAppToast toast:(@"宝贝名字超过最大长度!")];
+        [WeAppToast toast:(@"宝贝名字超过最大长度20!")];
         return;
     }
-    
     if ([EHUtils isAuthority:self.authory])
     {
         // 管理员修改宝贝名字
-        if ([EHUtils isEmptyString:self.babyNameTextField.text])
+        if ([EHUtils isEmptyString:babyName])
         {
+            self.babyNameTextField.text=@"";
             [WeAppToast toast:(@"请输入宝贝名字!")];
             return;
         }
@@ -80,6 +80,13 @@
     
     else
     {
+        // 修改昵称
+        if ([EHUtils isEmptyString:babyName])
+        {
+            self.babyNameTextField.text=@"";
+            [WeAppToast toast:(@"请输入宝贝昵称!")];
+            return;
+        }
         // 非管理员修改昵称
         [self modifyBabyNickName:babyName];
     }

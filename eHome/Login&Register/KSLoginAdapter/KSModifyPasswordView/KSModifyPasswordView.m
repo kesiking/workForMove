@@ -47,7 +47,7 @@
     _resetDescriptionLabel.font = [UIFont systemFontOfSize:EHSiz5];
     _resetDescriptionLabel.textColor = EHCor3;
     _resetDescriptionLabel.textAlignment = NSTextAlignmentLeft;
-    _resetDescriptionLabel.text = @"请确保输入的密码为6-20位的数字或字母组合";
+    _resetDescriptionLabel.text = @"请确保密码为6-20位数字、字母或字符的组合";
     _resetDescriptionLabel.frame = CGRectMake(37, self.resetViewCtl.text_newPwd.bottom + 6, 290, 20);
     [self addSubview:_resetDescriptionLabel];
     

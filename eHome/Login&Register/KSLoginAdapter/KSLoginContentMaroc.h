@@ -9,10 +9,10 @@
 #ifndef eHome_KSLoginContentMaroc_h
 #define eHome_KSLoginContentMaroc_h
 
-#define LOGIN_INPUT_ACCOUNTNAME_UNLOGGICAL_INFO  @"请输入正确的手机号"
-#define LOGIN_INPUT_PASSWORD_UNLOGGICAL_INFO     @"密码非法，请重新输入6-20位数字或字符"
-#define LOGIN_INPUT_OLD_PASSWORD_UNLOGGICAL_INFO @"原密码非法，请重新输入6-20位数字或字符"
-#define LOGIN_INPUT_NEW_PASSWORD_UNLOGGICAL_INFO @"新密码非法，请重新输入6-20位数字或字符"
+#define LOGIN_INPUT_ACCOUNTNAME_UNLOGGICAL_INFO  @"您输入的手机号码格式有误，请重新输入"
+#define LOGIN_INPUT_PASSWORD_UNLOGGICAL_INFO     @"密码非法，请重新输入6-20位数字、字母或字符"
+#define LOGIN_INPUT_OLD_PASSWORD_UNLOGGICAL_INFO @"原密码非法，请重新输入6-20位数字、字母或字符"
+#define LOGIN_INPUT_NEW_PASSWORD_UNLOGGICAL_INFO @"新密码非法，请重新输入6-20位数字、字母或字符"
 
 #define ALREADY_HAS_REGISTER_ACCOUNT_INFO        @"该号码已经注册，请重新输入一个新的手机号"
 #define HAS_NOT_REGISTER_ACCOUNT_INFO            @"该号码尚未注册"
@@ -23,10 +23,10 @@
 #define LOGIN_INPUT_CHECKCODE_EMPTY_INFO         @"请输入验证码"
 #define LOGIN_INPUT_CHECKCODE_UNLOGGICAL_INFO    @"您输入的验证码不正确，请重新输入"
 
-#define LOGIN_ALERTVIEW_MESSAGE                  @"该操作需要登陆账号，是否登陆已有账号？"
+#define LOGIN_ALERTVIEW_MESSAGE                  @"该操作需要登录账号，是否登录已有账号？"
 #define REPEAT_LOGIN_ALERTVIEW_MESSAGE           @"该账号已在其他地方登录"
 
-#define LOGIN_FAIL_INFO                          @"登陆失败，请稍后再试"
+#define LOGIN_FAIL_INFO                          @"登录失败，请稍后再试"
 
 #define REGISTER_SUCCESS_INFO                    @"注册成功"
 #define REGISTER_FAIL_INFO                       @"注册失败，请稍后再试"

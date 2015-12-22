@@ -15,7 +15,7 @@
 @interface EHHealthyShareViewController ()
 
 //分享页面截图
-@property (nonatomic,strong) UIView *sharedBgView;
+@property (nonatomic,strong) UIImageView *sharedBgView;
 //baby头像视图
 @property (nonatomic,strong) UIImageView *babyHeadImageView;
 @property (nonatomic,strong) UIView *imageNameView;
@@ -46,12 +46,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 //    UIView *sharedBackgroundView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, self.view.size.height - 70*SCREEN_SCALE)];
-    UIImageView *sharedBackgroundView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"img_share_health"]];
-    sharedBackgroundView.frame = CGRectMake(0, 0, SCREEN_WIDTH, self.view.size.height);
-    self.sharedBgView = sharedBackgroundView;
+    self.sharedBgView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"img_share_health"]];
+    self.sharedBgView.frame = CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     [self.view addSubview:self.sharedBgView];
     [self addSubViews];
-    
     UIImageView *sharedBtnBgView=[[UIImageView alloc]initWithImage:[UIImage imageNamed:@"bg_share_wechatanefriend"]];
     [self.view addSubview:sharedBtnBgView];
     [sharedBtnBgView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -68,8 +66,8 @@
     [sharedBtnBgView addSubview:weChatBtn];
     [weChatBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(sharedBtnBgView.mas_top).with.offset(18*SCREEN_SCALE);
-        make.left.equalTo(sharedBtnBgView.mas_left).with.offset(77*SCREEN_SCALE);
-        make.size.mas_equalTo(CGSizeMake(60*SCREEN_SCALE, 60*SCREEN_SCALE));
+        make.left.equalTo(sharedBtnBgView.mas_left).with.offset(72*SCREEN_SCALE);
+        make.size.mas_equalTo(CGSizeMake(70*SCREEN_SCALE, 70*SCREEN_SCALE));
     }];
     
     UILabel *weChartLabel = [[UILabel alloc]initWithFrame:CGRectZero];
@@ -90,8 +88,8 @@
     [sharedBtnBgView addSubview:friendsBtn];
     [friendsBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(sharedBtnBgView.mas_top).with.offset(18*SCREEN_SCALE);
-        make.right.equalTo(sharedBtnBgView.mas_right).with.offset(-77*SCREEN_SCALE);
-        make.size.mas_equalTo(CGSizeMake(60*SCREEN_SCALE, 60*SCREEN_SCALE));
+        make.right.equalTo(sharedBtnBgView.mas_right).with.offset(-72*SCREEN_SCALE);
+        make.size.mas_equalTo(CGSizeMake(70*SCREEN_SCALE, 70*SCREEN_SCALE));
     }];
     friendsBtn.tag=EHShareTypeWechatTimeline;
     [friendsBtn addTarget:self action:@selector(sharedButonClick:) forControlEvents:UIControlEventTouchUpInside];
@@ -109,7 +107,13 @@
         make.centerX.equalTo(friendsBtn.mas_centerX);
         
     }];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(babySOSMessageNotification:) name:EHBabySOSMessageNotification object:nil];
 
+}
+
+-(void)babySOSMessageNotification:(NSNotification*)notification{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -139,8 +143,8 @@
     [self setHeadImageUrl:self.sharedHeadImage withSex:[self.babySex integerValue]];
     
     self.babyHeadImageView.layer.masksToBounds=YES;
-    self.babyHeadImageView.layer.cornerRadius=30*SCREEN_SCALE;
-    self.babyHeadImageView.layer.borderWidth = 1;
+    self.babyHeadImageView.layer.cornerRadius=35*SCREEN_SCALE;
+    self.babyHeadImageView.layer.borderWidth = 2;
     self.babyHeadImageView.layer.borderColor = EHCor13.CGColor;
     //[self.view addSubview:_babyHeadImageView];
     [self.sharedBgView addSubview:self.babyHeadImageView];
@@ -172,10 +176,10 @@
     [self.sharedBgView addSubview:self.dateLabel];
     
     //取消按钮
-    self.cancelButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, roundf(42*SCREEN_SCALE), roundf(42*SCREEN_SCALE))];
+    self.cancelButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 46, 46)];
     self.cancelButton.imageEdgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+//    [self.cancelButton setImage:[UIImage imageNamed:@"icon_close"] forState:UIControlStateNormal];
     [self.cancelButton setImage:[UIImage imageNamed:@"icon_close"] forState:UIControlStateNormal];
-//    [self.cancelButton setBackgroundImage:[UIImage imageNamed:@"icon_close"] forState:UIControlStateNormal];
     [self.cancelButton addTarget:self action:@selector(cancelShareVC:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.cancelButton];
   
@@ -293,8 +297,8 @@
     [_babyHeadImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(superView.mas_top).with.offset(41*SCREEN_SCALE);
         make.centerX.equalTo(superView.mas_centerX);
-        make.size.mas_equalTo(CGSizeMake(60*SCREEN_SCALE, 60*SCREEN_SCALE));
-        NSLog(@"5self.nameLabel.size.width=%f",self.nameLabel.size.width);
+        make.size.mas_equalTo(CGSizeMake(70*SCREEN_SCALE, 70*SCREEN_SCALE));
+//        NSLog(@"5self.nameLabel.size.width=%f",self.nameLabel.size.width);
     }];
     
     [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -316,9 +320,10 @@
 
     //创建取消按钮约束
     [self.cancelButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(superView.mas_top).with.offset(50*SCREEN_SCALE);
-        make.right.equalTo(superView.mas_right).with.offset(-2*SCREEN_SCALE);
-        make.size.mas_equalTo(CGSizeMake(42*SCREEN_SCALE, 42*SCREEN_SCALE));
+//        make.top.equalTo(superView.mas_top).with.offset(60*SCREEN_SCALE);
+        make.centerY.equalTo(self.babyHeadImageView.mas_centerY);
+        make.right.equalTo(superView.mas_right).with.offset(-4*SCREEN_SCALE);
+        make.size.mas_equalTo(CGSizeMake(46, 46));
         
     }];
     
@@ -449,7 +454,9 @@
 
 - (UIImage *)screenshotForCroppingRect:(CGRect)croppingRect
 {
-    croppingRect.size.height = croppingRect.size.height - 123*SCREEN_SCALE;
+   croppingRect.size.height = croppingRect.size.height - 123*SCREEN_SCALE;
+
+    
     UIGraphicsBeginImageContextWithOptions(croppingRect.size, NO, [UIScreen mainScreen].scale);
     // Create a graphics context and translate it the view we want to crop so
     // that even in grabbing (0,0), that origin point now represents the actual
@@ -541,6 +548,10 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 

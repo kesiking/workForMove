@@ -84,6 +84,9 @@
         case EHMessageInfoCatergoryType_Family:
             self.messageNameLabel.text=@"家庭消息";
             break;
+        case EHMessageInfoCatergoryType_Family_ChangeBabyPhone:
+            self.messageNameLabel.text=@"换卡提醒";
+            break;
         case EHMessageInfoCatergoryType_Location:
             self.messageNameLabel.text=@"位置消息";
             break;

@@ -44,5 +44,13 @@ typedef void (^hasBabyDataBlock)            (EHHomeBabyHorizontalListView* babyL
  *  @since 1.0
  */
 -(void)switchToBabyWithBabyId:(NSNumber*)babyId;
-
+/**
+ *  @brief 有新的聊天消息，通知listView添加小红点
+ *  @param babyId 有新消息的BabyId
+ */
+-(void)hasUnselectedBabyChatMessageWithBabyId:(NSNumber *)babyId;
+/**
+ *  清除所有小红点标志
+ */
+-(void)clearListViewRedPoints;
 @end

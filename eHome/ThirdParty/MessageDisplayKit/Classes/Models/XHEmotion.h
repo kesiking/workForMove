@@ -9,6 +9,10 @@
 #import <Foundation/Foundation.h>
 
 #define kXHEmotionImageViewSize 60
+#define kEHEmotionImageViewWidth ([[UIScreen mainScreen]bounds].size.width/4-30*SCREEN_SCALE)
+#define kEHEmotionImageViewHeight (kEHEmotionImageViewWidth)
+#define kEHEmotionLabelWidth (kEHEmotionImageViewWidth)
+#define kEHEmotionLabelHeight 10
 #define kXHEmotionMinimumLineSpacing 12
 
 @interface XHEmotion : NSObject
@@ -22,5 +26,10 @@
  *  gif表情的路径
  */
 @property (nonatomic, copy) NSString *emotionPath;
+
+/**
+ *  表情文本注释
+ */
+@property (nonatomic, strong)NSString *text;
 
 @end

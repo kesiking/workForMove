@@ -22,6 +22,8 @@ typedef void (^doButtonClicedBlock)        (EHHomeNavBarTItleView* navBarTitleVi
 
 @property (nonatomic, strong) UIImage               *unSelectImage;
 
+@property (nonatomic, strong) UIImageView           *redPointImageView;
+
 @property (nonatomic, assign) BOOL                   btnIsSelected;
 
 @property (nonatomic, copy  ) doButtonClicedBlock    buttonClicedBlock;

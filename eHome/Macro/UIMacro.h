@@ -18,6 +18,8 @@
 #import "TBDetailUITools.h"
 #import "KSPaginationItem.h"
 #import "EHPopMenuLIstView.h"
+#import "KSTouchEvent.h"
+#import "UIButton+KSTouchEvent.h"
 
 //#define EH_USE_NAVIGATION_NOTIFICATION
 
@@ -96,6 +98,7 @@
 #define EHBgcor1 RGB(0xf8, 0xf8, 0xf8)
 #define EHBgcor2 RGB(0xf5, 0xf5, 0xf9)
 #define EHBgcor3 RGB(0xff, 0xff, 0xff)
+#define EHBgcor4 RGB(0xee, 0xee, 0xee)
 
 #define EHLinecor1 RGB(0xda, 0xda, 0xda)
 

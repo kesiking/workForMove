@@ -14,7 +14,7 @@
 #import "EHUpdateGeofenceStatusService.h"
 #import "EHBabyListDataCenter.h"
 #import "NSString+StringSize.h"
-#import "EHGeofenceMapViewShareInstance.h"
+#import "EHMAMapViewShareInstance.h"
 
 @interface EHGeofenceListViewController() <UITableViewDataSource,UITableViewDelegate>
 
@@ -52,11 +52,15 @@
  
 }
 
+-(void)dealloc{
+    [[EHMAMapViewShareInstance sharedCenter] resetMapWithMapView:self.mapView];
+}
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    [_listService getGeofenceListWithBabyID:[self.babyUser.babyId intValue] UserID:[[KSLoginComponentItem sharedInstance].userId intValue]];
     [self showLoadingView];
+    [_listService getGeofenceListWithBabyID:[self.babyUser.babyId intValue] UserID:[[KSAuthenticationCenter userId] intValue]];
+
     
 }
 
@@ -87,7 +91,7 @@
     if ([KSAuthenticationCenter isLogin]) {
         NSMutableArray *existedNameArray = [[NSMutableArray alloc]init];
         for (EHGetGeofenceListRsp *rsp in self.geofenceList) {
-            [existedNameArray addObject:rsp.geofence_name];
+            [existedNameArray addObject:rsp.geofence_name?:@""];
         }
         
         EHUserDevicePosition *position = [[EHBabyListDataCenter sharedCenter] currentBabyPosition];
@@ -133,22 +137,33 @@
     WEAKSELF
     cell.switchChangedBlock = ^(BOOL isOn){
         STRONGSELF
+        if (![KSAuthenticationCenter isLogin]) {
+            void(^loginActionBlock)(BOOL loginSuccess) = ^(BOOL loginSuccess){
+                // 如果登陆成功就进入创建围栏
+                [strongSelf.navigationController popViewControllerAnimated:YES];
+            };
+            [[KSAuthenticationCenter sharedCenter] authenticateWithAlertViewMessage:LOGIN_ALERTVIEW_MESSAGE LoginActionBlock:loginActionBlock cancelActionBlock:nil source:strongSelf];
+        }else{
         NSDictionary *dic = @{@"geofence_id":geofence_id,
                               @"status_switch":[NSNumber numberWithInteger:isOn]};
         NSArray *array = @[dic];
         [strongSelf.statusService updateGeofenceStatus:array];
         [strongSelf.statusHandler showLoadingViewInView:strongSelf.view];
         strongSelf.switchChangedIndexPath = indexPath;
+        }
     };
+    if (![KSAuthenticationCenter isLogin]) {
+        cell.swit.shouldChangeSwitchImmediately = NO;
+    }
     return cell;
 }
 
 #pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    if ([KSAuthenticationCenter isLogin]) {
+//    if ([KSAuthenticationCenter isLogin]) {
         NSMutableArray *existedNameArray = [[NSMutableArray alloc]init];
         for (EHGetGeofenceListRsp *rsp in self.geofenceList) {
-            [existedNameArray addObject:rsp.geofence_name];
+            [existedNameArray addObject:rsp.geofence_name?:@""];
         }
         EHGeofenceDetailViewController *gdvc = [[EHGeofenceDetailViewController alloc]init];
         gdvc.babyUser = self.babyUser;
@@ -158,13 +173,13 @@
         [self.navigationController pushViewController:gdvc animated:YES];
         
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
-        return;
-    }
-    void(^loginActionBlock)(BOOL loginSuccess) = ^(BOOL loginSuccess){
-        // 如果登陆成功就进入创建围栏
-        [self.navigationController popViewControllerAnimated:YES];
-    };
-    [[KSAuthenticationCenter sharedCenter] authenticateWithAlertViewMessage:LOGIN_ALERTVIEW_MESSAGE LoginActionBlock:loginActionBlock cancelActionBlock:nil source:self];
+//        return;
+//    }
+//    void(^loginActionBlock)(BOOL loginSuccess) = ^(BOOL loginSuccess){
+//        // 如果登陆成功就进入创建围栏
+//        [self.navigationController popViewControllerAnimated:YES];
+//    };
+//    [[KSAuthenticationCenter sharedCenter] authenticateWithAlertViewMessage:LOGIN_ALERTVIEW_MESSAGE LoginActionBlock:loginActionBlock cancelActionBlock:nil source:self];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -175,7 +190,7 @@
 #pragma mark - Common Methods
 - (void)initMapView
 {
-    self.mapView = [[EHGeofenceMapViewShareInstance sharedCenter] getMapViewWithFrame:self.view.bounds];
+    self.mapView = [[EHMAMapViewShareInstance sharedCenter] getMapViewWithFrame:self.view.bounds];
     self.mapView.showsUserLocation = NO;                       //YES 为打开定位，NO为关闭定位
     self.mapView.showsScale = NO;
     self.mapView.showsCompass = NO;
@@ -201,7 +216,7 @@
 
 - (UITableView *)tableView{
     if (!_tableView){
-        _tableView = [[GroupedTableView alloc]initWithFrame:CGRectMake(8, 12, CGRectGetWidth(self.view.frame) - 16, CGRectGetHeight(self.view.frame) - 12) style:UITableViewStylePlain];
+        _tableView = [[GroupedTableView alloc]initWithFrame:CGRectMake(8, 25, CGRectGetWidth(self.view.frame) - 16, CGRectGetHeight(self.view.frame) - 12) style:UITableViewStylePlain];
         _tableView.backgroundColor = [UIColor clearColor];
         _tableView.dataSource = self;
         _tableView.delegate = self;
@@ -269,7 +284,7 @@ static bool firstTag = YES;
         WEAKSELF
         _listService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
             STRONGSELF
-            [strongSelf hideLoadingView];
+            [strongSelf.statusHandler hideLoadingView];
             strongSelf.geofenceList = service.dataList;
 //            for (EHGetGeofenceListRsp *rsp in service.dataList) {
 //                EHLogInfo(@"rsp = %@",rsp);
@@ -285,7 +300,7 @@ static bool firstTag = YES;
         };
         _listService.serviceDidFailLoadBlock = ^(WeAppBasicService* service,NSError* error){
             STRONGSELF
-            [strongSelf hideLoadingView];
+            [strongSelf.statusHandler hideLoadingView];
             [WeAppToast toast:@"获取围栏列表失败"];
         };
     }

@@ -60,6 +60,9 @@
         _text_phoneNum = [WeAppBasicFieldView getCommonFieldView];
         _text_phoneNum.textView.placeholder = @"请输入手机号码";
         _text_phoneNum.textView.borderStyle = UITextBorderStyleRoundedRect;
+        _text_phoneNum.aDelegate = self;
+        _text_phoneNum.textView.keyboardType = UIKeyboardTypeNumberPad;
+        
         [self addSubview:_text_phoneNum];
     }
     return _text_phoneNum;
@@ -174,4 +177,14 @@
     self.cancelRegisterBlock = nil;
 }
 
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    if (_text_phoneNum.textView == textField) {
+        if (![EHUtils isEmptyString:string] && (![EHUtils isPureInt:string] || string.length > 11 || range.location > 10)) {
+            [WeAppToast toast:@"请输入正确的手机号码"];
+            return NO;
+        }
+    }
+    return YES;
+}
 @end

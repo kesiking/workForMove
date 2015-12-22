@@ -47,13 +47,19 @@
     [_title setFont:[UIFont boldSystemFontOfSize:18]];
     [_title setTextAlignment:NSTextAlignmentCenter];
     [_title setTextColor:UINAVIGATIONBAR_TITLE_COLOR];
-    [_title setText:@"暂无用户"];
+    [_title setText:@"暂无宝贝"];
     [_title sizeToFit];
     [self addSubview:_title];
     
     _imageView = [[UIImageView alloc] initWithFrame:CGRectMake(_title.right + 4 , (self.height - 6)/2, 10, 6)];
     [_imageView setImage:self.unSelectImage];
     [self addSubview:_imageView];
+    
+    _redPointImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"public_icon_message_propmpt"]];
+    _redPointImageView.frame = CGRectMake(_title.right - 2, _title.top, _redPointImageView.width, _redPointImageView.height);
+    
+    _redPointImageView.hidden = YES;
+    [self addSubview:_redPointImageView];
     
     [self setBtnImage:NO];
 
@@ -96,6 +102,7 @@
     [_btn setFrame:self.bounds];
     [_title setOrigin:CGPointMake(0, (self.height - _title.height)/2)];
     [_imageView setOrigin:CGPointMake(_title.right + 5, (self.height - _imageView.height)/2)];
+    [_redPointImageView setOrigin:CGPointMake(_title.right - 2, _title.top)];
 }
 
 @end

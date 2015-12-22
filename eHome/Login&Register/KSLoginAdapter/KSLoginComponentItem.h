@@ -25,6 +25,7 @@
 @property (nonatomic,strong) NSNumber* user_type;
 @property (nonatomic,strong) NSNumber* user_status;
 @property (nonatomic,strong) NSString* user_last_login_time;
+@property (nonatomic,strong) NSString* IMPassword;
 
 @property (nonatomic,assign) BOOL isLogined;
 
@@ -41,6 +42,9 @@
 -(NSString*)getAccountName;
 
 -(NSString*)getPassword;
+
+-(void)setXiaoxiPassword:(NSString *)xiaoxipPassword;
+-(NSString*)getXiaoxiPassword;
 
 -(void)clearPassword;
 

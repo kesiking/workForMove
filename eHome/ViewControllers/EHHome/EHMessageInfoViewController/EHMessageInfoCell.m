@@ -78,6 +78,13 @@
             }
         }
             break;
+        case EHMessageInfoCatergoryType_Family_ChangeBabyPhone:{
+            if (self.familyImage != self.messageImageView.image) {
+                [self.messageImageView setImage:self.familyImage];
+                [self.messageNamelabel setText:@"家庭消息："];
+            }
+        }
+            break;
         case EHMessageInfoCatergoryType_Location:{
             if (self.locationImage != self.messageImageView.image) {
                 [self.messageImageView setImage:self.locationImage];
