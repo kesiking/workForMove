@@ -1,0 +1,6 @@
+framework module KSDebug {
+  umbrella header "KSDebug.h"
+
+  export *
+  module * { export * }
+}

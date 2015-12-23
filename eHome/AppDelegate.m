@@ -14,6 +14,8 @@
 #import "EHXiaoXiConfig.h"
 #import "IQKeyboardManager.h"
 #import "UncaughtExceptionHandler.h"
+#import <KSDebug/KSDebug.h>
+
 @interface AppDelegate ()
 
 @property (nonatomic, assign)  BOOL    isNotNeedPushNotificationMessage;
@@ -37,6 +39,15 @@
     [KSTouchEvent setNeedTouchEventLog:NO];
     [self configAppCare];
     [self startNetworkstartMonitoring];
+    
+    KSDebugEnviroment* debugEnviroment = [KSDebugEnviroment new];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory,
+                                                         NSUserDomainMask, YES);
+    NSString *baseDir = paths.firstObject;
+    NSString *soundDirectory = [baseDir stringByAppendingPathComponent:@"com.hackemist.EHAudioDataCache.default"];
+    [debugEnviroment.filePathArray addObject:soundDirectory];
+    [KSDebugManager setupDebugManagerWithDebugEnviroment:debugEnviroment];
+    
     EHLogInfo(@"launch finished!");
     return YES;
 }

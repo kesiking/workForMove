@@ -208,6 +208,8 @@
 
 -(void)loadLocationListWithBabyId:(NSString*)babyId{
     [self showLoadingView];
+    // _refreshServiceTime （优化性能） 用于防止两次service刷新过于临近从而导致的地图频繁刷新 -- 孟希羲
+    self->_refreshServiceTime = [NSDate date];
     [self.listService loadLocationTraceHistoryWithBabyId:babyId];
 }
 
@@ -233,18 +235,33 @@
         _listService.serviceDidFinishLoadBlock = ^(WeAppBasicService* service){
             STRONGSELF
             if (service && service.dataList) {
-                strongSelf.positionArray = service.dataList;
+                // （优化性能） service请求的数据与当前positionArray无差别则无需刷新地图 -- 孟希羲
+                if ([strongSelf didMapViewNeedReloadData:service.dataList oldData:strongSelf.positionArray]) {
+                    strongSelf.positionArray = service.dataList;
+                    // 多实例后不再需要根据是否在当前view刷新 -- map多实例方案
+                    [strongSelf resetMapAnnotation];
+                    [strongSelf setupMapAnnotation];
+                    [strongSelf reloadData];
+                }
+                
+                /*
                 if ([(KSViewController*)strongSelf.viewController isViewAppeared]) {
                     [strongSelf resetMapAnnotation];
                     [strongSelf setupMapAnnotation];
                     [strongSelf reloadData];
                 }
+                 */
             }else{
                 strongSelf.positionArray = nil;
-                if ([(KSViewController*)strongSelf.viewController isViewAppeared]) {
+                // 多实例后不再需要根据是否在当前view刷新 -- map多实例方案
                 [strongSelf resetMapAnnotation];
                 [strongSelf reloadData];
+                /*
+                if ([(KSViewController*)strongSelf.viewController isViewAppeared]) {
+                    [strongSelf resetMapAnnotation];
+                    [strongSelf reloadData];
                 }
+                 */
             }
             [strongSelf hideLoadingView];
             if (strongSelf.finishedRefreshService) {
@@ -259,6 +276,31 @@
         };
     }
     return _listService;
+}
+
+-(BOOL)didMapViewNeedReloadData:(NSArray*)newData oldData:(NSArray*)oldData{
+    if ([newData count] != [oldData count]) {
+        return YES;
+    }
+    int i = 0;
+    for (; i < newData.count; i++) {
+        EHUserDevicePosition* newItem = [newData objectAtIndex:i];
+        if (![newItem isKindOfClass:[EHUserDevicePosition class]]) {
+            continue;
+        }
+        EHUserDevicePosition* oldItem = [oldData objectAtIndex:i];
+        if (![oldItem isKindOfClass:[EHUserDevicePosition class]]) {
+            continue;
+        }
+        
+        if (!([oldItem.positionId integerValue] == [newItem.positionId integerValue])) {
+            break;
+        }
+    }
+    if (i == newData.count) {
+        return NO;
+    }
+    return YES;
 }
 
 -(EHLocationService *)refreshLocationService{

@@ -70,6 +70,14 @@
 }
 
 -(void)babyLowBatteryNotification:(NSNotification*)notification{
+    // _refreshServiceTime （优化性能） 用于防止两次service刷新过于临近从而导致的地图频繁刷新 -- 孟希羲
+    NSDate* currentTime = [NSDate date];
+    NSTimeInterval timerBucket = [currentTime timeIntervalSinceDate:self->_refreshServiceTime];
+    // 在2秒内认为是刷新过于频繁
+    if (timerBucket <= 2) {
+        EHLogInfo(@"-----> babyLowBatteryNotification refresh service too quick!");
+        return;
+    }
     EHGetBabyListRsp* currentBabyUserInfo = [[EHBabyListDataCenter sharedCenter] currentBabyUserInfo];
     [self loadBabyMapListWithBabyUserInfo:currentBabyUserInfo];
 }

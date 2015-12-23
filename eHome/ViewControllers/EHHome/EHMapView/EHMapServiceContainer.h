@@ -21,6 +21,7 @@ typedef BOOL (^shouldSelectAnnotationViewAfterRefreshMapBlock) (EHMapServiceCont
 @interface EHMapServiceContainer : EHMapViewContainer{
     EHLocationService*     _listService;
     EHLocationService*     _refreshLocationService;
+    NSDate*                _refreshServiceTime;
 }
 
 @property (nonatomic, strong) EHGetBabyListRsp      *babyUserInfo;
