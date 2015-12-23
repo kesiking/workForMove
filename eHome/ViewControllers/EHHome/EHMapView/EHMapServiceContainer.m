@@ -296,6 +296,18 @@
         if (!([oldItem.positionId integerValue] == [newItem.positionId integerValue])) {
             break;
         }
+        if (![oldItem.location_time isEqualToString:newItem.location_time]) {
+            break;
+        }
+        if (!([oldItem.device_kwh integerValue] == [newItem.device_kwh integerValue])) {
+            break;
+        }
+        if (!([oldItem.device_status integerValue] == [newItem.device_status integerValue])) {
+            break;
+        }
+        if (![oldItem.locationType isEqualToString:newItem.locationType]) {
+            break;
+        }
     }
     if (i == newData.count) {
         return NO;
